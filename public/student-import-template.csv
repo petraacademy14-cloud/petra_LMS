@@ -1,0 +1,2 @@
+admission_number,first_name,middle_name,last_name,date_of_birth,gender,admission_date,address,guardian_first_name,guardian_last_name,guardian_relationship,guardian_phone,guardian_email,guardian_occupation
+,Ada,Chinelo,Okafor,2017-04-12,FEMALE,2026-09-07,"Awka, Anambra",Chidi,Okafor,FATHER,08031234567,chidi.okafor@example.com,Engineer

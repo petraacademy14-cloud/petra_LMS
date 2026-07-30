@@ -33,6 +33,52 @@ enum LogSeverity {
   CRITICAL
 }
 
+enum StudentStatus {
+  ACTIVE
+  WITHDRAWN
+  GRADUATED
+  ARCHIVED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum GuardianRelationship {
+  FATHER
+  MOTHER
+  GUARDIAN
+  SIBLING
+  RELATIVE
+  OTHER
+}
+
+enum EnrollmentStatus {
+  CURRENT
+  PROMOTED
+  COMPLETED
+  TRANSFERRED
+  WITHDRAWN
+}
+
+enum ImportStatus {
+  VALIDATING
+  READY
+  FAILED
+  IMPORTING
+  COMPLETED
+  CANCELLED
+}
+
+enum DocumentCategory {
+  BIRTH_CERTIFICATE
+  PREVIOUS_REPORT
+  MEDICAL
+  ADMISSION_FORM
+  OTHER
+}
+
 model User {
   id            String   @id @default(cuid())
   name          String
@@ -42,11 +88,13 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  sessions    Session[]
-  accounts    Account[]
-  memberships SchoolMembership[]
-  auditEvents AuditLog[]         @relation("AuditActor")
-  errorEvents ErrorLog[]
+  sessions     Session[]
+  accounts     Account[]
+  memberships  SchoolMembership[]
+  auditEvents  AuditLog[]       @relation("AuditActor")
+  errorEvents  ErrorLog[]
+  studentFiles StudentDocument[]
+  importJobs   StudentImportJob[]
 
   @@index([email])
   @@map("users")
@@ -109,13 +157,17 @@ model School {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  campuses    Campus[]
-  memberships SchoolMembership[]
-  sessions    AcademicSession[]
-  classLevels ClassLevel[]
-  subjects    Subject[]
-  auditEvents AuditLog[]
-  errorEvents ErrorLog[]
+  campuses          Campus[]
+  memberships       SchoolMembership[]
+  sessions          AcademicSession[]
+  classLevels       ClassLevel[]
+  subjects          Subject[]
+  students          Student[]
+  guardians         Guardian[]
+  admissionCounters AdmissionCounter[]
+  importJobs         StudentImportJob[]
+  auditEvents        AuditLog[]
+  errorEvents        ErrorLog[]
 
   @@map("schools")
 }
@@ -132,12 +184,16 @@ model Campus {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  memberships    SchoolMembership[]
-  classArms      ClassArm[]
-  campusSubjects CampusSubject[]
-  terms          Term[]
-  auditEvents    AuditLog[]
-  errorEvents    ErrorLog[]
+  memberships       SchoolMembership[]
+  classArms          ClassArm[]
+  campusSubjects     CampusSubject[]
+  terms              Term[]
+  students           Student[]
+  enrollments        StudentEnrollment[]
+  admissionCounters  AdmissionCounter[]
+  importJobs          StudentImportJob[]
+  auditEvents         AuditLog[]
+  errorEvents         ErrorLog[]
 
   @@unique([schoolId, code])
   @@unique([schoolId, name])
@@ -175,7 +231,9 @@ model AcademicSession {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  terms Term[]
+  terms       Term[]
+  enrollments StudentEnrollment[]
+  importJobs   StudentImportJob[]
 
   @@unique([schoolId, name])
   @@index([schoolId, isCurrent])
@@ -232,6 +290,9 @@ model ClassArm {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
+  enrollments StudentEnrollment[]
+  importJobs  StudentImportJob[]
+
   @@unique([campusId, classLevelId, code])
   @@index([campusId, isActive])
   @@map("class_arms")
@@ -266,6 +327,176 @@ model CampusSubject {
   @@unique([campusId, subjectId])
   @@index([campusId, isActive])
   @@map("campus_subjects")
+}
+
+model Student {
+  id              String        @id @default(cuid())
+  schoolId        String
+  school          School        @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId        String
+  campus          Campus        @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  admissionNumber String
+  firstName       String
+  middleName      String?
+  lastName        String
+  preferredName   String?
+  dateOfBirth     DateTime?     @db.Date
+  gender          Gender?
+  photoUrl        String?
+  address         String?
+  medicalNotes    String?
+  admissionDate   DateTime      @db.Date
+  status          StudentStatus @default(ACTIVE)
+  statusReason    String?
+  statusChangedAt DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  guardians  StudentGuardian[]
+  enrollments StudentEnrollment[]
+  documents  StudentDocument[]
+
+  @@unique([schoolId, admissionNumber])
+  @@index([schoolId, status, lastName, firstName])
+  @@index([campusId, status])
+  @@map("students")
+}
+
+model Guardian {
+  id             String   @id @default(cuid())
+  schoolId       String
+  school         School   @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  firstName      String
+  lastName       String
+  phone          String
+  alternatePhone String?
+  email          String?
+  address        String?
+  occupation     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  students StudentGuardian[]
+
+  @@index([schoolId, phone])
+  @@index([schoolId, email])
+  @@map("guardians")
+}
+
+model StudentGuardian {
+  id               String               @id @default(cuid())
+  studentId        String
+  student          Student              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  guardianId       String
+  guardian         Guardian             @relation(fields: [guardianId], references: [id], onDelete: Restrict)
+  relationship     GuardianRelationship
+  isPrimaryContact Boolean              @default(false)
+  receivesMessages Boolean              @default(true)
+  canPickUp        Boolean              @default(true)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@unique([studentId, guardianId])
+  @@index([guardianId])
+  @@map("student_guardians")
+}
+
+model StudentEnrollment {
+  id                String           @id @default(cuid())
+  studentId         String
+  student           Student          @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  campusId          String
+  campus            Campus           @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  classArmId        String
+  classArm          ClassArm         @relation(fields: [classArmId], references: [id], onDelete: Restrict)
+  academicSessionId String
+  academicSession   AcademicSession  @relation(fields: [academicSessionId], references: [id], onDelete: Restrict)
+  status            EnrollmentStatus @default(CURRENT)
+  startsOn          DateTime         @db.Date
+  endsOn            DateTime?        @db.Date
+  note              String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([studentId, startsOn(sort: Desc)])
+  @@index([campusId, classArmId, academicSessionId, status])
+  @@map("student_enrollments")
+}
+
+model AdmissionCounter {
+  id        String   @id @default(cuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId  String
+  campus    Campus   @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  year      Int
+  lastValue Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([schoolId, campusId, year])
+  @@map("admission_counters")
+}
+
+model StudentDocument {
+  id           String           @id @default(cuid())
+  studentId    String
+  student      Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  uploadedById String
+  uploadedBy   User             @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  category     DocumentCategory
+  originalName String
+  storagePath  String           @unique
+  mimeType     String
+  sizeBytes    Int
+  createdAt    DateTime         @default(now())
+
+  @@index([studentId, createdAt(sort: Desc)])
+  @@map("student_documents")
+}
+
+model StudentImportJob {
+  id                String          @id @default(cuid())
+  schoolId          String
+  school            School          @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId          String
+  campus            Campus          @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  classArmId        String
+  classArm          ClassArm        @relation(fields: [classArmId], references: [id], onDelete: Restrict)
+  academicSessionId String
+  academicSession   AcademicSession @relation(fields: [academicSessionId], references: [id], onDelete: Restrict)
+  createdById       String
+  createdBy         User            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  sourceName        String
+  status            ImportStatus    @default(VALIDATING)
+  totalRows         Int             @default(0)
+  validRows         Int             @default(0)
+  invalidRows       Int             @default(0)
+  importedRows      Int             @default(0)
+  createdAt         DateTime        @default(now())
+  completedAt       DateTime?
+
+  rows StudentImportRow[]
+
+  @@index([schoolId, createdAt(sort: Desc)])
+  @@index([campusId, status])
+  @@map("student_import_jobs")
+}
+
+model StudentImportRow {
+  id         String           @id @default(cuid())
+  importJobId String
+  importJob   StudentImportJob @relation(fields: [importJobId], references: [id], onDelete: Cascade)
+  rowNumber  Int
+  data       Json
+  errors     Json?
+  isValid    Boolean
+  studentId  String?
+  createdAt  DateTime         @default(now())
+
+  @@unique([importJobId, rowNumber])
+  @@index([importJobId, isValid])
+  @@map("student_import_rows")
 }
 
 model AuditLog {

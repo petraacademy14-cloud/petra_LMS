@@ -12,7 +12,12 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      include: ["src/lib/permissions.ts", "src/lib/scope.ts"],
+      include: [
+        "src/lib/permissions.ts",
+        "src/lib/scope.ts",
+        "src/lib/students/import-validation.ts",
+        "src/lib/students/admission-number.ts"
+      ],
     },
   },
 });

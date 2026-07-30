@@ -9,6 +9,9 @@ export const permissions = [
   "academic.manage",
   "people.read",
   "people.manage",
+  "students.read",
+  "students.manage",
+  "students.import",
   "teaching.manage",
   "audit.read",
   "system.manage",
@@ -26,6 +29,9 @@ const rolePermissions = {
     "academic.manage",
     "people.read",
     "people.manage",
+    "students.read",
+    "students.manage",
+    "students.import",
     "teaching.manage",
     "audit.read",
   ]),
@@ -34,6 +40,7 @@ const rolePermissions = {
     "campus.read",
     "academic.read",
     "people.read",
+    "students.read",
   ]),
 } satisfies Record<Role, Set<Permission>>;
 
@@ -44,3 +51,4 @@ export function hasPermission(role: Role, permission: Permission) {
 export function permissionsFor(role: Role) {
   return [...rolePermissions[role]];
 }
+
