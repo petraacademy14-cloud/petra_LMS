@@ -282,6 +282,108 @@ async function main() {
     });
   }
 
+  for (const [code, name] of [
+    ["TUITION", "Tuition"],
+    ["BOOKS", "Books and learning materials"],
+    ["UNIFORM", "Uniform"],
+    ["ACTIVITY", "Activities"],
+    ["TRANSPORT", "Transport"],
+  ] as const) {
+    await db.feeCategory.upsert({
+      where: { schoolId_code: { schoolId: school.id, code } },
+      create: { schoolId: school.id, code, name },
+      update: { name, isActive: true },
+    });
+  }
+
+  if (process.env.APP_ENV !== "production") {
+    const primaryOne = classLevels.find((item) => item.code === "PRI-1");
+    const awkaPrimaryOne = primaryOne
+      ? await db.classArm.findFirst({
+          where: {
+            campusId: awka.id,
+            classLevelId: primaryOne.id,
+            code: "A",
+          },
+        })
+      : null;
+    if (primaryOne && awkaPrimaryOne) {
+      const tuition = await db.feeCategory.findUniqueOrThrow({
+        where: {
+          schoolId_code: { schoolId: school.id, code: "TUITION" },
+        },
+      });
+      const firstTerm = await db.term.findUniqueOrThrow({
+        where: {
+          academicSessionId_campusId_kind: {
+            academicSessionId: academicSession.id,
+            campusId: awka.id,
+            kind: "FIRST",
+          },
+        },
+      });
+      await db.feeStructure.upsert({
+        where: {
+          campusId_termId_classLevelId_categoryId: {
+            campusId: awka.id,
+            termId: firstTerm.id,
+            classLevelId: primaryOne.id,
+            categoryId: tuition.id,
+          },
+        },
+        create: {
+          schoolId: school.id,
+          campusId: awka.id,
+          termId: firstTerm.id,
+          classLevelId: primaryOne.id,
+          categoryId: tuition.id,
+          amount: "75000.00",
+          dueOn: new Date("2026-09-30T00:00:00.000Z"),
+        },
+        update: {
+          amount: "75000.00",
+          dueOn: new Date("2026-09-30T00:00:00.000Z"),
+          isActive: true,
+        },
+      });
+
+      for (const student of [
+        {
+          studentId: "demo-ada-okafor",
+          admissionNumber: "PET/AWK/2026/001",
+          displayName: "Ada Okafor",
+        },
+        {
+          studentId: "demo-chidi-eze",
+          admissionNumber: "PET/AWK/2026/002",
+          displayName: "Chidi Eze",
+        },
+      ]) {
+        await db.studentFeeAccount.upsert({
+          where: {
+            schoolId_studentId: {
+              schoolId: school.id,
+              studentId: student.studentId,
+            },
+          },
+          create: {
+            ...student,
+            schoolId: school.id,
+            campusId: awka.id,
+            classArmId: awkaPrimaryOne.id,
+          },
+          update: {
+            admissionNumber: student.admissionNumber,
+            displayName: student.displayName,
+            campusId: awka.id,
+            classArmId: awkaPrimaryOne.id,
+            isActive: true,
+          },
+        });
+      }
+    }
+  }
+
   console.info(
     JSON.stringify({
       message: "Petra LMS seed complete",

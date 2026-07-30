@@ -16,6 +16,18 @@ e-learning platform.
 - Responsive application shell
 - PostgreSQL migrations, seed data, CI and environment runbooks
 
+## Phase 3 fees and payments
+
+- Class/term/campus fee structures and student-specific charges or discounts
+- Cash, transfer, POS and manually recorded online payments
+- Part payments, balances, receipt sequencing, printable/PDF receipts
+- Append-only ledger with reversal-based corrections
+- Students owing, collection filters, owner metrics and daily reconciliation
+- Draft reminder generation
+
+Payment gateways are intentionally excluded until manual recording and
+reconciliation are proven reliable.
+
 ## Stack
 
 - Next.js 16, React 19 and TypeScript
@@ -68,5 +80,6 @@ This runs linting, TypeScript, unit tests and the production build.
 - [Security and permissions](docs/security.md)
 - [Environments, backups and restore](docs/operations.md)
 - [Phase 1 acceptance criteria](docs/phase-1-foundation.md)
+- [Phase 3 fees and payments](docs/phase-3-fees-payments.md)
 
 Read `AGENTS.md` before starting any task.

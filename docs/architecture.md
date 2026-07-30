@@ -30,6 +30,8 @@ checks the same boundary before data access.
 - `src/app/actions`: validated transactional mutations
 - `src/lib/audit.ts`: append-only audit event writer
 - `src/lib/error-log.ts`: structured application error capture
+- `src/lib/finance.ts`: receipt, money, balance and reconciliation rules
+- `src/lib/student-finance-sync.ts`: Phase 2 to finance projection boundary
 - `prisma/schema.prisma`: canonical data model
 
 ## Decision rules
@@ -40,3 +42,6 @@ checks the same boundary before data access.
 - Return narrow DTOs/selects instead of full database records.
 - Recheck authorization close to every data source and mutation.
 - Keep important mutations and their audit event in one transaction.
+- Treat the fee ledger as the balance source. Never derive balances by mutating
+  a student total column.
+- Keep posted charges, payments, allocations and reversals append-only.

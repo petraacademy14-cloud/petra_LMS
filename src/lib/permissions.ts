@@ -10,6 +10,9 @@ export const permissions = [
   "people.read",
   "people.manage",
   "teaching.manage",
+  "finance.read",
+  "finance.manage",
+  "finance.reconcile",
   "audit.read",
   "system.manage",
 ] as const;
@@ -27,6 +30,9 @@ const rolePermissions = {
     "people.read",
     "people.manage",
     "teaching.manage",
+    "finance.read",
+    "finance.manage",
+    "finance.reconcile",
     "audit.read",
   ]),
   TEACHER: new Set<Permission>([

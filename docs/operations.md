@@ -26,6 +26,10 @@ Vercel runtime traffic uses the pooled `DATABASE_URL`. Prisma CLI migration
 commands prefer the direct/session `DIRECT_URL`, falling back to `DATABASE_URL`
 for local and CI environments.
 
+The Phase 3 finance migration creates append-only triggers. Confirm a fresh
+restore point before deploying it. Test the migration and the reversal workflow
+against the preview database before production.
+
 ## Backup policy
 
 Use the managed PostgreSQL provider's automated backups:
@@ -46,7 +50,8 @@ isolated database at least quarterly.
 3. set `DATABASE_URL` only in an isolated test environment.
 4. Run `npm run db:deploy` to apply any later compatible migrations.
 5. Verify sign-in, campus counts, current session, audit history and a sampled
-   record from each completed module.
+   record from each completed module. For Phase 3, verify one posted payment,
+   receipt download, balance, reversal and reconciliation batch.
 6. Record restore time, recovery point, failures and follow-up actions.
 7. Destroy the temporary restored database after approval.
 
