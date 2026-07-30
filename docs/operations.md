@@ -18,8 +18,13 @@ configured separately for Preview and Production.
 3. A human checks the task acceptance criteria at phone and desktop widths.
 4. Before a high-risk migration, confirm a fresh production restore point.
 5. Merge the approved pull request.
-6. Run `npm run db:deploy` using production credentials.
-7. Deploy the exact approved commit and perform the smoke checks.
+6. Vercel runs `npm run vercel-build`, applying pending migrations through
+   `DIRECT_URL` before building the exact approved commit.
+7. Perform the production smoke checks.
+
+Vercel runtime traffic uses the pooled `DATABASE_URL`. Prisma CLI migration
+commands prefer the direct/session `DIRECT_URL`, falling back to `DATABASE_URL`
+for local and CI environments.
 
 ## Backup policy
 
