@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: petra_lms
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d petra_lms"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - petra_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  petra_postgres_data:
