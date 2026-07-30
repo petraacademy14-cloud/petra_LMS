@@ -1,0 +1,316 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  TEACHER
+}
+
+enum MembershipStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+}
+
+enum TermKind {
+  FIRST
+  SECOND
+  THIRD
+  CUSTOM
+}
+
+enum LogSeverity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions    Session[]
+  accounts    Account[]
+  memberships SchoolMembership[]
+  auditEvents AuditLog[]         @relation("AuditActor")
+  errorEvents ErrorLog[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+model School {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  timezone  String   @default("Africa/Lagos")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  campuses    Campus[]
+  memberships SchoolMembership[]
+  sessions    AcademicSession[]
+  classLevels ClassLevel[]
+  subjects    Subject[]
+  auditEvents AuditLog[]
+  errorEvents ErrorLog[]
+
+  @@map("schools")
+}
+
+model Campus {
+  id        String   @id @default(cuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name      String
+  code      String
+  city      String
+  state     String   @default("Anambra")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships    SchoolMembership[]
+  classArms      ClassArm[]
+  campusSubjects CampusSubject[]
+  terms          Term[]
+  auditEvents    AuditLog[]
+  errorEvents    ErrorLog[]
+
+  @@unique([schoolId, code])
+  @@unique([schoolId, name])
+  @@index([schoolId, isActive])
+  @@map("campuses")
+}
+
+model SchoolMembership {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schoolId  String
+  school    School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  campusId  String?
+  campus    Campus?          @relation(fields: [campusId], references: [id], onDelete: Cascade)
+  role      Role
+  status    MembershipStatus @default(INVITED)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@unique([userId, schoolId, campusId])
+  @@index([schoolId, role, status])
+  @@index([campusId, role, status])
+  @@map("school_memberships")
+}
+
+model AcademicSession {
+  id        String   @id @default(cuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name      String
+  startsOn  DateTime @db.Date
+  endsOn    DateTime @db.Date
+  isCurrent Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  terms Term[]
+
+  @@unique([schoolId, name])
+  @@index([schoolId, isCurrent])
+  @@map("academic_sessions")
+}
+
+model Term {
+  id                String          @id @default(cuid())
+  academicSessionId String
+  academicSession   AcademicSession @relation(fields: [academicSessionId], references: [id], onDelete: Cascade)
+  campusId          String
+  campus            Campus          @relation(fields: [campusId], references: [id], onDelete: Cascade)
+  name              String
+  kind              TermKind
+  startsOn          DateTime        @db.Date
+  endsOn            DateTime        @db.Date
+  isCurrent         Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@unique([academicSessionId, campusId, kind])
+  @@index([campusId, isCurrent])
+  @@map("terms")
+}
+
+model ClassLevel {
+  id        String   @id @default(cuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name      String
+  code      String
+  sortOrder Int
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  arms ClassArm[]
+
+  @@unique([schoolId, code])
+  @@unique([schoolId, sortOrder])
+  @@map("class_levels")
+}
+
+model ClassArm {
+  id           String     @id @default(cuid())
+  campusId     String
+  campus       Campus     @relation(fields: [campusId], references: [id], onDelete: Cascade)
+  classLevelId String
+  classLevel   ClassLevel @relation(fields: [classLevelId], references: [id], onDelete: Cascade)
+  name         String
+  code         String
+  capacity     Int?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([campusId, classLevelId, code])
+  @@index([campusId, isActive])
+  @@map("class_arms")
+}
+
+model Subject {
+  id        String   @id @default(cuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name      String
+  code      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  campusSubjects CampusSubject[]
+
+  @@unique([schoolId, code])
+  @@map("subjects")
+}
+
+model CampusSubject {
+  id        String   @id @default(cuid())
+  campusId  String
+  campus    Campus   @relation(fields: [campusId], references: [id], onDelete: Cascade)
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([campusId, subjectId])
+  @@index([campusId, isActive])
+  @@map("campus_subjects")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId    String?
+  campus      Campus?  @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  actorUserId String?
+  actor       User?    @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  action      String
+  entityType  String
+  entityId    String?
+  before      Json?
+  after       Json?
+  requestId   String?
+  ipAddress   String?
+  userAgent   String?
+  occurredAt  DateTime @default(now())
+
+  @@index([schoolId, occurredAt(sort: Desc)])
+  @@index([campusId, occurredAt(sort: Desc)])
+  @@index([actorUserId, occurredAt(sort: Desc)])
+  @@map("audit_logs")
+}
+
+model ErrorLog {
+  id          String      @id @default(cuid())
+  schoolId    String?
+  school      School?     @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  campusId    String?
+  campus      Campus?     @relation(fields: [campusId], references: [id], onDelete: SetNull)
+  userId      String?
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  severity    LogSeverity @default(ERROR)
+  message     String
+  stack       String?
+  fingerprint String?
+  requestId   String?
+  path        String?
+  context     Json?
+  occurredAt  DateTime    @default(now())
+
+  @@index([severity, occurredAt(sort: Desc)])
+  @@index([schoolId, occurredAt(sort: Desc)])
+  @@index([fingerprint])
+  @@map("error_logs")
+}
