@@ -26,6 +26,21 @@ Vercel runtime traffic uses the pooled `DATABASE_URL`. Prisma CLI migration
 commands prefer the direct/session `DIRECT_URL`, falling back to `DATABASE_URL`
 for local and CI environments.
 
+### Phase 2 migration
+
+`20260730210000_phase_2_student_management` only adds new enums, tables,
+indexes, foreign keys and scope triggers. Take a restore point before deploying.
+Rollback is restore-based after records have been imported; dropping the Phase 2
+tables would permanently destroy student data and is not an approved rollback.
+
+### Student document storage
+
+Document uploads are optional. In Supabase Storage, create a private bucket named
+`student-documents`, then set `SUPABASE_URL` and the server-only
+`SUPABASE_SECRET_KEY` in Preview and Production. Never expose that secret with a
+`NEXT_PUBLIC_` prefix. Keep the bucket private; the application records only
+metadata and opaque object keys in PostgreSQL.
+
 ## Backup policy
 
 Use the managed PostgreSQL provider's automated backups:

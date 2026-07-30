@@ -1,0 +1,274 @@
+-- CreateEnum
+CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE');
+
+-- CreateEnum
+CREATE TYPE "StudentStatus" AS ENUM ('ACTIVE', 'ARCHIVED', 'WITHDRAWN', 'GRADUATED');
+
+-- CreateEnum
+CREATE TYPE "EnrollmentStatus" AS ENUM ('CURRENT', 'PROMOTED', 'TRANSFERRED', 'WITHDRAWN', 'GRADUATED');
+
+-- CreateEnum
+CREATE TYPE "GuardianRelationship" AS ENUM ('FATHER', 'MOTHER', 'GUARDIAN', 'SIBLING', 'RELATIVE', 'OTHER');
+
+-- CreateTable
+CREATE TABLE "admission_sequences" (
+    "id" TEXT NOT NULL,
+    "schoolId" TEXT NOT NULL,
+    "campusId" TEXT NOT NULL,
+    "year" INTEGER NOT NULL,
+    "nextNumber" INTEGER NOT NULL DEFAULT 1,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "admission_sequences_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "students" (
+    "id" TEXT NOT NULL,
+    "schoolId" TEXT NOT NULL,
+    "campusId" TEXT NOT NULL,
+    "admissionNumber" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "middleName" TEXT,
+    "lastName" TEXT NOT NULL,
+    "preferredName" TEXT,
+    "gender" "Gender" NOT NULL,
+    "dateOfBirth" DATE,
+    "admissionDate" DATE NOT NULL,
+    "status" "StudentStatus" NOT NULL DEFAULT 'ACTIVE',
+    "address" TEXT,
+    "notes" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "students_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "guardians" (
+    "id" TEXT NOT NULL,
+    "schoolId" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
+    "email" TEXT,
+    "address" TEXT,
+    "occupation" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "guardians_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "student_guardians" (
+    "id" TEXT NOT NULL,
+    "studentId" TEXT NOT NULL,
+    "guardianId" TEXT NOT NULL,
+    "relationship" "GuardianRelationship" NOT NULL,
+    "isPrimary" BOOLEAN NOT NULL DEFAULT false,
+    "livesWith" BOOLEAN NOT NULL DEFAULT false,
+    "canPickup" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "student_guardians_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "enrollments" (
+    "id" TEXT NOT NULL,
+    "studentId" TEXT NOT NULL,
+    "campusId" TEXT NOT NULL,
+    "academicSessionId" TEXT NOT NULL,
+    "classArmId" TEXT NOT NULL,
+    "status" "EnrollmentStatus" NOT NULL DEFAULT 'CURRENT',
+    "startsOn" DATE NOT NULL,
+    "endsOn" DATE,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "enrollments_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "student_documents" (
+    "id" TEXT NOT NULL,
+    "studentId" TEXT NOT NULL,
+    "campusId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "storageKey" TEXT NOT NULL,
+    "fileName" TEXT NOT NULL,
+    "contentType" TEXT NOT NULL,
+    "sizeBytes" INTEGER NOT NULL,
+    "uploadedById" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "student_documents_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE INDEX "admission_sequences_schoolId_year_idx" ON "admission_sequences"("schoolId", "year");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "admission_sequences_campusId_year_key" ON "admission_sequences"("campusId", "year");
+
+-- CreateIndex
+CREATE INDEX "students_campusId_status_lastName_firstName_idx" ON "students"("campusId", "status", "lastName", "firstName");
+
+-- CreateIndex
+CREATE INDEX "students_schoolId_lastName_firstName_idx" ON "students"("schoolId", "lastName", "firstName");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "students_schoolId_admissionNumber_key" ON "students"("schoolId", "admissionNumber");
+
+-- CreateIndex
+CREATE INDEX "guardians_schoolId_phone_idx" ON "guardians"("schoolId", "phone");
+
+-- CreateIndex
+CREATE INDEX "guardians_schoolId_lastName_firstName_idx" ON "guardians"("schoolId", "lastName", "firstName");
+
+-- CreateIndex
+CREATE INDEX "student_guardians_guardianId_idx" ON "student_guardians"("guardianId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "student_guardians_studentId_guardianId_key" ON "student_guardians"("studentId", "guardianId");
+
+-- CreateIndex
+CREATE INDEX "enrollments_campusId_classArmId_status_idx" ON "enrollments"("campusId", "classArmId", "status");
+
+-- CreateIndex
+CREATE INDEX "enrollments_academicSessionId_status_idx" ON "enrollments"("academicSessionId", "status");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "enrollments_studentId_academicSessionId_key" ON "enrollments"("studentId", "academicSessionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "student_documents_storageKey_key" ON "student_documents"("storageKey");
+
+-- CreateIndex
+CREATE INDEX "student_documents_studentId_createdAt_idx" ON "student_documents"("studentId", "createdAt" DESC);
+
+-- CreateIndex
+CREATE INDEX "student_documents_campusId_createdAt_idx" ON "student_documents"("campusId", "createdAt" DESC);
+
+-- AddForeignKey
+ALTER TABLE "admission_sequences" ADD CONSTRAINT "admission_sequences_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "admission_sequences" ADD CONSTRAINT "admission_sequences_campusId_fkey" FOREIGN KEY ("campusId") REFERENCES "campuses"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "students" ADD CONSTRAINT "students_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "students" ADD CONSTRAINT "students_campusId_fkey" FOREIGN KEY ("campusId") REFERENCES "campuses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "guardians" ADD CONSTRAINT "guardians_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "student_guardians" ADD CONSTRAINT "student_guardians_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "student_guardians" ADD CONSTRAINT "student_guardians_guardianId_fkey" FOREIGN KEY ("guardianId") REFERENCES "guardians"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "enrollments" ADD CONSTRAINT "enrollments_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "enrollments" ADD CONSTRAINT "enrollments_campusId_fkey" FOREIGN KEY ("campusId") REFERENCES "campuses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "enrollments" ADD CONSTRAINT "enrollments_academicSessionId_fkey" FOREIGN KEY ("academicSessionId") REFERENCES "academic_sessions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "enrollments" ADD CONSTRAINT "enrollments_classArmId_fkey" FOREIGN KEY ("classArmId") REFERENCES "class_arms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "student_documents" ADD CONSTRAINT "student_documents_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "student_documents" ADD CONSTRAINT "student_documents_campusId_fkey" FOREIGN KEY ("campusId") REFERENCES "campuses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "student_documents" ADD CONSTRAINT "student_documents_uploadedById_fkey" FOREIGN KEY ("uploadedById") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Preserve tenant and campus boundaries even when data is written outside the app.
+CREATE OR REPLACE FUNCTION enforce_student_scope()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM "campuses"
+    WHERE "id" = NEW."campusId" AND "schoolId" = NEW."schoolId"
+  ) THEN
+    RAISE EXCEPTION 'Student campus must belong to the student school';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER students_scope_guard
+BEFORE INSERT OR UPDATE ON "students"
+FOR EACH ROW EXECUTE FUNCTION enforce_student_scope();
+
+CREATE OR REPLACE FUNCTION enforce_admission_sequence_scope()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM "campuses"
+    WHERE "id" = NEW."campusId" AND "schoolId" = NEW."schoolId"
+  ) THEN
+    RAISE EXCEPTION 'Admission sequence campus must belong to the school';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER admission_sequences_scope_guard
+BEFORE INSERT OR UPDATE ON "admission_sequences"
+FOR EACH ROW EXECUTE FUNCTION enforce_admission_sequence_scope();
+
+CREATE OR REPLACE FUNCTION enforce_enrollment_scope()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM "students" s
+    JOIN "class_arms" ca ON ca."id" = NEW."classArmId"
+    JOIN "academic_sessions" a ON a."id" = NEW."academicSessionId"
+    JOIN "campuses" c ON c."id" = NEW."campusId"
+    WHERE s."id" = NEW."studentId"
+      AND s."schoolId" = c."schoolId"
+      AND s."campusId" = NEW."campusId"
+      AND ca."campusId" = NEW."campusId"
+      AND a."schoolId" = s."schoolId"
+  ) THEN
+    RAISE EXCEPTION 'Enrollment references must share school and campus scope';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER enrollments_scope_guard
+BEFORE INSERT OR UPDATE ON "enrollments"
+FOR EACH ROW EXECUTE FUNCTION enforce_enrollment_scope();
+
+CREATE OR REPLACE FUNCTION enforce_student_guardian_scope()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM "students" s
+    JOIN "guardians" g ON g."id" = NEW."guardianId"
+    WHERE s."id" = NEW."studentId" AND s."schoolId" = g."schoolId"
+  ) THEN
+    RAISE EXCEPTION 'Student and guardian must belong to the same school';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER student_guardians_scope_guard
+BEFORE INSERT OR UPDATE ON "student_guardians"
+FOR EACH ROW EXECUTE FUNCTION enforce_student_guardian_scope();

@@ -13,6 +13,7 @@ import {
   Settings,
   ShieldCheck,
   Users,
+  GraduationCap,
   X,
 } from "lucide-react";
 import { Brand } from "@/components/brand";
@@ -37,6 +38,12 @@ const navigation: Array<{
     label: "Academics",
     icon: BookOpenText,
     permission: "academic.read",
+  },
+  {
+    href: "/students",
+    label: "Students",
+    icon: GraduationCap,
+    permission: "people.read",
   },
   {
     href: "/people",

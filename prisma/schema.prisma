@@ -33,6 +33,35 @@ enum LogSeverity {
   CRITICAL
 }
 
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum StudentStatus {
+  ACTIVE
+  ARCHIVED
+  WITHDRAWN
+  GRADUATED
+}
+
+enum EnrollmentStatus {
+  CURRENT
+  PROMOTED
+  TRANSFERRED
+  WITHDRAWN
+  GRADUATED
+}
+
+enum GuardianRelationship {
+  FATHER
+  MOTHER
+  GUARDIAN
+  SIBLING
+  RELATIVE
+  OTHER
+}
+
 model User {
   id            String   @id @default(cuid())
   name          String
@@ -42,11 +71,12 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  sessions    Session[]
-  accounts    Account[]
-  memberships SchoolMembership[]
-  auditEvents AuditLog[]         @relation("AuditActor")
-  errorEvents ErrorLog[]
+  sessions                 Session[]
+  accounts                 Account[]
+  memberships              SchoolMembership[]
+  auditEvents              AuditLog[]         @relation("AuditActor")
+  errorEvents              ErrorLog[]
+  uploadedStudentDocuments StudentDocument[]
 
   @@index([email])
   @@map("users")
@@ -109,13 +139,16 @@ model School {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  campuses    Campus[]
-  memberships SchoolMembership[]
-  sessions    AcademicSession[]
-  classLevels ClassLevel[]
-  subjects    Subject[]
-  auditEvents AuditLog[]
-  errorEvents ErrorLog[]
+  campuses           Campus[]
+  memberships        SchoolMembership[]
+  sessions           AcademicSession[]
+  classLevels        ClassLevel[]
+  subjects           Subject[]
+  auditEvents        AuditLog[]
+  errorEvents        ErrorLog[]
+  students           Student[]
+  guardians          Guardian[]
+  admissionSequences AdmissionSequence[]
 
   @@map("schools")
 }
@@ -132,12 +165,16 @@ model Campus {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  memberships    SchoolMembership[]
-  classArms      ClassArm[]
-  campusSubjects CampusSubject[]
-  terms          Term[]
-  auditEvents    AuditLog[]
-  errorEvents    ErrorLog[]
+  memberships        SchoolMembership[]
+  classArms          ClassArm[]
+  campusSubjects     CampusSubject[]
+  terms              Term[]
+  auditEvents        AuditLog[]
+  errorEvents        ErrorLog[]
+  students           Student[]
+  enrollments        Enrollment[]
+  studentDocuments   StudentDocument[]
+  admissionSequences AdmissionSequence[]
 
   @@unique([schoolId, code])
   @@unique([schoolId, name])
@@ -175,7 +212,8 @@ model AcademicSession {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  terms Term[]
+  terms       Term[]
+  enrollments Enrollment[]
 
   @@unique([schoolId, name])
   @@index([schoolId, isCurrent])
@@ -220,17 +258,18 @@ model ClassLevel {
 }
 
 model ClassArm {
-  id           String     @id @default(cuid())
+  id           String       @id @default(cuid())
   campusId     String
-  campus       Campus     @relation(fields: [campusId], references: [id], onDelete: Cascade)
+  campus       Campus       @relation(fields: [campusId], references: [id], onDelete: Cascade)
   classLevelId String
-  classLevel   ClassLevel @relation(fields: [classLevelId], references: [id], onDelete: Cascade)
+  classLevel   ClassLevel   @relation(fields: [classLevelId], references: [id], onDelete: Cascade)
   name         String
   code         String
   capacity     Int?
-  isActive     Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  enrollments  Enrollment[]
 
   @@unique([campusId, classLevelId, code])
   @@index([campusId, isActive])
@@ -266,6 +305,131 @@ model CampusSubject {
   @@unique([campusId, subjectId])
   @@index([campusId, isActive])
   @@map("campus_subjects")
+}
+
+model AdmissionSequence {
+  id         String   @id @default(cuid())
+  schoolId   String
+  school     School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  campusId   String
+  campus     Campus   @relation(fields: [campusId], references: [id], onDelete: Cascade)
+  year       Int
+  nextNumber Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([campusId, year])
+  @@index([schoolId, year])
+  @@map("admission_sequences")
+}
+
+model Student {
+  id              String        @id @default(cuid())
+  schoolId        String
+  school          School        @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId        String
+  campus          Campus        @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  admissionNumber String
+  firstName       String
+  middleName      String?
+  lastName        String
+  preferredName   String?
+  gender          Gender
+  dateOfBirth     DateTime?     @db.Date
+  admissionDate   DateTime      @db.Date
+  status          StudentStatus @default(ACTIVE)
+  address         String?
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  guardians   StudentGuardian[]
+  enrollments Enrollment[]
+  documents   StudentDocument[]
+
+  @@unique([schoolId, admissionNumber])
+  @@index([campusId, status, lastName, firstName])
+  @@index([schoolId, lastName, firstName])
+  @@map("students")
+}
+
+model Guardian {
+  id         String   @id @default(cuid())
+  schoolId   String
+  school     School   @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  firstName  String
+  lastName   String
+  phone      String
+  email      String?
+  address    String?
+  occupation String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  students StudentGuardian[]
+
+  @@index([schoolId, phone])
+  @@index([schoolId, lastName, firstName])
+  @@map("guardians")
+}
+
+model StudentGuardian {
+  id           String               @id @default(cuid())
+  studentId    String
+  student      Student              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  guardianId   String
+  guardian     Guardian             @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+  relationship GuardianRelationship
+  isPrimary    Boolean              @default(false)
+  livesWith    Boolean              @default(false)
+  canPickup    Boolean              @default(true)
+  createdAt    DateTime             @default(now())
+
+  @@unique([studentId, guardianId])
+  @@index([guardianId])
+  @@map("student_guardians")
+}
+
+model Enrollment {
+  id                String           @id @default(cuid())
+  studentId         String
+  student           Student          @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  campusId          String
+  campus            Campus           @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  academicSessionId String
+  academicSession   AcademicSession  @relation(fields: [academicSessionId], references: [id], onDelete: Restrict)
+  classArmId        String
+  classArm          ClassArm         @relation(fields: [classArmId], references: [id], onDelete: Restrict)
+  status            EnrollmentStatus @default(CURRENT)
+  startsOn          DateTime         @db.Date
+  endsOn            DateTime?        @db.Date
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@unique([studentId, academicSessionId])
+  @@index([campusId, classArmId, status])
+  @@index([academicSessionId, status])
+  @@map("enrollments")
+}
+
+model StudentDocument {
+  id           String   @id @default(cuid())
+  studentId    String
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  campusId     String
+  campus       Campus   @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  name         String
+  storageKey   String   @unique
+  fileName     String
+  contentType  String
+  sizeBytes    Int
+  uploadedById String
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  createdAt    DateTime @default(now())
+
+  @@index([studentId, createdAt(sort: Desc)])
+  @@index([campusId, createdAt(sort: Desc)])
+  @@map("student_documents")
 }
 
 model AuditLog {
