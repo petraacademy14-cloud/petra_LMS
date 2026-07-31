@@ -20,6 +20,10 @@ export const permissions = [
   "results.manage",
   "results.approve",
   "results.publish",
+  "communications.read",
+  "communications.manage",
+  "communications.review",
+  "communications.publish",
   "audit.read",
   "system.manage",
 ] as const;
@@ -47,6 +51,10 @@ const rolePermissions = {
     "results.manage",
     "results.approve",
     "results.publish",
+    "communications.read",
+    "communications.manage",
+    "communications.review",
+    "communications.publish",
     "audit.read",
   ]),
   TEACHER: new Set<Permission>([
@@ -58,6 +66,8 @@ const rolePermissions = {
     "attendance.manage",
     "results.read",
     "results.manage",
+    "communications.read",
+    "communications.manage",
   ]),
 } satisfies Record<Role, Set<Permission>>;
 
