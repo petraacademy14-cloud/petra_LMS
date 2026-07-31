@@ -41,6 +41,12 @@ Document uploads are optional. In Supabase Storage, create a private bucket name
 `NEXT_PUBLIC_` prefix. Keep the bucket private; the application records only
 metadata and opaque object keys in PostgreSQL.
 
+### Phase 3 migration
+
+The Phase 3 finance migration creates append-only triggers. Confirm a fresh
+restore point before deploying it. Test the migration and the reversal workflow
+against the preview database before production.
+
 ## Backup policy
 
 Use the managed PostgreSQL provider's automated backups:
@@ -61,7 +67,8 @@ isolated database at least quarterly.
 3. set `DATABASE_URL` only in an isolated test environment.
 4. Run `npm run db:deploy` to apply any later compatible migrations.
 5. Verify sign-in, campus counts, current session, audit history and a sampled
-   record from each completed module.
+   record from each completed module. For Phase 3, verify one posted payment,
+   receipt download, balance, reversal and reconciliation batch.
 6. Record restore time, recovery point, failures and follow-up actions.
 7. Destroy the temporary restored database after approval.
 
@@ -71,3 +78,4 @@ Structured logs include environment, version, message and a fingerprint.
 Database error records may include school, campus, user, route and request ID,
 but must not include secrets. Critical production errors should be connected to
 an external alerting provider before pilot launch.
+
