@@ -340,20 +340,46 @@ export async function changeStudentStatus(
   if (!student) throw new Error("NOT_FOUND:STUDENT");
   await requireCampusAccess(student.campusId);
 
+  if (student.status === nextStatus) return;
+  if (nextStatus === "ACTIVE" && student.status !== "ARCHIVED") {
+    throw new Error("INVALID:REACTIVATION_REQUIRES_PLACEMENT");
+  }
+
   await db.$transaction(async (tx) => {
-    await tx.student.update({
-      where: { id: student.id },
+    const changed = await tx.student.updateMany({
+      where: { id: student.id, status: student.status },
       data: { status: nextStatus },
     });
+    if (changed.count === 0) return;
+
+    let enrollmentChange:
+      | { id: string; before: EnrollmentStatus; after: EnrollmentStatus }
+      | undefined;
     if (nextStatus === "WITHDRAWN" || nextStatus === "GRADUATED") {
-      await tx.enrollment.updateMany({
-        where: { studentId, status: "CURRENT" },
-        data: {
-          status: nextStatus as EnrollmentStatus,
-          endsOn: new Date(),
+      const latestEnrollment = await tx.enrollment.findFirst({
+        where: {
+          studentId,
+          status: { in: ["CURRENT", "WITHDRAWN", "GRADUATED"] },
         },
+        orderBy: { startsOn: "desc" },
+        select: { id: true, status: true, endsOn: true },
       });
+      if (latestEnrollment && latestEnrollment.status !== nextStatus) {
+        await tx.enrollment.update({
+          where: { id: latestEnrollment.id },
+          data: {
+            status: nextStatus as EnrollmentStatus,
+            endsOn: latestEnrollment.endsOn ?? new Date(),
+          },
+        });
+        enrollmentChange = {
+          id: latestEnrollment.id,
+          before: latestEnrollment.status,
+          after: nextStatus as EnrollmentStatus,
+        };
+      }
     }
+
     await audit(tx, {
       schoolId: viewer.membership.schoolId,
       campusId: student.campusId,
@@ -362,11 +388,100 @@ export async function changeStudentStatus(
       entityType: "Student",
       entityId: student.id,
       before: { status: student.status },
-      after: { status: nextStatus },
+      after: {
+        status: nextStatus,
+        ...(enrollmentChange ? { enrollment: enrollmentChange } : {}),
+      },
     });
   });
   revalidatePath("/students");
   revalidatePath(`/students/${studentId}`);
+}
+
+export async function reactivateStudent(
+  studentId: string,
+  _previous: StudentActionState,
+  formData: FormData,
+): Promise<StudentActionState> {
+  try {
+    const viewer = await requirePermission("people.manage");
+    const input = z
+      .object({
+        campusId: z.string().cuid(),
+        classArmId: z.string().cuid(),
+        academicSessionId: z.string().cuid(),
+        startsOn: z.coerce.date(),
+      })
+      .parse(Object.fromEntries(formData));
+    const student = await db.student.findFirst({
+      where: { id: studentId, schoolId: viewer.membership.schoolId },
+      select: { id: true, campusId: true, status: true },
+    });
+    if (!student) throw new Error("NOT_FOUND:STUDENT");
+    if (student.status !== "WITHDRAWN" && student.status !== "GRADUATED") {
+      throw new Error("INVALID:STUDENT_NOT_INACTIVE");
+    }
+    await requireCampusAccess(student.campusId);
+    await requireCampusAccess(input.campusId);
+    await checkedPlacement({
+      ...input,
+      schoolId: viewer.membership.schoolId,
+    });
+
+    await db.$transaction(async (tx) => {
+      const currentEnrollment = await tx.enrollment.findFirst({
+        where: { studentId, status: "CURRENT" },
+        select: { id: true },
+      });
+      if (currentEnrollment) throw new Error("INVALID:CURRENT_ENROLLMENT_EXISTS");
+
+      const changed = await tx.student.updateMany({
+        where: {
+          id: student.id,
+          status: { in: ["WITHDRAWN", "GRADUATED"] },
+        },
+        data: { status: "ACTIVE", campusId: input.campusId },
+      });
+      if (changed.count !== 1) throw new Error("INVALID:STUDENT_STATUS_CHANGED");
+
+      const enrollment = await tx.enrollment.create({
+        data: {
+          studentId,
+          campusId: input.campusId,
+          classArmId: input.classArmId,
+          academicSessionId: input.academicSessionId,
+          startsOn: input.startsOn,
+        },
+      });
+      await audit(tx, {
+        schoolId: viewer.membership.schoolId,
+        campusId: input.campusId,
+        actorUserId: viewer.user.id,
+        action: "student.reactivated",
+        entityType: "Student",
+        entityId: student.id,
+        before: { status: student.status, campusId: student.campusId },
+        after: {
+          status: "ACTIVE",
+          campusId: input.campusId,
+          enrollmentId: enrollment.id,
+          classArmId: input.classArmId,
+          academicSessionId: input.academicSessionId,
+          startsOn: input.startsOn.toISOString(),
+        },
+      });
+    });
+
+    revalidatePath("/students");
+    revalidatePath(`/students/${studentId}`);
+    revalidatePath("/dashboard");
+    return {
+      status: "success",
+      message: "Student reactivated with a new current enrollment.",
+    };
+  } catch (error) {
+    return failure(error);
+  }
 }
 
 export async function bulkPromoteStudents(
