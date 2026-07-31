@@ -296,6 +296,68 @@ async function main() {
     });
   }
 
+  const gradingScheme = await db.gradingScheme.upsert({
+    where: {
+      schoolId_name: {
+        schoolId: school.id,
+        name: "Standard 40/60",
+      },
+    },
+    create: {
+      schoolId: school.id,
+      name: "Standard 40/60",
+      caWeight: 40,
+      examWeight: 60,
+      isDefault: true,
+    },
+    update: {
+      caWeight: 40,
+      examWeight: 60,
+      isDefault: true,
+    },
+  });
+
+  for (const [index, band] of [
+    ["A", 70, 100, "Excellent", 5],
+    ["B", 60, 69.99, "Very good", 4],
+    ["C", 50, 59.99, "Good", 3],
+    ["D", 45, 49.99, "Fair", 2],
+    ["E", 40, 44.99, "Pass", 1],
+    ["F", 0, 39.99, "Needs improvement", 0],
+  ].entries()) {
+    const [label, minScore, maxScore, remark, gradePoint] = band as [
+      string,
+      number,
+      number,
+      string,
+      number,
+    ];
+    await db.gradeBand.upsert({
+      where: {
+        schemeId_label: {
+          schemeId: gradingScheme.id,
+          label,
+        },
+      },
+      create: {
+        schemeId: gradingScheme.id,
+        label,
+        minScore,
+        maxScore,
+        remark,
+        gradePoint,
+        sortOrder: index + 1,
+      },
+      update: {
+        minScore,
+        maxScore,
+        remark,
+        gradePoint,
+        sortOrder: index + 1,
+      },
+    });
+  }
+
   if (process.env.APP_ENV !== "production") {
     const primaryOne = classLevels.find((item) => item.code === "PRI-1");
     const awkaPrimaryOne = primaryOne
