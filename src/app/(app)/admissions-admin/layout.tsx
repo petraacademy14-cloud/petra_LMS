@@ -6,6 +6,7 @@ export default function AdmissionsAdminLayout({ children }: { children: React.Re
       <nav className="card flex flex-wrap gap-2 p-2" aria-label="Admissions workspace">
         <Link className="button button-secondary" href="/admissions-admin">Applications and visits</Link>
         <Link className="button button-secondary" href="/admissions-admin/payments">Entrance fees and payments</Link>
+        <Link className="button button-secondary" href="/admissions-admin/exams">Entrance examinations</Link>
       </nav>
       {children}
     </div>

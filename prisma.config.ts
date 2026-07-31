@@ -29,6 +29,11 @@ export default defineConfig({
       "public.applicant_payment_reversals",
       "public.applicant_fee_ledger_entries",
       "public.applicant_receipt_sequences",
+      "public.entrance_exam_papers",
+      "public.entrance_exam_questions",
+      "public.exam_candidate_sequences",
+      "public.applicant_exam_registrations",
+      "public.applicant_exam_answers",
     ],
   },
   enums: {
@@ -39,6 +44,10 @@ export default defineConfig({
       "public.EntranceFeeKind",
       "public.ApplicantPaymentStatus",
       "public.ApplicantLedgerEntryType",
+      "public.EntranceExamPaperStatus",
+      "public.ApplicantExamStatus",
+      "public.ExamAttendanceStatus",
+      "public.ExamAnswerOption",
     ],
   },
 });
