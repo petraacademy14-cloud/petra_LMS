@@ -14,6 +14,7 @@ export default defineConfig({
       reporter: ["text", "json", "html"],
       include: [
         "src/lib/academics.ts",
+        "src/lib/communications.ts",
         "src/lib/finance.ts",
         "src/lib/permissions.ts",
         "src/lib/scope.ts",
