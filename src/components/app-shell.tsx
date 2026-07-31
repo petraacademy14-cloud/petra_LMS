@@ -12,6 +12,7 @@ import {
   FileText,
   LayoutDashboard,
   Menu,
+  Megaphone,
   Settings,
   ShieldCheck,
   Users,
@@ -71,6 +72,12 @@ const navigation: Array<{
     label: "Results",
     icon: FileText,
     permission: "results.read",
+  },
+  {
+    href: "/communications",
+    label: "Communications",
+    icon: Megaphone,
+    permission: "communications.read",
   },
   {
     href: "/audit",
