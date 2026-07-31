@@ -1,0 +1,50 @@
+enum AdmissionDecisionOutcome {
+  ACCEPTED
+  WAITLISTED
+  REJECTED
+}
+
+enum AdmissionOfferResponse {
+  NOT_APPLICABLE
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+
+/// Admission-decision records are maintained through reviewed SQL migrations.
+model AdmissionDecision {
+  id                 String                   @id
+  applicationId      String                   @unique
+  schoolId           String
+  campusId           String
+  outcome            AdmissionDecisionOutcome
+  internalNote       String
+  applicantMessage   String?
+  offerExpiresAt     DateTime?
+  offerResponse      AdmissionOfferResponse   @default(NOT_APPLICABLE)
+  respondedAt        DateTime?
+  decidedById        String
+  convertedStudentId String?                  @unique
+  convertedById      String?
+  convertedAt        DateTime?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @default(now())
+
+  @@index([schoolId, outcome, createdAt(sort: Desc)])
+  @@index([campusId, outcome, createdAt(sort: Desc)])
+  @@index([offerResponse, offerExpiresAt])
+  @@map("admission_decisions")
+}
+
+/// Links private admission documents to the converted student without copying or exposing files.
+model StudentAdmissionDocumentLink {
+  id                    String   @id
+  studentId             String
+  applicationDocumentId String   @unique
+  createdById           String
+  createdAt              DateTime @default(now())
+
+  @@index([studentId, createdAt(sort: Desc)])
+  @@map("student_admission_document_links")
+}
