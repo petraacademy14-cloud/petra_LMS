@@ -7,6 +7,40 @@ datasource db {
   provider = "postgresql"
 }
 
+
+enum CommunicationAudience {
+  SCHOOL
+  CAMPUS
+  CLASS
+}
+
+enum CommunicationChannel {
+  WHATSAPP
+  EMAIL
+  PRINT
+}
+
+enum CommunicationTemplateKind {
+  GENERAL
+  FEE_REMINDER
+  RESULT_NOTICE
+  ATTENDANCE_NOTICE
+}
+
+enum ContentStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum PublicationKind {
+  NEWS
+  EVENT
+  ACHIEVEMENT
+}
+
 enum Role {
   OWNER
   ADMIN
@@ -151,6 +185,15 @@ model User {
   resultSheetsApproved         ResultSheet[]          @relation("ResultApprover")
   resultSheetsPublished        ResultSheet[]          @relation("ResultPublisher")
   resultSheetsLocked           ResultSheet[]          @relation("ResultLocker")
+  communicationTemplatesCreated CommunicationTemplate[] @relation("CommunicationTemplateCreator")
+  announcementsAuthored          Announcement[]          @relation("AnnouncementAuthor")
+  announcementsReviewed         Announcement[]          @relation("AnnouncementReviewer")
+  announcementsPublished        Announcement[]          @relation("AnnouncementPublisher")
+  deliveryDraftsGenerated        CommunicationDeliveryDraft[] @relation("DeliveryDraftGenerator")
+  publicationsAuthored           Publication[]           @relation("PublicationAuthor")
+  publicationsReviewed           Publication[]           @relation("PublicationReviewer")
+  publicationsPublished          Publication[]           @relation("PublicationPublisher")
+  communicationMediaUploaded     CommunicationMedia[]    @relation("CommunicationMediaUploader")
 
   @@index([email])
   @@map("users")
@@ -236,6 +279,13 @@ model School {
   teachingAssignments TeachingAssignment[]
   attendanceRegisters AttendanceRegister[]
   resultSheets        ResultSheet[]
+  communicationTemplates CommunicationTemplate[]
+  announcements       Announcement[]
+  deliveryDrafts      CommunicationDeliveryDraft[]
+  contentCategories   ContentCategory[]
+  publications        Publication[]
+  communicationMedia  CommunicationMedia[]
+  newsletterSubscribers NewsletterSubscriber[]
 
   @@map("schools")
 }
@@ -273,6 +323,9 @@ model Campus {
   teachingAssignments TeachingAssignment[]
   attendanceRegisters AttendanceRegister[]
   resultSheets        ResultSheet[]
+  announcements       Announcement[]
+  publications        Publication[]
+  communicationMedia  CommunicationMedia[]
 
   @@unique([schoolId, code])
   @@unique([schoolId, name])
@@ -385,6 +438,7 @@ model ClassArm {
   teachingAssignments TeachingAssignment[]
   attendanceRegisters AttendanceRegister[]
   resultSheets        ResultSheet[]
+  announcements       Announcement[]
 
   @@unique([campusId, classLevelId, code])
   @@index([campusId, isActive])
@@ -1045,6 +1099,171 @@ model ResultEntry {
   @@unique([sheetId, studentId])
   @@index([studentId, createdAt(sort: Desc)])
   @@map("result_entries")
+}
+
+
+model CommunicationTemplate {
+  id          String                    @id @default(cuid())
+  schoolId    String
+  school      School                    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name        String
+  kind        CommunicationTemplateKind
+  channel     CommunicationChannel
+  subject     String?
+  body        String
+  isActive    Boolean                   @default(true)
+  createdById String
+  createdBy   User                      @relation("CommunicationTemplateCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt   DateTime                  @default(now())
+  updatedAt   DateTime                  @updatedAt
+
+  deliveryDrafts CommunicationDeliveryDraft[]
+
+  @@unique([schoolId, name, channel])
+  @@index([schoolId, kind, isActive])
+  @@map("communication_templates")
+}
+
+model Announcement {
+  id            String                @id @default(cuid())
+  schoolId      String
+  school        School                @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  campusId      String?
+  campus        Campus?               @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  classArmId    String?
+  classArm      ClassArm?             @relation(fields: [classArmId], references: [id], onDelete: Restrict)
+  audience      CommunicationAudience
+  title         String
+  body          String
+  status        ContentStatus         @default(DRAFT)
+  parentFacing  Boolean               @default(true)
+  scheduledFor  DateTime?
+  publishedAt   DateTime?
+  authorId      String
+  author        User                  @relation("AnnouncementAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  reviewedById  String?
+  reviewedBy    User?                 @relation("AnnouncementReviewer", fields: [reviewedById], references: [id], onDelete: Restrict)
+  publishedById String?
+  publishedBy   User?                 @relation("AnnouncementPublisher", fields: [publishedById], references: [id], onDelete: Restrict)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  deliveryDrafts CommunicationDeliveryDraft[]
+
+  @@index([schoolId, status, publishedAt(sort: Desc)])
+  @@index([campusId, status, publishedAt(sort: Desc)])
+  @@index([classArmId, status])
+  @@map("announcements")
+}
+
+model CommunicationDeliveryDraft {
+  id             String               @id @default(cuid())
+  schoolId       String
+  school         School               @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  announcementId String?
+  announcement   Announcement?        @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  templateId     String?
+  template       CommunicationTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  channel        CommunicationChannel
+  subject        String?
+  content        String
+  recipientCount Int                  @default(0)
+  generatedById  String
+  generatedBy    User                 @relation("DeliveryDraftGenerator", fields: [generatedById], references: [id], onDelete: Restrict)
+  createdAt      DateTime             @default(now())
+
+  @@index([schoolId, createdAt(sort: Desc)])
+  @@index([announcementId, channel])
+  @@map("communication_delivery_drafts")
+}
+
+model ContentCategory {
+  id        String   @id @default(cuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name      String
+  slug      String
+  createdAt DateTime @default(now())
+
+  publications Publication[]
+
+  @@unique([schoolId, slug])
+  @@unique([schoolId, name])
+  @@map("content_categories")
+}
+
+model Publication {
+  id            String          @id @default(cuid())
+  schoolId      String
+  school        School          @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  campusId      String?
+  campus        Campus?         @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  categoryId    String?
+  category      ContentCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  kind          PublicationKind
+  status        ContentStatus   @default(DRAFT)
+  slug          String
+  title         String
+  excerpt       String
+  body          String
+  tags          String[]        @default([])
+  coverImageUrl String?
+  eventStartsAt DateTime?
+  eventEndsAt   DateTime?
+  publishedAt   DateTime?
+  authorId      String
+  author        User            @relation("PublicationAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  reviewedById  String?
+  reviewedBy    User?           @relation("PublicationReviewer", fields: [reviewedById], references: [id], onDelete: Restrict)
+  publishedById String?
+  publishedBy   User?           @relation("PublicationPublisher", fields: [publishedById], references: [id], onDelete: Restrict)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  media CommunicationMedia[]
+
+  @@unique([schoolId, slug])
+  @@index([schoolId, status, publishedAt(sort: Desc)])
+  @@index([campusId, status, publishedAt(sort: Desc)])
+  @@index([kind, status, eventStartsAt])
+  @@map("publications")
+}
+
+model CommunicationMedia {
+  id            String       @id @default(cuid())
+  schoolId      String
+  school        School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  campusId      String?
+  campus        Campus?      @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  publicationId String?
+  publication   Publication? @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  name          String
+  storageKey    String       @unique
+  fileName      String
+  contentType   String
+  sizeBytes     Int
+  uploadedById  String
+  uploadedBy    User         @relation("CommunicationMediaUploader", fields: [uploadedById], references: [id], onDelete: Restrict)
+  createdAt     DateTime     @default(now())
+
+  @@index([schoolId, createdAt(sort: Desc)])
+  @@index([publicationId, createdAt(sort: Desc)])
+  @@map("communication_media")
+}
+
+model NewsletterSubscriber {
+  id             String    @id @default(cuid())
+  schoolId       String
+  school         School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  email          String
+  name           String?
+  isActive       Boolean   @default(true)
+  subscribedAt   DateTime  @default(now())
+  unsubscribedAt DateTime?
+
+  @@unique([schoolId, email])
+  @@index([schoolId, isActive, subscribedAt(sort: Desc)])
+  @@map("newsletter_subscribers")
 }
 
 model AuditLog {
