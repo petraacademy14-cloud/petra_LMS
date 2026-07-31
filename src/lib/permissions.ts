@@ -13,6 +13,13 @@ export const permissions = [
   "finance.read",
   "finance.manage",
   "finance.reconcile",
+  "attendance.read",
+  "attendance.manage",
+  "attendance.correct",
+  "results.read",
+  "results.manage",
+  "results.approve",
+  "results.publish",
   "audit.read",
   "system.manage",
 ] as const;
@@ -33,6 +40,13 @@ const rolePermissions = {
     "finance.read",
     "finance.manage",
     "finance.reconcile",
+    "attendance.read",
+    "attendance.manage",
+    "attendance.correct",
+    "results.read",
+    "results.manage",
+    "results.approve",
+    "results.publish",
     "audit.read",
   ]),
   TEACHER: new Set<Permission>([
@@ -40,6 +54,10 @@ const rolePermissions = {
     "campus.read",
     "academic.read",
     "people.read",
+    "attendance.read",
+    "attendance.manage",
+    "results.read",
+    "results.manage",
   ]),
 } satisfies Record<Role, Set<Permission>>;
 

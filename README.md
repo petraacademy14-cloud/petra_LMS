@@ -38,6 +38,16 @@ e-learning platform.
 Payment gateways are intentionally excluded until manual recording and
 reconciliation are proven reliable.
 
+## Phase 4 attendance and results
+
+- Daily class registers with present, absent, late and excused statuses
+- Teacher submission, audited admin corrections and register locking
+- Attendance reports by date, campus, class and learner
+- Teaching assignments and continuous-assessment/exam score sheets
+- Configurable CA/exam weighting and grade bands
+- Draft, submitted, approved, published and locked result workflow
+- Printable and downloadable PDF report cards with attendance and promotion history
+
 ## Stack
 
 - Next.js 16, React 19 and TypeScript
@@ -92,6 +102,6 @@ This runs linting, TypeScript, unit tests and the production build.
 - [Phase 1 acceptance criteria](docs/phase-1-foundation.md)
 - [Phase 2 student management and import](docs/phase-2-students.md)
 - [Phase 3 fees and payments](docs/phase-3-fees-payments.md)
+- [Phase 4 attendance and results](docs/phase-4-attendance-results.md)
 
 Read `AGENTS.md` before starting any task.
-

@@ -8,6 +8,8 @@ import {
   Building2,
   ChevronDown,
   ClipboardClock,
+  ClipboardCheck,
+  FileText,
   LayoutDashboard,
   Menu,
   Settings,
@@ -57,6 +59,18 @@ const navigation: Array<{
     label: "Fees & payments",
     icon: WalletCards,
     permission: "finance.read",
+  },
+  {
+    href: "/attendance",
+    label: "Attendance",
+    icon: ClipboardCheck,
+    permission: "attendance.read",
+  },
+  {
+    href: "/results",
+    label: "Results",
+    icon: FileText,
+    permission: "results.read",
   },
   {
     href: "/audit",
@@ -207,4 +221,3 @@ export function AppShell({ children, viewer, permissions }: AppShellProps) {
     </div>
   );
 }
-
