@@ -326,7 +326,6 @@ model School {
   contentCategories   ContentCategory[]
   publications        Publication[]
   communicationMedia  CommunicationMedia[]
-  pilotIssues         PilotIssue[]
   newsletterSubscribers NewsletterSubscriber[]
   pilotRuns           PilotRun[]
   pilotIssues         PilotIssue[]
@@ -370,6 +369,7 @@ model Campus {
   announcements       Announcement[]
   publications        Publication[]
   communicationMedia  CommunicationMedia[]
+  pilotIssues         PilotIssue[]
 
   @@unique([schoolId, code])
   @@unique([schoolId, name])
