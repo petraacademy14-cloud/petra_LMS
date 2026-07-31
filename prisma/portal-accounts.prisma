@@ -1,0 +1,49 @@
+enum PortalAccountRole {
+  PARENT
+  STUDENT
+}
+
+enum PortalAccountStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+/// School-issued parent and student credentials are separate from staff Better Auth accounts.
+/// These records are maintained through reviewed SQL migrations.
+model PortalAccount {
+  id                  String              @id
+  schoolId            String
+  role                PortalAccountRole
+  username            String              @unique
+  displayName         String
+  guardianId          String?             @unique
+  studentId           String?             @unique
+  passwordHash        String
+  mustChangePassword  Boolean             @default(true)
+  status              PortalAccountStatus @default(ACTIVE)
+  failedLoginCount    Int                 @default(0)
+  lockedUntil         DateTime?
+  credentialsIssuedAt DateTime?
+  credentialsIssuedById String?
+  lastLoginAt         DateTime?
+  passwordChangedAt   DateTime?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @default(now())
+
+  @@index([schoolId, role, status, createdAt(sort: Desc)])
+  @@index([guardianId, status])
+  @@index([studentId, status])
+  @@map("portal_accounts")
+}
+
+model PortalSession {
+  id         String   @id
+  accountId  String
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  lastSeenAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([accountId, expiresAt])
+  @@map("portal_sessions")
+}
