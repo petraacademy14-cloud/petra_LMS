@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
   ArrowUpRight,
   BookOpenCheck,
@@ -6,9 +7,12 @@ import {
   CalendarRange,
   ShieldCheck,
   Users,
+  WalletCards,
 } from "lucide-react";
 import { getViewer } from "@/lib/dal";
 import { db } from "@/lib/db";
+import { formatNaira } from "@/lib/finance";
+import { hasPermission } from "@/lib/permissions";
 
 export const metadata: Metadata = {
   title: "Overview",
@@ -21,6 +25,10 @@ export default async function DashboardPage() {
     viewer.membership.role === "OWNER"
       ? {}
       : { id: viewer.membership.campusId ?? "__none__" };
+  const canViewFinance = hasPermission(
+    viewer.membership.role,
+    "finance.read",
+  );
 
   const [campusCount, staffCount, classArmCount, subjectCount, currentSession] =
     await Promise.all([
@@ -70,6 +78,36 @@ export default async function DashboardPage() {
         },
       }),
     ]);
+  const financeCampus =
+    viewer.membership.role === "OWNER"
+      ? {}
+      : { campusId: viewer.membership.campusId ?? "__none__" };
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+  const [feeBalances, monthCollections] = canViewFinance
+    ? await Promise.all([
+        db.feeLedgerEntry.groupBy({
+          by: ["accountId"],
+          where: { schoolId, ...financeCampus },
+          _sum: { amount: true },
+        }),
+        db.payment.aggregate({
+          where: {
+            schoolId,
+            ...financeCampus,
+            paidAt: { gte: monthStart },
+            reversal: null,
+          },
+          _sum: { amount: true },
+        }),
+      ])
+    : [[], null];
+  const outstanding = feeBalances.reduce(
+    (total, item) =>
+      total + Math.max(0, Number(item._sum.amount ?? 0)),
+    0,
+  );
 
   const metrics = [
     {
@@ -111,8 +149,8 @@ export default async function DashboardPage() {
             Good day, {viewer.user.name.split(" ")[0]}
           </h1>
           <p className="page-subtitle">
-            Your operational structure is visible here. Student, fee,
-            attendance and result metrics will join this overview in the next
+            Your operational structure and current financial position are
+            visible here. Attendance and result metrics will join in later
             phases.
           </p>
         </div>
@@ -144,6 +182,59 @@ export default async function DashboardPage() {
           );
         })}
       </section>
+
+      {canViewFinance && (
+        <section className="mt-5 grid gap-4 sm:grid-cols-2">
+          <Link
+            className="card group p-5 transition hover:border-[#d71920]"
+            href="/fees/reports"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <span className="grid size-10 place-items-center rounded-xl bg-[#fff0f1] text-[#bd1218]">
+                <WalletCards size={20} />
+              </span>
+              <ArrowUpRight
+                className="text-[#a0a6ae] group-hover:text-[#d71920]"
+                size={17}
+              />
+            </div>
+            <p className="mt-5 text-3xl font-black tracking-[-0.04em]">
+              {formatNaira(outstanding)}
+            </p>
+            <p className="mt-1 text-sm font-extrabold">
+              Outstanding fee balance
+            </p>
+            <p className="mt-1 text-xs text-[#7a828e]">
+              {feeBalances.filter((item) => Number(item._sum.amount ?? 0) > 0)
+                .length}{" "}
+              student account(s) owing
+            </p>
+          </Link>
+          <Link
+            className="card group p-5 transition hover:border-[#14804a]"
+            href="/fees"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <span className="grid size-10 place-items-center rounded-xl bg-[#eaf8f0] text-[#14804a]">
+                <CalendarRange size={20} />
+              </span>
+              <ArrowUpRight
+                className="text-[#a0a6ae] group-hover:text-[#14804a]"
+                size={17}
+              />
+            </div>
+            <p className="mt-5 text-3xl font-black tracking-[-0.04em]">
+              {formatNaira(monthCollections?._sum.amount ?? 0)}
+            </p>
+            <p className="mt-1 text-sm font-extrabold">
+              Collected this month
+            </p>
+            <p className="mt-1 text-xs text-[#7a828e]">
+              Posted payments excluding reversals
+            </p>
+          </Link>
+        </section>
+      )}
 
       <section className="mt-5 grid gap-5 xl:grid-cols-[1.3fr_0.7fr]">
         <article className="card p-5 sm:p-6">
