@@ -24,6 +24,9 @@ export const permissions = [
   "communications.manage",
   "communications.review",
   "communications.publish",
+  "launch.read",
+  "launch.manage",
+  "launch.approve",
   "audit.read",
   "system.manage",
 ] as const;
@@ -55,6 +58,8 @@ const rolePermissions = {
     "communications.manage",
     "communications.review",
     "communications.publish",
+    "launch.read",
+    "launch.manage",
     "audit.read",
   ]),
   TEACHER: new Set<Permission>([
