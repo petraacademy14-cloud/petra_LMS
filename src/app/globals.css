@@ -138,6 +138,22 @@ a {
   background: #f7f7f8;
 }
 
+.card input:not([type="checkbox"]):not([type="file"]),
+.card select,
+.card textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: white;
+  padding: 0.65rem 0.8rem;
+  color: var(--ink);
+}
+
+.card textarea {
+  resize: vertical;
+}
+
 .table-wrap {
   overflow-x: auto;
 }
