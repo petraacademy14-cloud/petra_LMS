@@ -16,6 +16,16 @@ e-learning platform.
 - Responsive application shell
 - PostgreSQL migrations, seed data, CI and environment runbooks
 
+## Phase 2 student management
+
+- Student profiles with campus, status and generated admission numbers
+- Multiple guardians and primary/pickup contact flags
+- Current class assignment and immutable enrolment history
+- Search by name, admission number or guardian plus campus/class/status filters
+- Atomic bulk promotion into a new academic session
+- All-or-nothing CSV/XLSX import with row-level validation
+- Optional private Supabase Storage documents
+
 ## Phase 3 fees and payments
 
 - Class/term/campus fee structures and student-specific charges or discounts
@@ -80,6 +90,8 @@ This runs linting, TypeScript, unit tests and the production build.
 - [Security and permissions](docs/security.md)
 - [Environments, backups and restore](docs/operations.md)
 - [Phase 1 acceptance criteria](docs/phase-1-foundation.md)
+- [Phase 2 student management and import](docs/phase-2-students.md)
 - [Phase 3 fees and payments](docs/phase-3-fees-payments.md)
 
 Read `AGENTS.md` before starting any task.
+
