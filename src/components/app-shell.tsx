@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ClipboardClock,
   ClipboardCheck,
+  ClipboardList,
   FileText,
   LayoutDashboard,
   Menu,
@@ -48,6 +49,12 @@ const navigation: Array<{
     label: "Students",
     icon: GraduationCap,
     permission: "people.read",
+  },
+  {
+    href: "/admissions-admin",
+    label: "Admissions",
+    icon: ClipboardList,
+    permission: "admissions.read",
   },
   {
     href: "/people",
