@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Users,
   GraduationCap,
+  WalletCards,
   X,
 } from "lucide-react";
 import { Brand } from "@/components/brand";
@@ -50,6 +51,12 @@ const navigation: Array<{
     label: "People & roles",
     icon: Users,
     permission: "people.read",
+  },
+  {
+    href: "/fees",
+    label: "Fees & payments",
+    icon: WalletCards,
+    permission: "finance.read",
   },
   {
     href: "/audit",
@@ -200,3 +207,4 @@ export function AppShell({ children, viewer, permissions }: AppShellProps) {
     </div>
   );
 }
+
