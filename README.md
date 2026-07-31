@@ -48,6 +48,17 @@ reconciliation are proven reliable.
 - Draft, submitted, approved, published and locked result workflow
 - Printable and downloadable PDF report cards with attendance and promotion history
 
+## Phase 5 communication and digital presence
+
+- School, campus and class announcements with parent-facing publication
+- Fee, result, attendance and general message templates
+- Generated WhatsApp, email and print drafts without automatic sending
+- Draft, review, approval, publication and archive workflow
+- Public news, events and student-achievement pages
+- Categories, tags, optional media uploads and newsletter subscribers
+
+Private chat and automatic external delivery remain outside the V1 boundary.
+
 ## Stack
 
 - Next.js 16, React 19 and TypeScript
