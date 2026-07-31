@@ -16,6 +16,7 @@ import { PageHeading } from "@/components/page-heading";
 import {
   AddGuardianForm,
   DocumentUploadForm,
+  StudentReactivationForm,
 } from "@/components/student-forms";
 import { requireCampusAccess, requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
@@ -65,6 +66,64 @@ export default async function StudentProfilePage({
   if (!student) notFound();
   await requireCampusAccess(student.campusId);
   const canManage = hasPermission(viewer.membership.role, "people.manage");
+  const needsPlacement =
+    student.status === "WITHDRAWN" || student.status === "GRADUATED";
+  const [campuses, classArms, sessions] =
+    canManage && needsPlacement
+      ? await Promise.all([
+          db.campus.findMany({
+            where: {
+              schoolId: viewer.membership.schoolId,
+              isActive: true,
+              ...(viewer.membership.role === "OWNER"
+                ? {}
+                : { id: viewer.membership.campusId ?? "__none__" }),
+            },
+            orderBy: { name: "asc" },
+            select: { id: true, name: true, code: true },
+          }),
+          db.classArm.findMany({
+            where: {
+              isActive: true,
+              campus: {
+                schoolId: viewer.membership.schoolId,
+                ...(viewer.membership.role === "OWNER"
+                  ? {}
+                  : { id: viewer.membership.campusId ?? "__none__" }),
+              },
+            },
+            orderBy: [
+              { classLevel: { sortOrder: "asc" } },
+              { campus: { name: "asc" } },
+              { name: "asc" },
+            ],
+            select: {
+              id: true,
+              name: true,
+              campus: { select: { name: true } },
+              classLevel: { select: { name: true } },
+            },
+          }),
+          db.academicSession.findMany({
+            where: { schoolId: viewer.membership.schoolId },
+            orderBy: { startsOn: "desc" },
+            select: { id: true, name: true },
+          }),
+        ])
+      : [[], [], []];
+
+  const campusOptions = campuses.map((campus) => ({
+    value: campus.id,
+    label: `${campus.name} (${campus.code})`,
+  }));
+  const classOptions = classArms.map((arm) => ({
+    value: arm.id,
+    label: `${arm.campus.name} · ${arm.classLevel.name} ${arm.name}`,
+  }));
+  const sessionOptions = sessions.map((session) => ({
+    value: session.id,
+    label: session.name,
+  }));
 
   return (
     <div>
@@ -264,34 +323,44 @@ export default async function StudentProfilePage({
                 </p>
               </div>
             </div>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {(
-                [
-                  "ACTIVE",
-                  "ARCHIVED",
-                  "WITHDRAWN",
-                  "GRADUATED",
-                ] as StudentStatus[]
-              ).map((status) => {
-                const action = changeStudentStatus.bind(
-                  null,
-                  student.id,
-                  status,
-                );
-                return (
-                  <form action={action} key={status}>
-                    <button
-                      className={
-                        status === student.status ? "button" : "button-secondary"
-                      }
-                      disabled={status === student.status}
-                      type="submit"
-                    >
-                      Mark {status.toLowerCase()}
-                    </button>
-                  </form>
-                );
-              })}
+            <div className="mt-5">
+              <div className="flex flex-wrap gap-2">
+                {(
+                  student.status === "ARCHIVED"
+                    ? (["ACTIVE", "WITHDRAWN", "GRADUATED"] as StudentStatus[])
+                    : (["ARCHIVED", "WITHDRAWN", "GRADUATED"] as StudentStatus[])
+                )
+                  .filter((status) => status !== student.status)
+                  .map((status) => {
+                    const action = changeStudentStatus.bind(
+                      null,
+                      student.id,
+                      status,
+                    );
+                    return (
+                      <form action={action} key={status}>
+                        <button className="button-secondary" type="submit">
+                          Mark {status.toLowerCase()}
+                        </button>
+                      </form>
+                    );
+                  })}
+              </div>
+              {needsPlacement && (
+                <details className="mt-5 border-t border-[#e8eaed] pt-5" open>
+                  <summary className="cursor-pointer font-black">
+                    Reactivate with a new class placement
+                  </summary>
+                  <div className="mt-4">
+                    <StudentReactivationForm
+                      campuses={campusOptions}
+                      classArms={classOptions}
+                      sessions={sessionOptions}
+                      studentId={student.id}
+                    />
+                  </div>
+                </details>
+              )}
             </div>
           </section>
         )}
