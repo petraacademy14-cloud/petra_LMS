@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle2, Clock3, DollarSign, FileText, LogOut } from "lucide-react";
+import { CheckCircle2, Clock3, DollarSign, FileText, GraduationCap, LogOut } from "lucide-react";
 import { logoutApplicant } from "@/app/actions/admissions";
 import { startEntrancePayment } from "@/app/actions/applicant-finance";
 import { applicationStatusLabel, type ApplicationStatus } from "@/lib/admissions-rules";
@@ -32,7 +32,7 @@ const guidance: Record<ApplicationStatus, string> = {
   DRAFT: "Complete the form, upload supporting documents and submit the application.",
   SUBMITTED: "Your application is received. Open the payment stage to view the entrance form fee for the selected campus and class.",
   AWAITING_PAYMENT: "Complete the visible entrance fee. The examination fee appears only after the form fee is fully verified.",
-  AWAITING_EXAMINATION: "Both entrance fees are verified. Your online or onsite examination instructions will be provided next.",
+  AWAITING_EXAMINATION: "Both entrance fees are verified. Open the examination portal for your online window or onsite examination slip.",
   UNDER_REVIEW: "The examination and application are being reviewed by the admissions team.",
   ACCEPTED: "Congratulations. Admission and acceptance documents will be available from this portal.",
   WAITLISTED: "The application remains active on the waiting list. The school will communicate any change.",
@@ -83,6 +83,7 @@ export default async function ApplicationStatusPage({ searchParams }: StatusPage
             {application.status === "DRAFT" && <Link className="button" href="/apply/application">Continue application</Link>}
             {application.status === "SUBMITTED" && !hasCharges && <form action={startEntrancePayment}><button className="button" type="submit"><DollarSign size={18} /> View entrance form fee</button></form>}
             {(["AWAITING_PAYMENT", "AWAITING_EXAMINATION"] as ApplicationStatus[]).includes(application.status) || hasCharges ? <Link className="button" href="/apply/payment"><DollarSign size={18} /> Fees, payments and receipts</Link> : null}
+            {(["AWAITING_EXAMINATION", "UNDER_REVIEW"] as ApplicationStatus[]).includes(application.status) && <Link className="button button-secondary" href="/apply/exam"><GraduationCap size={18} /> Entrance examination</Link>}
           </article>
           <aside className="marketing-card status-detail-card">
             <h2>Application details</h2>
