@@ -61,10 +61,14 @@ export function isEditableApplication(status: ApplicationStatus) {
   return status === "DRAFT";
 }
 
-export function applicationStatusLabel(status: ApplicationStatus) {
-  return status
+export function enumLabel(value: string) {
+  return value
     .toLowerCase()
     .split("_")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+export function applicationStatusLabel(status: ApplicationStatus) {
+  return enumLabel(status);
 }
