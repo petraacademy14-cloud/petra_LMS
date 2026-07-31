@@ -1,0 +1,71 @@
+.application-form-section {
+  min-height: 75vh;
+  background: linear-gradient(145deg, #fff, #fff8f8);
+}
+
+.narrow-form-shell {
+  max-width: 790px;
+}
+
+.form-intro {
+  margin: 38px 0 28px;
+}
+
+.form-intro h1,
+.applicant-login-card h1 {
+  margin: 10px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.form-intro p,
+.applicant-login-card > p {
+  max-width: 700px;
+  color: #666b73;
+  line-height: 1.7;
+}
+
+.applicant-account-form {
+  padding: 36px;
+}
+
+.security-note {
+  display: flex;
+  gap: 11px;
+  border-radius: 13px;
+  background: #fff4f4;
+  padding: 15px;
+  color: #625557;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.security-note svg {
+  flex: 0 0 auto;
+  color: #a50e12;
+}
+
+.applicant-login-shell {
+  max-width: 540px;
+}
+
+.applicant-login-card {
+  margin-top: 38px;
+  padding: 36px;
+}
+
+.applicant-login-form {
+  margin-top: 23px;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+@media (max-width: 580px) {
+  .applicant-account-form,
+  .applicant-login-card {
+    padding: 24px;
+  }
+}
