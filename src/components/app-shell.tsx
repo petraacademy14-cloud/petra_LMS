@@ -13,6 +13,7 @@ import {
   Settings,
   ShieldCheck,
   Users,
+  GraduationCap,
   WalletCards,
   X,
 } from "lucide-react";
@@ -38,6 +39,12 @@ const navigation: Array<{
     label: "Academics",
     icon: BookOpenText,
     permission: "academic.read",
+  },
+  {
+    href: "/students",
+    label: "Students",
+    icon: GraduationCap,
+    permission: "people.read",
   },
   {
     href: "/people",
@@ -200,3 +207,4 @@ export function AppShell({ children, viewer, permissions }: AppShellProps) {
     </div>
   );
 }
+
