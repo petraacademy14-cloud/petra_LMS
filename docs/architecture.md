@@ -32,6 +32,7 @@ checks the same boundary before data access.
 - `src/lib/error-log.ts`: structured application error capture
 - `src/lib/finance.ts`: receipt, money, balance and reconciliation rules
 - `src/lib/student-finance-sync.ts`: Phase 2 to finance projection boundary
+- `src/lib/academics.ts`: weighted scores, grade bands, attendance summaries and result transitions
 - `prisma/schema.prisma`: canonical data model
 
 ## Student records
@@ -57,5 +58,5 @@ creates cannot receive the same number.
 - Treat the fee ledger as the balance source. Never derive balances by mutating
   a student total column.
 - Keep posted charges, payments, allocations and reversals append-only.
-
-
+- Treat published results and submitted attendance as controlled records. Later
+  changes require an explicit reason and correction history.
