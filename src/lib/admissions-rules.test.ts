@@ -8,10 +8,10 @@ import {
 } from "@/lib/admissions-rules";
 
 describe("admissions workflow", () => {
-  it("keeps submitted applications out of final decisions until payment and examination", () => {
+  it("keeps payment-stage transitions under finance control", () => {
     expect(canTransitionApplication("SUBMITTED", "ACCEPTED")).toBe(false);
-    expect(canTransitionApplication("SUBMITTED", "AWAITING_PAYMENT")).toBe(true);
-    expect(canTransitionApplication("AWAITING_PAYMENT", "AWAITING_EXAMINATION")).toBe(true);
+    expect(canTransitionApplication("SUBMITTED", "AWAITING_PAYMENT")).toBe(false);
+    expect(canTransitionApplication("AWAITING_PAYMENT", "AWAITING_EXAMINATION")).toBe(false);
     expect(canTransitionApplication("AWAITING_EXAMINATION", "UNDER_REVIEW")).toBe(true);
     expect(canTransitionApplication("UNDER_REVIEW", "ACCEPTED")).toBe(true);
   });

@@ -23,6 +23,12 @@ export default defineConfig({
       "public.admission_applications",
       "public.application_documents",
       "public.visit_bookings",
+      "public.entrance_fee_schedules",
+      "public.applicant_charges",
+      "public.applicant_payments",
+      "public.applicant_payment_reversals",
+      "public.applicant_fee_ledger_entries",
+      "public.applicant_receipt_sequences",
     ],
   },
   enums: {
@@ -30,6 +36,9 @@ export default defineConfig({
       "public.ApplicationStatus",
       "public.EntranceExamMode",
       "public.VisitBookingStatus",
+      "public.EntranceFeeKind",
+      "public.ApplicantPaymentStatus",
+      "public.ApplicantLedgerEntryType",
     ],
   },
 });

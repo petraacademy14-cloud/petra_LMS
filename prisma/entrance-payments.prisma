@@ -1,0 +1,114 @@
+enum EntranceFeeKind {
+  FORM
+  EXAM
+}
+
+enum ApplicantPaymentStatus {
+  PENDING_VERIFICATION
+  VERIFIED
+  REVERSED
+}
+
+enum ApplicantLedgerEntryType {
+  CHARGE
+  PAYMENT
+  REVERSAL
+}
+
+model EntranceFeeSchedule {
+  id           String          @id
+  schoolId     String
+  campusId     String
+  classLevelId String
+  kind         EntranceFeeKind
+  amount       Decimal         @db.Decimal(12, 2)
+  isActive     Boolean         @default(true)
+  createdById  String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @default(now())
+
+  @@unique([campusId, classLevelId, kind])
+  @@index([schoolId, isActive, kind])
+  @@map("entrance_fee_schedules")
+}
+
+model ApplicantCharge {
+  id            String          @id
+  schoolId      String
+  campusId      String
+  applicationId String
+  scheduleId    String
+  kind          EntranceFeeKind
+  description   String
+  amount        Decimal         @db.Decimal(12, 2)
+  createdAt     DateTime        @default(now())
+
+  @@unique([applicationId, kind])
+  @@index([schoolId, campusId, kind])
+  @@map("applicant_charges")
+}
+
+model ApplicantPayment {
+  id            String                 @id
+  schoolId      String
+  campusId      String
+  applicationId String
+  chargeId      String
+  status        ApplicantPaymentStatus @default(PENDING_VERIFICATION)
+  method        PaymentMethod
+  amount        Decimal                @db.Decimal(12, 2)
+  reference     String?
+  receiptNumber String?
+  paidAt        DateTime
+  submittedAt   DateTime               @default(now())
+  verifiedAt    DateTime?
+  verifiedById  String?
+  note          String?
+  createdAt     DateTime               @default(now())
+
+  @@index([applicationId, status, paidAt(sort: Desc)])
+  @@index([campusId, status, method, paidAt(sort: Desc)])
+  @@map("applicant_payments")
+}
+
+model ApplicantPaymentReversal {
+  id           String   @id
+  paymentId    String   @unique
+  reason       String
+  recordedById String
+  createdAt    DateTime @default(now())
+
+  @@map("applicant_payment_reversals")
+}
+
+model ApplicantFeeLedgerEntry {
+  id            String                   @id
+  schoolId      String
+  campusId      String
+  applicationId String
+  type          ApplicantLedgerEntryType
+  amount        Decimal                  @db.Decimal(12, 2)
+  referenceType String
+  referenceId   String
+  description   String
+  occurredAt    DateTime
+  recordedById  String?
+  createdAt     DateTime                 @default(now())
+
+  @@unique([referenceType, referenceId, type])
+  @@index([applicationId, occurredAt])
+  @@index([campusId, occurredAt(sort: Desc)])
+  @@map("applicant_fee_ledger_entries")
+}
+
+model ApplicantReceiptSequence {
+  id            String   @id
+  schoolId      String
+  campusId      String
+  year          Int
+  currentNumber Int      @default(0)
+  updatedAt     DateTime @default(now())
+
+  @@unique([campusId, year])
+  @@map("applicant_receipt_sequences")
+}
