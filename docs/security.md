@@ -22,6 +22,8 @@ must provide a high-entropy `BETTER_AUTH_SECRET`, HTTPS and secure cookies.
 | Correct/lock attendance | All campuses | Assigned campus | No |
 | Enter and submit results | All campuses | Assigned campus | Assigned subjects/classes |
 | Approve/publish/lock results | All campuses | Assigned campus | No |
+| Draft announcements and public updates | All campuses | Assigned campus | Assigned campus |
+| Review/publish communications | All campuses | Assigned campus | No |
 | View audit history | School-wide | Assigned campus | No |
 | Manage system settings | Yes | No | No |
 
@@ -44,6 +46,9 @@ table above must update that file and its tests in the same pull request.
 - Teaching assignments bind teachers to a campus, term, class and subject.
 - Locked attendance registers and result sheets reject entry/score updates at
   the database layer. Corrections before locking require an audit reason.
+
+- Communication publishing is state-controlled; public routes expose only PUBLISHED records.
+- Delivery generation stores drafts and recipient counts but does not send externally.
 
 ## Secrets and personal data
 
