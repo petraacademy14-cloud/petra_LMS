@@ -20,9 +20,16 @@ describe("role permissions", () => {
   });
 
   it("limits teachers to read permissions", () => {
-    expect(permissionsFor("TEACHER").every((item) => item.endsWith(".read"))).toBe(
-      true,
-    );
+    expect(
+      permissionsFor("TEACHER").every((item) => item.endsWith(".read")),
+    ).toBe(true);
     expect(hasPermission("TEACHER", "people.manage")).toBe(false);
+    expect(hasPermission("TEACHER", "finance.read")).toBe(false);
+  });
+
+  it("allows campus admins to record and reconcile fees", () => {
+    expect(hasPermission("ADMIN", "finance.read")).toBe(true);
+    expect(hasPermission("ADMIN", "finance.manage")).toBe(true);
+    expect(hasPermission("ADMIN", "finance.reconcile")).toBe(true);
   });
 });
