@@ -4,7 +4,7 @@ import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Permission } from "@/lib/permissions";
-import { hasPermission } from "@/lib/permissions";
+import { hasPermission, permissionsFor } from "@/lib/permissions";
 import { canAccessCampus } from "@/lib/scope";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -56,6 +56,7 @@ export const getViewer = cache(async () => {
       image: session.user.image,
     },
     membership,
+    permissions: permissionsFor(membership.role),
   };
 });
 
