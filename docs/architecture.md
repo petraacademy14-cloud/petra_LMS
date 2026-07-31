@@ -34,6 +34,18 @@ checks the same boundary before data access.
 - `src/lib/student-finance-sync.ts`: Phase 2 to finance projection boundary
 - `prisma/schema.prisma`: canonical data model
 
+## Student records
+
+`Student` belongs to one school and campus. `Guardian` is school-scoped so one
+guardian may be linked to siblings at either Petra campus. `StudentGuardian`
+stores the relationship and contact permissions. `Enrollment` is append-only
+history: promotion closes the current row and creates a row for the new session
+and class. The database migration rejects cross-school or cross-campus links.
+
+Admission numbers use `PET/{campus}/{year}/{sequence}`. A database-backed
+`AdmissionSequence` increment runs inside the student transaction, so concurrent
+creates cannot receive the same number.
+
 ## Decision rules
 
 - Keep modules in one application until scale provides evidence for separation.
@@ -45,3 +57,5 @@ checks the same boundary before data access.
 - Treat the fee ledger as the balance source. Never derive balances by mutating
   a student total column.
 - Keep posted charges, payments, allocations and reversals append-only.
+
+
