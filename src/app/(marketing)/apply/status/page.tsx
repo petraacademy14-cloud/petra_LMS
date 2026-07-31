@@ -1,8 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle2, Clock3, DollarSign, FileText, GraduationCap, LogOut } from "lucide-react";
+import {
+  CheckCircle2,
+  Clock3,
+  DollarSign,
+  Download,
+  FileText,
+  GraduationCap,
+  LogOut,
+  ShieldCheck,
+  XCircle,
+} from "lucide-react";
+import { respondToAdmissionOffer } from "@/app/actions/admission-decisions";
 import { logoutApplicant } from "@/app/actions/admissions";
 import { startEntrancePayment } from "@/app/actions/applicant-finance";
+import {
+  decisionLabel,
+  isOfferExpired,
+  type AdmissionDecisionOutcome,
+  type AdmissionOfferResponse,
+} from "@/lib/admission-decision";
 import { applicationStatusLabel, type ApplicationStatus } from "@/lib/admissions-rules";
 import { requireApplicant } from "@/lib/applicant-auth";
 import { db } from "@/lib/db";
@@ -17,6 +34,18 @@ type StatusRow = {
   className: string | null;
   examMode: "ONLINE" | "ONSITE" | null;
   submittedAt: Date | null;
+};
+
+type DecisionRow = {
+  id: string;
+  outcome: AdmissionDecisionOutcome;
+  applicantMessage: string | null;
+  offerExpiresAt: Date | null;
+  offerResponse: AdmissionOfferResponse;
+  respondedAt: Date | null;
+  convertedStudentId: string | null;
+  convertedAt: Date | null;
+  admissionNumber: string | null;
 };
 
 const statusOrder: ApplicationStatus[] = [
@@ -34,17 +63,23 @@ const guidance: Record<ApplicationStatus, string> = {
   AWAITING_PAYMENT: "Complete the visible entrance fee. The examination fee appears only after the form fee is fully verified.",
   AWAITING_EXAMINATION: "Both entrance fees are verified. Open the examination portal for your online window or onsite examination slip.",
   UNDER_REVIEW: "The examination and application are being reviewed by the admissions team.",
-  ACCEPTED: "Congratulations. Admission and acceptance documents will be available from this portal.",
+  ACCEPTED: "An admission offer has been recorded. Review the letter and respond before the stated deadline.",
   WAITLISTED: "The application remains active on the waiting list. The school will communicate any change.",
   REJECTED: "The current application was not successful. Contact the admissions office for clarification.",
 };
 
-type StatusPageProps = { searchParams: Promise<{ submitted?: string; error?: string }> };
+type StatusPageProps = {
+  searchParams: Promise<{
+    submitted?: string;
+    error?: string;
+    offer?: string;
+  }>;
+};
 
 export default async function ApplicationStatusPage({ searchParams }: StatusPageProps) {
   const viewer = await requireApplicant();
-  const { submitted, error } = await searchParams;
-  const [[application], [finance]] = await Promise.all([
+  const { submitted, error, offer } = await searchParams;
+  const [[application], [finance], [decision]] = await Promise.all([
     db.$queryRaw<StatusRow[]>`
       SELECT p."status"::text AS "status", p."studentFirstName", p."studentLastName",
         c."name" AS "campusName", l."name" AS "className",
@@ -59,10 +94,22 @@ export default async function ApplicationStatusPage({ searchParams }: StatusPage
       SELECT COUNT(*)::bigint AS "chargeCount"
       FROM "applicant_charges" WHERE "applicationId"=${viewer.applicationId}
     `,
+    db.$queryRaw<DecisionRow[]>`
+      SELECT d."id", d."outcome"::text AS "outcome", d."applicantMessage",
+        d."offerExpiresAt", d."offerResponse"::text AS "offerResponse", d."respondedAt",
+        d."convertedStudentId", d."convertedAt", s."admissionNumber"
+      FROM "admission_decisions" d
+      LEFT JOIN "students" s ON s."id" = d."convertedStudentId"
+      WHERE d."applicationId" = ${viewer.applicationId}
+      LIMIT 1
+    `,
   ]);
   if (!application) throw new Error("NOT_FOUND:APPLICATION");
   const currentIndex = statusOrder.indexOf(application.status);
   const hasCharges = Number(finance?.chargeCount ?? 0) > 0;
+  const expiredOffer = decision
+    ? isOfferExpired(decision.offerResponse, decision.offerExpiresAt)
+    : false;
 
   return (
     <section className="marketing-section applicant-workspace-section">
@@ -72,6 +119,9 @@ export default async function ApplicationStatusPage({ searchParams }: StatusPage
           <form action={logoutApplicant}><button className="button button-secondary" type="submit"><LogOut size={17} /> Sign out</button></form>
         </div>
         {submitted && <div className="success-banner"><CheckCircle2 size={20} />Your application has been submitted successfully.</div>}
+        {offer === "accepted" && <div className="success-banner"><CheckCircle2 size={20} />Your admission offer has been accepted. The school can now create the student record.</div>}
+        {offer === "declined" && <div className="form-alert"><XCircle size={20} />You declined the admission offer. Contact admissions promptly if this was a mistake.</div>}
+        {offer === "expired" && <div className="form-alert"><Clock3 size={20} />The admission offer deadline has passed. Contact the admissions office for assistance.</div>}
         {error === "fee-not-configured" && <div className="marketing-card status-guidance"><Clock3 size={22} /><div><strong>Entrance fee setup is pending</strong><p>The school has not configured the fee for this campus and class yet. Admissions can complete the setup without changing your application.</p></div></div>}
 
         <div className="status-summary-grid">
@@ -89,12 +139,51 @@ export default async function ApplicationStatusPage({ searchParams }: StatusPage
             <h2>Application details</h2>
             <dl>
               <div><dt>Application number</dt><dd>{viewer.applicationNumber}</dd></div>
-              <div><dt>Exam preference</dt><dd>{application.examMode ? applicationStatusLabel(application.examMode as never) : "Not selected"}</dd></div>
+              <div><dt>Exam preference</dt><dd>{application.examMode ? decisionLabel(application.examMode) : "Not selected"}</dd></div>
               <div><dt>Submitted</dt><dd>{application.submittedAt ? application.submittedAt.toLocaleString("en-NG") : "Not submitted"}</dd></div>
             </dl>
             <Link className="text-link" href="/apply/documents"><FileText size={17} /> View submitted documents</Link>
           </aside>
         </div>
+
+        {decision && (
+          <article className="marketing-card status-main-card" style={{ marginTop: 24 }}>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <span className="application-status-badge" data-status={decision.outcome}>{decisionLabel(decision.outcome)}</span>
+                <h2 style={{ marginTop: 16 }}>Admission decision</h2>
+              </div>
+              {decision.outcome === "ACCEPTED" && <ShieldCheck size={34} aria-hidden="true" />}
+            </div>
+            <p>{decision.applicantMessage ?? (decision.outcome === "ACCEPTED" ? "Petra Academy is pleased to offer admission, subject to acceptance before the deadline." : decision.outcome === "WAITLISTED" ? "Your application remains active on the waiting list." : "The current application was not successful.")}</p>
+
+            {decision.outcome === "ACCEPTED" && (
+              <div className="mt-5 space-y-4">
+                <div className="status-guidance">
+                  <Clock3 size={22} />
+                  <div>
+                    <strong>Offer deadline</strong>
+                    <p>{decision.offerExpiresAt?.toLocaleString("en-NG") ?? "Contact admissions"}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <Link className="button button-secondary" href={`/api/admission-letters/${viewer.applicationId}/download`}><Download size={18} /> Download admission letter</Link>
+                  {decision.offerResponse === "PENDING" && !expiredOffer && (
+                    <>
+                      <form action={respondToAdmissionOffer.bind(null, "ACCEPTED")}><button className="button" type="submit"><CheckCircle2 size={18} /> Accept offer</button></form>
+                      <form action={respondToAdmissionOffer.bind(null, "DECLINED")}><button className="button button-secondary" type="submit"><XCircle size={18} /> Decline offer</button></form>
+                    </>
+                  )}
+                </div>
+                {expiredOffer && <div className="form-alert"><Clock3 size={20} />This offer has passed its deadline. Contact admissions before taking further action.</div>}
+                {decision.offerResponse === "ACCEPTED" && !decision.convertedStudentId && <div className="success-banner"><CheckCircle2 size={20} />Offer accepted. Petra Academy will complete the official enrolment record.</div>}
+                {decision.offerResponse === "DECLINED" && <div className="form-alert"><XCircle size={20} />This offer was declined on {decision.respondedAt?.toLocaleString("en-NG") ?? "the recorded response date"}.</div>}
+                {decision.offerResponse === "EXPIRED" && <div className="form-alert"><Clock3 size={20} />This offer has expired.</div>}
+                {decision.convertedStudentId && <div className="success-banner"><GraduationCap size={20} /><div><strong>Enrolment completed</strong><br />Official admission number: {decision.admissionNumber}</div></div>}
+              </div>
+            )}
+          </article>
+        )}
 
         {!(["WAITLISTED", "REJECTED"] as ApplicationStatus[]).includes(application.status) && (
           <div className="application-timeline marketing-card">

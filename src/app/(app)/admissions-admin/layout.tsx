@@ -7,6 +7,7 @@ export default function AdmissionsAdminLayout({ children }: { children: React.Re
         <Link className="button button-secondary" href="/admissions-admin">Applications and visits</Link>
         <Link className="button button-secondary" href="/admissions-admin/payments">Entrance fees and payments</Link>
         <Link className="button button-secondary" href="/admissions-admin/exams">Entrance examinations</Link>
+        <Link className="button button-secondary" href="/admissions-admin/decisions">Admission decisions</Link>
       </nav>
       {children}
     </div>

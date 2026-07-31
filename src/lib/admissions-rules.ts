@@ -20,15 +20,16 @@ export const visitStatuses = [
 
 export type VisitStatus = (typeof visitStatuses)[number];
 
-// SUBMITTED → AWAITING_PAYMENT and AWAITING_PAYMENT → AWAITING_EXAMINATION
-// are controlled by the applicant finance workflow, not manual staff status changes.
+// Payment-stage transitions are controlled by applicant finance. Final outcomes
+// after UNDER_REVIEW are controlled by the admission decision record so an offer,
+// family response and student conversion cannot be bypassed by a generic status update.
 const transitions: Record<ApplicationStatus, readonly ApplicationStatus[]> = {
   DRAFT: ["SUBMITTED"],
   SUBMITTED: ["REJECTED"],
   AWAITING_PAYMENT: ["REJECTED"],
   AWAITING_EXAMINATION: ["UNDER_REVIEW", "REJECTED"],
-  UNDER_REVIEW: ["ACCEPTED", "WAITLISTED", "REJECTED"],
-  WAITLISTED: ["ACCEPTED", "REJECTED"],
+  UNDER_REVIEW: [],
+  WAITLISTED: [],
   ACCEPTED: [],
   REJECTED: [],
 };
