@@ -68,7 +68,6 @@ const rolePermissions = {
     "results.read",
     "results.manage",
     "communications.read",
-    "communications.manage",
   ]),
 } satisfies Record<Role, Set<Permission>>;
 
