@@ -21,11 +21,18 @@ describe("role permissions", () => {
 
   it("limits teachers to assigned teaching workflows", () => {
     expect(hasPermission("TEACHER", "people.manage")).toBe(false);
+    expect(hasPermission("TEACHER", "admissions.read")).toBe(false);
     expect(hasPermission("TEACHER", "finance.read")).toBe(false);
     expect(hasPermission("TEACHER", "attendance.manage")).toBe(true);
     expect(hasPermission("TEACHER", "attendance.correct")).toBe(false);
     expect(hasPermission("TEACHER", "results.manage")).toBe(true);
     expect(hasPermission("TEACHER", "results.approve")).toBe(false);
+  });
+
+  it("allows owners and campus admins to manage admissions", () => {
+    expect(hasPermission("OWNER", "admissions.manage")).toBe(true);
+    expect(hasPermission("ADMIN", "admissions.read")).toBe(true);
+    expect(hasPermission("ADMIN", "admissions.manage")).toBe(true);
   });
 
   it("allows campus admins to correct attendance and approve results", () => {
@@ -39,6 +46,7 @@ describe("role permissions", () => {
     expect(hasPermission("ADMIN", "finance.manage")).toBe(true);
     expect(hasPermission("ADMIN", "finance.reconcile")).toBe(true);
   });
+
   it("separates communication drafting from publication", () => {
     expect(hasPermission("TEACHER", "communications.manage")).toBe(true);
     expect(hasPermission("TEACHER", "communications.publish")).toBe(false);
