@@ -1,0 +1,91 @@
+.applicant-status-shell .marketing-card label,
+.applicant-status-shell .marketing-card label > span {
+  display: grid;
+  gap: 7px;
+  color: #505761;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.applicant-status-shell .marketing-card input,
+.applicant-status-shell .marketing-card select,
+.applicant-status-shell .marketing-card textarea {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #dfe2e6;
+  border-radius: 11px;
+  background: #fff;
+  padding: 10px 12px;
+  color: #20242a;
+}
+
+.applicant-status-shell .marketing-card textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+.applicant-status-shell dl {
+  margin: 0;
+}
+
+.applicant-status-shell dl > div {
+  border-radius: 12px;
+  background: #f7f7f8;
+  padding: 13px;
+}
+
+.applicant-status-shell dt,
+.receipt-sheet dt {
+  color: #777e88;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.applicant-status-shell dd,
+.receipt-sheet dd {
+  margin: 5px 0 0;
+  font-weight: 800;
+}
+
+.portal-option {
+  display: grid;
+  gap: 8px;
+  border: 1px solid #e4e6e9;
+  border-radius: 14px;
+  padding: 17px;
+}
+
+.portal-option svg {
+  color: #a50e12;
+}
+
+.portal-option p {
+  margin: 0;
+  color: #69707a;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.receipt-sheet dl > div {
+  border-bottom: 1px solid #eceef0;
+  padding-bottom: 15px;
+}
+
+@media print {
+  .marketing-site .site-header,
+  .marketing-site .site-footer,
+  .receipt-actions {
+    display: none !important;
+  }
+
+  .marketing-section {
+    padding: 0 !important;
+  }
+
+  .receipt-sheet {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}
