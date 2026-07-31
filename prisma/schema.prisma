@@ -41,6 +41,42 @@ enum PublicationKind {
   ACHIEVEMENT
 }
 
+
+enum PilotStatus {
+  PLANNED
+  ACTIVE
+  BLOCKED
+  COMPLETED
+}
+
+enum PilotChecklistStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  PASSED
+  FAILED
+  BLOCKED
+}
+
+enum PilotIssueSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum PilotIssueStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  ACCEPTED_RISK
+}
+
+enum LaunchApprovalStatus {
+  DRAFT
+  APPROVED
+  REVOKED
+}
+
 enum Role {
   OWNER
   ADMIN
@@ -194,6 +230,11 @@ model User {
   publicationsReviewed           Publication[]           @relation("PublicationReviewer")
   publicationsPublished          Publication[]           @relation("PublicationPublisher")
   communicationMediaUploaded     CommunicationMedia[]    @relation("CommunicationMediaUploader")
+  pilotRunsCreated               PilotRun[]               @relation("PilotRunCreator")
+  pilotChecklistVerified         PilotChecklistItem[]     @relation("PilotChecklistVerifier")
+  pilotIssuesReported            PilotIssue[]             @relation("PilotIssueReporter")
+  pilotIssuesResolved            PilotIssue[]             @relation("PilotIssueResolver")
+  launchApprovals                LaunchApproval[]         @relation("LaunchApprover")
 
   @@index([email])
   @@map("users")
@@ -285,7 +326,10 @@ model School {
   contentCategories   ContentCategory[]
   publications        Publication[]
   communicationMedia  CommunicationMedia[]
+  pilotIssues         PilotIssue[]
   newsletterSubscribers NewsletterSubscriber[]
+  pilotRuns           PilotRun[]
+  pilotIssues         PilotIssue[]
 
   @@map("schools")
 }
@@ -1264,6 +1308,93 @@ model NewsletterSubscriber {
   @@unique([schoolId, email])
   @@index([schoolId, isActive, subscribedAt(sort: Desc)])
   @@map("newsletter_subscribers")
+}
+
+
+model PilotRun {
+  id          String      @id @default(cuid())
+  schoolId    String
+  school      School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name        String
+  status      PilotStatus @default(PLANNED)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  notes       String?
+  createdById String
+  createdBy   User        @relation("PilotRunCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  checklist PilotChecklistItem[]
+  issues    PilotIssue[]
+  approval  LaunchApproval?
+
+  @@index([schoolId, status, createdAt(sort: Desc)])
+  @@map("pilot_runs")
+}
+
+model PilotChecklistItem {
+  id           String               @id @default(cuid())
+  pilotRunId   String
+  pilotRun     PilotRun             @relation(fields: [pilotRunId], references: [id], onDelete: Cascade)
+  key          String
+  area         String
+  label        String
+  status       PilotChecklistStatus @default(NOT_STARTED)
+  evidence     String?
+  verifiedById String?
+  verifiedBy   User?                @relation("PilotChecklistVerifier", fields: [verifiedById], references: [id], onDelete: Restrict)
+  verifiedAt   DateTime?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@unique([pilotRunId, key])
+  @@index([pilotRunId, area, status])
+  @@map("pilot_checklist_items")
+}
+
+model PilotIssue {
+  id           String           @id @default(cuid())
+  schoolId     String
+  school       School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  campusId     String?
+  campus       Campus?          @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  pilotRunId   String
+  pilotRun     PilotRun         @relation(fields: [pilotRunId], references: [id], onDelete: Cascade)
+  title        String
+  description  String
+  route        String?
+  severity     PilotIssueSeverity
+  status       PilotIssueStatus @default(OPEN)
+  resolution   String?
+  reportedById String
+  reportedBy   User             @relation("PilotIssueReporter", fields: [reportedById], references: [id], onDelete: Restrict)
+  resolvedById String?
+  resolvedBy   User?            @relation("PilotIssueResolver", fields: [resolvedById], references: [id], onDelete: Restrict)
+  resolvedAt   DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([schoolId, status, severity])
+  @@index([pilotRunId, createdAt(sort: Desc)])
+  @@index([campusId, status])
+  @@map("pilot_issues")
+}
+
+model LaunchApproval {
+  id           String               @id @default(cuid())
+  pilotRunId   String               @unique
+  pilotRun     PilotRun             @relation(fields: [pilotRunId], references: [id], onDelete: Cascade)
+  status       LaunchApprovalStatus @default(DRAFT)
+  summary      String?
+  approvedById String?
+  approvedBy   User?                @relation("LaunchApprover", fields: [approvedById], references: [id], onDelete: Restrict)
+  approvedAt   DateTime?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([status, approvedAt(sort: Desc)])
+  @@map("launch_approvals")
 }
 
 model AuditLog {
