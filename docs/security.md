@@ -24,6 +24,8 @@ must provide a high-entropy `BETTER_AUTH_SECRET`, HTTPS and secure cookies.
 | Approve/publish/lock results | All campuses | Assigned campus | No |
 | Draft announcements and public updates | All campuses | Assigned campus | Assigned campus |
 | Review/publish communications | All campuses | Assigned campus | No |
+| Record pilot evidence/issues | All campuses | Assigned campus | No |
+| Approve production launch | Yes | No | No |
 | View audit history | School-wide | Assigned campus | No |
 | Manage system settings | Yes | No | No |
 
@@ -49,6 +51,9 @@ table above must update that file and its tests in the same pull request.
 
 - Communication publishing is state-controlled; public routes expose only PUBLISHED records.
 - Delivery generation stores drafts and recipient counts but does not send externally.
+
+- The public health endpoint exposes only service, version and database reachability; never environment values.
+- Pilot evidence must not contain passwords, database URLs, secret keys or student documents.
 
 ## Secrets and personal data
 
