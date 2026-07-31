@@ -12,7 +12,11 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      include: ["src/lib/permissions.ts", "src/lib/scope.ts"],
+      include: [
+        "src/lib/finance.ts",
+        "src/lib/permissions.ts",
+        "src/lib/scope.ts",
+      ],
     },
   },
 });
