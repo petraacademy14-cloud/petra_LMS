@@ -63,9 +63,6 @@ const rolePermissions = {
   ]),
   TEACHER: new Set<Permission>([
     "school.read",
-    "campus.read",
-    "academic.read",
-    "people.read",
     "attendance.read",
     "attendance.manage",
     "results.read",
