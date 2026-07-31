@@ -4,11 +4,28 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, GraduationCap, School, Users } from "lucide-react";
 import { LoginForm } from "@/components/login-form";
+import { PortalLoginForm } from "@/components/portal-login-form";
+import type { PortalAccountRole } from "@/lib/portal-account";
 
 const portals = {
-  student: { title: "Student login", detail: "Use the student credentials issued by Petra Academy.", icon: GraduationCap },
-  parent: { title: "Parent login", detail: "Use the parent or guardian credentials issued by Petra Academy.", icon: Users },
-  teacher: { title: "Teacher login", detail: "Use your staff email address and password.", icon: School },
+  student: {
+    title: "Student login",
+    detail: "Use the student username and temporary password issued by Petra Academy.",
+    icon: GraduationCap,
+    portalRole: "STUDENT" as PortalAccountRole,
+  },
+  parent: {
+    title: "Parent login",
+    detail: "Use the parent or guardian username and temporary password issued by Petra Academy.",
+    icon: Users,
+    portalRole: "PARENT" as PortalAccountRole,
+  },
+  teacher: {
+    title: "Teacher login",
+    detail: "Use your staff email address and password.",
+    icon: School,
+    portalRole: null,
+  },
 } as const;
 
 type PortalRole = keyof typeof portals;
@@ -37,7 +54,7 @@ export default async function RoleLoginPage({ params }: { params: Promise<{ role
           <span className="section-kicker">Petra Academy</span>
           <h1>{portal.title}</h1>
           <p>{portal.detail}</p>
-          <LoginForm />
+          {portal.portalRole ? <PortalLoginForm role={portal.portalRole} /> : <LoginForm />}
         </div>
         <p className="portal-help">Your portal access is protected. Never share your password.</p>
       </div>
