@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { GraduationCap, ShieldCheck, UsersRound, WalletCards } from "lucide-react";
+import { Prisma } from "@/generated/prisma/client";
 import { requirePortalRole } from "@/lib/portal-auth";
 import { db } from "@/lib/db";
 
@@ -68,7 +69,7 @@ export default async function ParentPortalPage() {
         SELECT a."studentId", COALESCE(SUM(l."amount"), 0) AS "balance"
         FROM "student_fee_accounts" a
         LEFT JOIN "fee_ledger_entries" l ON l."accountId" = a."id"
-        WHERE a."schoolId" = ${viewer.schoolId} AND a."studentId" IN (${studentIds.join(",")})
+        WHERE a."schoolId" = ${viewer.schoolId} AND a."studentId" IN (${Prisma.join(studentIds)})
         GROUP BY a."studentId"
       `
     : [];
