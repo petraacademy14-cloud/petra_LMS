@@ -34,6 +34,8 @@ export default defineConfig({
       "public.exam_candidate_sequences",
       "public.applicant_exam_registrations",
       "public.applicant_exam_answers",
+      "public.admission_decisions",
+      "public.student_admission_document_links",
     ],
   },
   enums: {
@@ -48,6 +50,8 @@ export default defineConfig({
       "public.ApplicantExamStatus",
       "public.ExamAttendanceStatus",
       "public.ExamAnswerOption",
+      "public.AdmissionDecisionOutcome",
+      "public.AdmissionOfferResponse",
     ],
   },
 });
