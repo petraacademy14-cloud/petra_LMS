@@ -13,6 +13,17 @@ import { formatAdmissionNumber } from "@/lib/admission-number";
 import { requireCampusAccess, requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { parseStudentImportFile } from "@/lib/student-import";
+import { syncStudentFeeAccount } from "@/lib/student-finance-sync";
+
+function studentDisplayName(input: {
+  firstName: string;
+  middleName?: string | null;
+  lastName: string;
+}) {
+  return [input.firstName, input.middleName, input.lastName]
+    .filter(Boolean)
+    .join(" ");
+}
 
 export type StudentActionState = {
   status: "idle" | "success" | "error";
@@ -222,6 +233,18 @@ export async function createStudent(
           startsOn: input.admissionDate,
         },
       });
+      await syncStudentFeeAccount(
+        {
+          studentId: created.id,
+          schoolId: created.schoolId,
+          campusId: created.campusId,
+          admissionNumber: created.admissionNumber,
+          displayName: studentDisplayName(created),
+          classArmId: input.classArmId,
+          isActive: true,
+        },
+        tx,
+      );
       await audit(tx, {
         schoolId: viewer.membership.schoolId,
         campusId: input.campusId,
@@ -335,7 +358,22 @@ export async function changeStudentStatus(
     .parse(status);
   const student = await db.student.findFirst({
     where: { id: studentId, schoolId: viewer.membership.schoolId },
-    select: { id: true, campusId: true, status: true },
+    select: {
+      id: true,
+      schoolId: true,
+      campusId: true,
+      admissionNumber: true,
+      firstName: true,
+      middleName: true,
+      lastName: true,
+      status: true,
+      enrollments: {
+        where: { status: "CURRENT" },
+        orderBy: { startsOn: "desc" },
+        take: 1,
+        select: { classArmId: true },
+      },
+    },
   });
   if (!student) throw new Error("NOT_FOUND:STUDENT");
   await requireCampusAccess(student.campusId);
@@ -380,6 +418,19 @@ export async function changeStudentStatus(
       }
     }
 
+    await syncStudentFeeAccount(
+      {
+        studentId: student.id,
+        schoolId: student.schoolId,
+        campusId: student.campusId,
+        admissionNumber: student.admissionNumber,
+        displayName: studentDisplayName(student),
+        classArmId: student.enrollments[0]?.classArmId ?? null,
+        isActive: nextStatus === "ACTIVE",
+      },
+      tx,
+    );
+
     await audit(tx, {
       schoolId: viewer.membership.schoolId,
       campusId: student.campusId,
@@ -415,7 +466,16 @@ export async function reactivateStudent(
       .parse(Object.fromEntries(formData));
     const student = await db.student.findFirst({
       where: { id: studentId, schoolId: viewer.membership.schoolId },
-      select: { id: true, campusId: true, status: true },
+      select: {
+        id: true,
+        schoolId: true,
+        campusId: true,
+        admissionNumber: true,
+        firstName: true,
+        middleName: true,
+        lastName: true,
+        status: true,
+      },
     });
     if (!student) throw new Error("NOT_FOUND:STUDENT");
     if (student.status !== "WITHDRAWN" && student.status !== "GRADUATED") {
@@ -453,6 +513,18 @@ export async function reactivateStudent(
           startsOn: input.startsOn,
         },
       });
+      await syncStudentFeeAccount(
+        {
+          studentId: student.id,
+          schoolId: student.schoolId,
+          campusId: input.campusId,
+          admissionNumber: student.admissionNumber,
+          displayName: studentDisplayName(student),
+          classArmId: input.classArmId,
+          isActive: true,
+        },
+        tx,
+      );
       await audit(tx, {
         schoolId: viewer.membership.schoolId,
         campusId: input.campusId,
@@ -514,7 +586,15 @@ export async function bulkPromoteStudents(
         campusId: input.campusId,
         status: "ACTIVE",
       },
-      select: { id: true },
+      select: {
+        id: true,
+        schoolId: true,
+        campusId: true,
+        admissionNumber: true,
+        firstName: true,
+        middleName: true,
+        lastName: true,
+      },
     });
     if (students.length !== new Set(studentIds).size) {
       throw new Error("FORBIDDEN:STUDENT_SCOPE");
@@ -535,6 +615,18 @@ export async function bulkPromoteStudents(
             startsOn: input.startsOn,
           },
         });
+        await syncStudentFeeAccount(
+          {
+            studentId: student.id,
+            schoolId: student.schoolId,
+            campusId: student.campusId,
+            admissionNumber: student.admissionNumber,
+            displayName: studentDisplayName(student),
+            classArmId: input.classArmId,
+            isActive: true,
+          },
+          tx,
+        );
       }
       await audit(tx, {
         schoolId: viewer.membership.schoolId,
@@ -783,6 +875,18 @@ export async function importStudents(
             startsOn: new Date(`${row.admission_date}T00:00:00Z`),
           },
         });
+        await syncStudentFeeAccount(
+          {
+            studentId: student.id,
+            schoolId: student.schoolId,
+            campusId: student.campusId,
+            admissionNumber: student.admissionNumber,
+            displayName: studentDisplayName(student),
+            classArmId: classArm.id,
+            isActive: true,
+          },
+          tx,
+        );
         await audit(tx, {
           schoolId: viewer.membership.schoolId,
           campusId: campus.id,

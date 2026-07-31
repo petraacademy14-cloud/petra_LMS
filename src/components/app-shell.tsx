@@ -8,12 +8,15 @@ import {
   Building2,
   ChevronDown,
   ClipboardClock,
+  ClipboardCheck,
+  FileText,
   LayoutDashboard,
   Menu,
   Settings,
   ShieldCheck,
   Users,
   GraduationCap,
+  WalletCards,
   X,
 } from "lucide-react";
 import { Brand } from "@/components/brand";
@@ -50,6 +53,24 @@ const navigation: Array<{
     label: "People & roles",
     icon: Users,
     permission: "people.read",
+  },
+  {
+    href: "/fees",
+    label: "Fees & payments",
+    icon: WalletCards,
+    permission: "finance.read",
+  },
+  {
+    href: "/attendance",
+    label: "Attendance",
+    icon: ClipboardCheck,
+    permission: "attendance.read",
+  },
+  {
+    href: "/results",
+    label: "Results",
+    icon: FileText,
+    permission: "results.read",
   },
   {
     href: "/audit",

@@ -62,6 +62,63 @@ enum GuardianRelationship {
   OTHER
 }
 
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  POS
+  ONLINE
+}
+
+enum StudentChargeType {
+  CHARGE
+  DISCOUNT
+}
+
+enum LedgerEntryType {
+  CHARGE
+  DISCOUNT
+  PAYMENT
+  REVERSAL
+}
+
+enum ReminderChannel {
+  PRINT
+  WHATSAPP
+  SMS
+  EMAIL
+}
+
+enum ReconciliationStatus {
+  OPEN
+  RECONCILED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum AttendanceRegisterStatus {
+  DRAFT
+  SUBMITTED
+  LOCKED
+}
+
+enum AssessmentKind {
+  CONTINUOUS_ASSESSMENT
+  EXAM
+}
+
+enum ResultSheetStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  PUBLISHED
+  LOCKED
+}
+
 model User {
   id            String   @id @default(cuid())
   name          String
@@ -71,12 +128,29 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  sessions                 Session[]
-  accounts                 Account[]
-  memberships              SchoolMembership[]
-  auditEvents              AuditLog[]         @relation("AuditActor")
-  errorEvents              ErrorLog[]
-  uploadedStudentDocuments StudentDocument[]
+  sessions                     Session[]
+  accounts                     Account[]
+  memberships                  SchoolMembership[]
+  auditEvents                  AuditLog[]             @relation("AuditActor")
+  errorEvents                  ErrorLog[]
+  uploadedStudentDocuments     StudentDocument[]
+  recordedPayments             Payment[]              @relation("PaymentRecorder")
+  paymentReversals             PaymentReversal[]      @relation("PaymentReversalRecorder")
+  chargeReversals              ChargeReversal[]       @relation("ChargeReversalRecorder")
+  feeLedgerEntries             FeeLedgerEntry[]       @relation("FeeLedgerRecorder")
+  feeReminders                 FeeReminder[]          @relation("FeeReminderGenerator")
+  reconciliations              ReconciliationBatch[]  @relation("ReconciliationRecorder")
+  attendanceRegistersCreated   AttendanceRegister[]   @relation("AttendanceCreator")
+  attendanceRegistersSubmitted AttendanceRegister[]   @relation("AttendanceSubmitter")
+  attendanceRegistersLocked    AttendanceRegister[]   @relation("AttendanceLocker")
+  attendanceEntriesMarked      AttendanceEntry[]      @relation("AttendanceMarker")
+  attendanceCorrections        AttendanceCorrection[] @relation("AttendanceCorrector")
+  scoresMarked                 StudentScore[]         @relation("ScoreMarker")
+  scoreCorrections             ScoreCorrection[]      @relation("ScoreCorrector")
+  resultSheetsSubmitted        ResultSheet[]          @relation("ResultSubmitter")
+  resultSheetsApproved         ResultSheet[]          @relation("ResultApprover")
+  resultSheetsPublished        ResultSheet[]          @relation("ResultPublisher")
+  resultSheetsLocked           ResultSheet[]          @relation("ResultLocker")
 
   @@index([email])
   @@map("users")
@@ -139,16 +213,29 @@ model School {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  campuses           Campus[]
-  memberships        SchoolMembership[]
-  sessions           AcademicSession[]
-  classLevels        ClassLevel[]
-  subjects           Subject[]
-  auditEvents        AuditLog[]
-  errorEvents        ErrorLog[]
-  students           Student[]
-  guardians          Guardian[]
-  admissionSequences AdmissionSequence[]
+  campuses            Campus[]
+  memberships         SchoolMembership[]
+  sessions            AcademicSession[]
+  classLevels         ClassLevel[]
+  subjects            Subject[]
+  auditEvents         AuditLog[]
+  errorEvents         ErrorLog[]
+  students            Student[]
+  guardians           Guardian[]
+  admissionSequences  AdmissionSequence[]
+  feeCategories       FeeCategory[]
+  feeStructures       FeeStructure[]
+  studentFeeAccounts  StudentFeeAccount[]
+  studentCharges      StudentCharge[]
+  payments            Payment[]
+  feeLedgerEntries    FeeLedgerEntry[]
+  receiptSequences    ReceiptSequence[]
+  feeReminders        FeeReminder[]
+  reconciliations     ReconciliationBatch[]
+  gradingSchemes      GradingScheme[]
+  teachingAssignments TeachingAssignment[]
+  attendanceRegisters AttendanceRegister[]
+  resultSheets        ResultSheet[]
 
   @@map("schools")
 }
@@ -165,16 +252,27 @@ model Campus {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  memberships        SchoolMembership[]
-  classArms          ClassArm[]
-  campusSubjects     CampusSubject[]
-  terms              Term[]
-  auditEvents        AuditLog[]
-  errorEvents        ErrorLog[]
-  students           Student[]
-  enrollments        Enrollment[]
-  studentDocuments   StudentDocument[]
-  admissionSequences AdmissionSequence[]
+  memberships         SchoolMembership[]
+  classArms           ClassArm[]
+  campusSubjects      CampusSubject[]
+  terms               Term[]
+  auditEvents         AuditLog[]
+  errorEvents         ErrorLog[]
+  students            Student[]
+  enrollments         Enrollment[]
+  studentDocuments    StudentDocument[]
+  admissionSequences  AdmissionSequence[]
+  feeStructures       FeeStructure[]
+  studentFeeAccounts  StudentFeeAccount[]
+  studentCharges      StudentCharge[]
+  payments            Payment[]
+  feeLedgerEntries    FeeLedgerEntry[]
+  receiptSequences    ReceiptSequence[]
+  feeReminders        FeeReminder[]
+  reconciliations     ReconciliationBatch[]
+  teachingAssignments TeachingAssignment[]
+  attendanceRegisters AttendanceRegister[]
+  resultSheets        ResultSheet[]
 
   @@unique([schoolId, code])
   @@unique([schoolId, name])
@@ -194,6 +292,9 @@ model SchoolMembership {
   status    MembershipStatus @default(INVITED)
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
+
+  teachingAssignments TeachingAssignment[]
+  resultSheets        ResultSheet[]
 
   @@unique([userId, schoolId, campusId])
   @@index([schoolId, role, status])
@@ -234,6 +335,15 @@ model Term {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 
+  feeStructures       FeeStructure[]
+  studentCharges      StudentCharge[]
+  payments            Payment[]
+  feeLedgerEntries    FeeLedgerEntry[]
+  feeReminders        FeeReminder[]
+  teachingAssignments TeachingAssignment[]
+  attendanceRegisters AttendanceRegister[]
+  resultSheets        ResultSheet[]
+
   @@unique([academicSessionId, campusId, kind])
   @@index([campusId, isCurrent])
   @@map("terms")
@@ -250,7 +360,8 @@ model ClassLevel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  arms ClassArm[]
+  arms          ClassArm[]
+  feeStructures FeeStructure[]
 
   @@unique([schoolId, code])
   @@unique([schoolId, sortOrder])
@@ -258,18 +369,22 @@ model ClassLevel {
 }
 
 model ClassArm {
-  id           String       @id @default(cuid())
-  campusId     String
-  campus       Campus       @relation(fields: [campusId], references: [id], onDelete: Cascade)
-  classLevelId String
-  classLevel   ClassLevel   @relation(fields: [classLevelId], references: [id], onDelete: Cascade)
-  name         String
-  code         String
-  capacity     Int?
-  isActive     Boolean      @default(true)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  enrollments  Enrollment[]
+  id                  String               @id @default(cuid())
+  campusId            String
+  campus              Campus               @relation(fields: [campusId], references: [id], onDelete: Cascade)
+  classLevelId        String
+  classLevel          ClassLevel           @relation(fields: [classLevelId], references: [id], onDelete: Cascade)
+  name                String
+  code                String
+  capacity            Int?
+  isActive            Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  enrollments         Enrollment[]
+  studentFeeAccounts  StudentFeeAccount[]
+  teachingAssignments TeachingAssignment[]
+  attendanceRegisters AttendanceRegister[]
+  resultSheets        ResultSheet[]
 
   @@unique([campusId, classLevelId, code])
   @@index([campusId, isActive])
@@ -286,7 +401,9 @@ model Subject {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  campusSubjects CampusSubject[]
+  campusSubjects      CampusSubject[]
+  teachingAssignments TeachingAssignment[]
+  resultSheets        ResultSheet[]
 
   @@unique([schoolId, code])
   @@map("subjects")
@@ -343,9 +460,12 @@ model Student {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
-  guardians   StudentGuardian[]
-  enrollments Enrollment[]
-  documents   StudentDocument[]
+  guardians         StudentGuardian[]
+  enrollments       Enrollment[]
+  documents         StudentDocument[]
+  attendanceEntries AttendanceEntry[]
+  scores            StudentScore[]
+  resultEntries     ResultEntry[]
 
   @@unique([schoolId, admissionNumber])
   @@index([campusId, status, lastName, firstName])
@@ -430,6 +550,501 @@ model StudentDocument {
   @@index([studentId, createdAt(sort: Desc)])
   @@index([campusId, createdAt(sort: Desc)])
   @@map("student_documents")
+}
+
+model FeeCategory {
+  id          String   @id @default(cuid())
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name        String
+  code        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  structures FeeStructure[]
+  charges    StudentCharge[]
+
+  @@unique([schoolId, code])
+  @@unique([schoolId, name])
+  @@index([schoolId, isActive])
+  @@map("fee_categories")
+}
+
+model FeeStructure {
+  id           String      @id @default(cuid())
+  schoolId     String
+  school       School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  campusId     String
+  campus       Campus      @relation(fields: [campusId], references: [id], onDelete: Cascade)
+  termId       String
+  term         Term        @relation(fields: [termId], references: [id], onDelete: Cascade)
+  classLevelId String
+  classLevel   ClassLevel  @relation(fields: [classLevelId], references: [id], onDelete: Cascade)
+  categoryId   String
+  category     FeeCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  amount       Decimal     @db.Decimal(12, 2)
+  dueOn        DateTime?   @db.Date
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  charges StudentCharge[]
+
+  @@unique([campusId, termId, classLevelId, categoryId])
+  @@index([schoolId, termId, isActive])
+  @@index([campusId, classLevelId, isActive])
+  @@map("fee_structures")
+}
+
+/// Finance-owned projection of a Phase 2 student. `studentId` is the stable
+/// external key; snapshots keep historical receipts readable after name/class changes.
+model StudentFeeAccount {
+  id              String    @id @default(cuid())
+  schoolId        String
+  school          School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  campusId        String
+  campus          Campus    @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  studentId       String
+  admissionNumber String
+  displayName     String
+  classArmId      String?
+  classArm        ClassArm? @relation(fields: [classArmId], references: [id], onDelete: SetNull)
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  charges   StudentCharge[]
+  payments  Payment[]
+  ledger    FeeLedgerEntry[]
+  reminders FeeReminder[]
+
+  @@unique([schoolId, studentId])
+  @@unique([schoolId, admissionNumber])
+  @@index([campusId, classArmId, isActive])
+  @@index([schoolId, displayName])
+  @@map("student_fee_accounts")
+}
+
+model StudentCharge {
+  id             String            @id @default(cuid())
+  schoolId       String
+  school         School            @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId       String
+  campus         Campus            @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  accountId      String
+  account        StudentFeeAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  termId         String
+  term           Term              @relation(fields: [termId], references: [id], onDelete: Restrict)
+  categoryId     String?
+  category       FeeCategory?      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  feeStructureId String?
+  feeStructure   FeeStructure?     @relation(fields: [feeStructureId], references: [id], onDelete: SetNull)
+  type           StudentChargeType
+  description    String
+  amount         Decimal           @db.Decimal(12, 2)
+  dueOn          DateTime?         @db.Date
+  createdAt      DateTime          @default(now())
+
+  allocations PaymentAllocation[]
+  reversal    ChargeReversal?
+
+  @@unique([accountId, feeStructureId])
+  @@index([accountId, termId, createdAt])
+  @@index([campusId, termId, type])
+  @@map("student_charges")
+}
+
+model ChargeReversal {
+  id           String        @id @default(cuid())
+  chargeId     String        @unique
+  charge       StudentCharge @relation(fields: [chargeId], references: [id], onDelete: Restrict)
+  reason       String
+  recordedById String
+  recordedBy   User          @relation("ChargeReversalRecorder", fields: [recordedById], references: [id], onDelete: Restrict)
+  createdAt    DateTime      @default(now())
+
+  @@index([createdAt])
+  @@map("charge_reversals")
+}
+
+model Payment {
+  id            String            @id @default(cuid())
+  schoolId      String
+  school        School            @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId      String
+  campus        Campus            @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  accountId     String
+  account       StudentFeeAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  termId        String
+  term          Term              @relation(fields: [termId], references: [id], onDelete: Restrict)
+  receiptNumber String            @unique
+  method        PaymentMethod
+  amount        Decimal           @db.Decimal(12, 2)
+  reference     String?
+  paidAt        DateTime
+  note          String?
+  recordedById  String
+  recordedBy    User              @relation("PaymentRecorder", fields: [recordedById], references: [id], onDelete: Restrict)
+  createdAt     DateTime          @default(now())
+
+  allocations PaymentAllocation[]
+  reversal    PaymentReversal?
+
+  @@index([accountId, termId, paidAt(sort: Desc)])
+  @@index([campusId, paidAt(sort: Desc), method])
+  @@index([schoolId, receiptNumber])
+  @@map("payments")
+}
+
+model PaymentAllocation {
+  id        String        @id @default(cuid())
+  paymentId String
+  payment   Payment       @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  chargeId  String
+  charge    StudentCharge @relation(fields: [chargeId], references: [id], onDelete: Restrict)
+  amount    Decimal       @db.Decimal(12, 2)
+  createdAt DateTime      @default(now())
+
+  @@unique([paymentId, chargeId])
+  @@index([chargeId])
+  @@map("payment_allocations")
+}
+
+model PaymentReversal {
+  id           String   @id @default(cuid())
+  paymentId    String   @unique
+  payment      Payment  @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  reason       String
+  recordedById String
+  recordedBy   User     @relation("PaymentReversalRecorder", fields: [recordedById], references: [id], onDelete: Restrict)
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("payment_reversals")
+}
+
+/// Append-only balance source. Positive amounts increase debt; negative amounts
+/// reduce debt. Corrections append an equal-and-opposite REVERSAL entry.
+model FeeLedgerEntry {
+  id            String            @id @default(cuid())
+  schoolId      String
+  school        School            @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId      String
+  campus        Campus            @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  accountId     String
+  account       StudentFeeAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  termId        String
+  term          Term              @relation(fields: [termId], references: [id], onDelete: Restrict)
+  type          LedgerEntryType
+  amount        Decimal           @db.Decimal(12, 2)
+  referenceType String
+  referenceId   String
+  description   String
+  occurredAt    DateTime
+  recordedById  String
+  recordedBy    User              @relation("FeeLedgerRecorder", fields: [recordedById], references: [id], onDelete: Restrict)
+  createdAt     DateTime          @default(now())
+
+  @@unique([referenceType, referenceId, type])
+  @@index([accountId, termId, occurredAt])
+  @@index([campusId, termId, occurredAt])
+  @@index([schoolId, occurredAt(sort: Desc)])
+  @@map("fee_ledger_entries")
+}
+
+model ReceiptSequence {
+  id            String   @id @default(cuid())
+  schoolId      String
+  school        School   @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId      String
+  campus        Campus   @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  year          Int
+  currentNumber Int      @default(0)
+  updatedAt     DateTime @updatedAt
+
+  @@unique([campusId, year])
+  @@map("receipt_sequences")
+}
+
+model FeeReminder {
+  id            String            @id @default(cuid())
+  schoolId      String
+  school        School            @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId      String
+  campus        Campus            @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  accountId     String
+  account       StudentFeeAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  termId        String
+  term          Term              @relation(fields: [termId], references: [id], onDelete: Restrict)
+  channel       ReminderChannel
+  balance       Decimal           @db.Decimal(12, 2)
+  message       String
+  generatedById String
+  generatedBy   User              @relation("FeeReminderGenerator", fields: [generatedById], references: [id], onDelete: Restrict)
+  createdAt     DateTime          @default(now())
+
+  @@index([campusId, termId, createdAt(sort: Desc)])
+  @@index([accountId, createdAt(sort: Desc)])
+  @@map("fee_reminders")
+}
+
+model ReconciliationBatch {
+  id             String               @id @default(cuid())
+  schoolId       String
+  school         School               @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId       String
+  campus         Campus               @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  businessDate   DateTime             @db.Date
+  method         PaymentMethod
+  status         ReconciliationStatus @default(OPEN)
+  expectedAmount Decimal              @db.Decimal(12, 2)
+  declaredAmount Decimal              @db.Decimal(12, 2)
+  variance       Decimal              @db.Decimal(12, 2)
+  note           String?
+  reconciledById String
+  reconciledBy   User                 @relation("ReconciliationRecorder", fields: [reconciledById], references: [id], onDelete: Restrict)
+  createdAt      DateTime             @default(now())
+
+  @@unique([campusId, businessDate, method])
+  @@index([schoolId, businessDate(sort: Desc)])
+  @@map("reconciliation_batches")
+}
+
+model TeachingAssignment {
+  id                  String           @id @default(cuid())
+  schoolId            String
+  school              School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  campusId            String
+  campus              Campus           @relation(fields: [campusId], references: [id], onDelete: Cascade)
+  termId              String
+  term                Term             @relation(fields: [termId], references: [id], onDelete: Cascade)
+  classArmId          String
+  classArm            ClassArm         @relation(fields: [classArmId], references: [id], onDelete: Cascade)
+  subjectId           String
+  subject             Subject          @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacherMembershipId String
+  teacherMembership   SchoolMembership @relation(fields: [teacherMembershipId], references: [id], onDelete: Cascade)
+  createdAt           DateTime         @default(now())
+
+  @@unique([termId, classArmId, subjectId, teacherMembershipId])
+  @@index([campusId, termId, classArmId])
+  @@index([teacherMembershipId, termId])
+  @@map("teaching_assignments")
+}
+
+model AttendanceRegister {
+  id            String                   @id @default(cuid())
+  schoolId      String
+  school        School                   @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId      String
+  campus        Campus                   @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  termId        String
+  term          Term                     @relation(fields: [termId], references: [id], onDelete: Restrict)
+  classArmId    String
+  classArm      ClassArm                 @relation(fields: [classArmId], references: [id], onDelete: Restrict)
+  registerDate  DateTime                 @db.Date
+  status        AttendanceRegisterStatus @default(DRAFT)
+  createdById   String
+  createdBy     User                     @relation("AttendanceCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  submittedById String?
+  submittedBy   User?                    @relation("AttendanceSubmitter", fields: [submittedById], references: [id], onDelete: Restrict)
+  submittedAt   DateTime?
+  lockedById    String?
+  lockedBy      User?                    @relation("AttendanceLocker", fields: [lockedById], references: [id], onDelete: Restrict)
+  lockedAt      DateTime?
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+
+  entries AttendanceEntry[]
+
+  @@unique([classArmId, registerDate])
+  @@index([campusId, termId, registerDate(sort: Desc)])
+  @@index([schoolId, registerDate(sort: Desc)])
+  @@map("attendance_registers")
+}
+
+model AttendanceEntry {
+  id         String             @id @default(cuid())
+  registerId String
+  register   AttendanceRegister @relation(fields: [registerId], references: [id], onDelete: Cascade)
+  studentId  String
+  student    Student            @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  status     AttendanceStatus
+  note       String?
+  markedById String
+  markedBy   User               @relation("AttendanceMarker", fields: [markedById], references: [id], onDelete: Restrict)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  corrections AttendanceCorrection[]
+
+  @@unique([registerId, studentId])
+  @@index([studentId, createdAt(sort: Desc)])
+  @@map("attendance_entries")
+}
+
+model AttendanceCorrection {
+  id            String           @id @default(cuid())
+  entryId       String
+  entry         AttendanceEntry  @relation(fields: [entryId], references: [id], onDelete: Restrict)
+  beforeStatus  AttendanceStatus
+  afterStatus   AttendanceStatus
+  beforeNote    String?
+  afterNote     String?
+  reason        String
+  correctedById String
+  correctedBy   User             @relation("AttendanceCorrector", fields: [correctedById], references: [id], onDelete: Restrict)
+  createdAt     DateTime         @default(now())
+
+  @@index([entryId, createdAt(sort: Desc)])
+  @@map("attendance_corrections")
+}
+
+model GradingScheme {
+  id         String   @id @default(cuid())
+  schoolId   String
+  school     School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name       String
+  caWeight   Decimal  @db.Decimal(5, 2)
+  examWeight Decimal  @db.Decimal(5, 2)
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  bands        GradeBand[]
+  resultSheets ResultSheet[]
+
+  @@unique([schoolId, name])
+  @@index([schoolId, isDefault])
+  @@map("grading_schemes")
+}
+
+model GradeBand {
+  id         String        @id @default(cuid())
+  schemeId   String
+  scheme     GradingScheme @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+  label      String
+  minScore   Decimal       @db.Decimal(5, 2)
+  maxScore   Decimal       @db.Decimal(5, 2)
+  remark     String
+  gradePoint Decimal?      @db.Decimal(4, 2)
+  sortOrder  Int
+
+  @@unique([schemeId, label])
+  @@unique([schemeId, sortOrder])
+  @@map("grade_bands")
+}
+
+model ResultSheet {
+  id                  String            @id @default(cuid())
+  schoolId            String
+  school              School            @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId            String
+  campus              Campus            @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  termId              String
+  term                Term              @relation(fields: [termId], references: [id], onDelete: Restrict)
+  classArmId          String
+  classArm            ClassArm          @relation(fields: [classArmId], references: [id], onDelete: Restrict)
+  subjectId           String
+  subject             Subject           @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  gradingSchemeId     String
+  gradingScheme       GradingScheme     @relation(fields: [gradingSchemeId], references: [id], onDelete: Restrict)
+  teacherMembershipId String
+  teacherMembership   SchoolMembership  @relation(fields: [teacherMembershipId], references: [id], onDelete: Restrict)
+  status              ResultSheetStatus @default(DRAFT)
+  submittedById       String?
+  submittedBy         User?             @relation("ResultSubmitter", fields: [submittedById], references: [id], onDelete: Restrict)
+  submittedAt         DateTime?
+  approvedById        String?
+  approvedBy          User?             @relation("ResultApprover", fields: [approvedById], references: [id], onDelete: Restrict)
+  approvedAt          DateTime?
+  publishedById       String?
+  publishedBy         User?             @relation("ResultPublisher", fields: [publishedById], references: [id], onDelete: Restrict)
+  publishedAt         DateTime?
+  lockedById          String?
+  lockedBy            User?             @relation("ResultLocker", fields: [lockedById], references: [id], onDelete: Restrict)
+  lockedAt            DateTime?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  components AssessmentComponent[]
+  entries    ResultEntry[]
+
+  @@unique([termId, classArmId, subjectId])
+  @@index([campusId, termId, status])
+  @@index([teacherMembershipId, termId, status])
+  @@map("result_sheets")
+}
+
+model AssessmentComponent {
+  id        String         @id @default(cuid())
+  sheetId   String
+  sheet     ResultSheet    @relation(fields: [sheetId], references: [id], onDelete: Cascade)
+  name      String
+  kind      AssessmentKind
+  maxScore  Decimal        @db.Decimal(6, 2)
+  weight    Decimal        @db.Decimal(5, 2)
+  sortOrder Int
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  scores StudentScore[]
+
+  @@unique([sheetId, name])
+  @@unique([sheetId, sortOrder])
+  @@map("assessment_components")
+}
+
+model StudentScore {
+  id          String              @id @default(cuid())
+  componentId String
+  component   AssessmentComponent @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  studentId   String
+  student     Student             @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  score       Decimal             @db.Decimal(6, 2)
+  markedById  String
+  markedBy    User                @relation("ScoreMarker", fields: [markedById], references: [id], onDelete: Restrict)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  corrections ScoreCorrection[]
+
+  @@unique([componentId, studentId])
+  @@index([studentId, createdAt(sort: Desc)])
+  @@map("student_scores")
+}
+
+model ScoreCorrection {
+  id            String       @id @default(cuid())
+  scoreId       String
+  score         StudentScore @relation(fields: [scoreId], references: [id], onDelete: Restrict)
+  beforeScore   Decimal      @db.Decimal(6, 2)
+  afterScore    Decimal      @db.Decimal(6, 2)
+  reason        String
+  correctedById String
+  correctedBy   User         @relation("ScoreCorrector", fields: [correctedById], references: [id], onDelete: Restrict)
+  createdAt     DateTime     @default(now())
+
+  @@index([scoreId, createdAt(sort: Desc)])
+  @@map("score_corrections")
+}
+
+model ResultEntry {
+  id             String      @id @default(cuid())
+  sheetId        String
+  sheet          ResultSheet @relation(fields: [sheetId], references: [id], onDelete: Cascade)
+  studentId      String
+  student        Student     @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  teacherComment String?
+  adminComment   String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@unique([sheetId, studentId])
+  @@index([studentId, createdAt(sort: Desc)])
+  @@map("result_entries")
 }
 
 model AuditLog {

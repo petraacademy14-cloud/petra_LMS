@@ -15,6 +15,13 @@ must provide a high-entropy `BETTER_AUTH_SECRET`, HTTPS and secure cookies.
 | Manage sessions and academics | Yes | Assigned campus | No |
 | View staff | All campuses | Assigned campus | Assigned campus |
 | Manage staff | Yes | Assigned campus; no owner escalation | No |
+| View fees and payments | All campuses | Assigned campus | No |
+| Record fees and payments | All campuses | Assigned campus | No |
+| Reconcile payment methods | All campuses | Assigned campus | No |
+| Take attendance | All campuses | Assigned campus | Assigned classes |
+| Correct/lock attendance | All campuses | Assigned campus | No |
+| Enter and submit results | All campuses | Assigned campus | Assigned subjects/classes |
+| Approve/publish/lock results | All campuses | Assigned campus | No |
 | View audit history | School-wide | Assigned campus | No |
 | Manage system settings | Yes | No | No |
 
@@ -30,6 +37,13 @@ table above must update that file and its tests in the same pull request.
   permission and scope.
 - Database checks prevent admins/teachers without a campus and make audit logs
   immutable.
+- Finance tables carry explicit school and campus scope. Database triggers reject
+  cross-scope account, term, class and category references.
+- Posted payments, charges, allocations, reversals and ledger entries cannot be
+  updated or deleted at the database layer.
+- Teaching assignments bind teachers to a campus, term, class and subject.
+- Locked attendance registers and result sheets reject entry/score updates at
+  the database layer. Corrections before locking require an audit reason.
 
 ## Secrets and personal data
 
