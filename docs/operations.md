@@ -54,6 +54,14 @@ tables plus scope and lock triggers. Test register submission/correction and the
 full result approval-to-lock sequence in Preview before production. Rollback
 after staff have entered records is restore-based.
 
+### Phase 5 migration
+
+The Phase 5 migration adds communication templates, announcements, delivery
+drafts, public publications, media metadata and subscribers. Create a private
+Supabase Storage bucket named `communication-media` before testing uploads.
+The migration has scope checks and is restore-based after real communications
+or subscribers have been recorded.
+
 ## Backup policy
 
 Use the managed PostgreSQL provider's automated backups:
