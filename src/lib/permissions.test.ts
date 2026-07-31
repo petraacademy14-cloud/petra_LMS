@@ -39,4 +39,10 @@ describe("role permissions", () => {
     expect(hasPermission("ADMIN", "finance.manage")).toBe(true);
     expect(hasPermission("ADMIN", "finance.reconcile")).toBe(true);
   });
+  it("separates communication drafting from publication", () => {
+    expect(hasPermission("TEACHER", "communications.manage")).toBe(true);
+    expect(hasPermission("TEACHER", "communications.publish")).toBe(false);
+    expect(hasPermission("ADMIN", "communications.review")).toBe(true);
+    expect(hasPermission("ADMIN", "communications.publish")).toBe(true);
+  });
 });
