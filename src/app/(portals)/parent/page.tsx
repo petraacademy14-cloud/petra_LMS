@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { GraduationCap, ShieldCheck, UsersRound, WalletCards } from "lucide-react";
+import {
+  ArrowRight,
+  GraduationCap,
+  ShieldCheck,
+  UsersRound,
+  WalletCards,
+} from "lucide-react";
 import { Prisma } from "@/generated/prisma/client";
 import { requirePortalRole } from "@/lib/portal-auth";
 import { db } from "@/lib/db";
@@ -28,7 +35,10 @@ export default async function ParentPortalPage() {
       lastName: true,
       phone: true,
       students: {
-        orderBy: [{ student: { lastName: "asc" } }, { student: { firstName: "asc" } }],
+        orderBy: [
+          { student: { lastName: "asc" } },
+          { student: { firstName: "asc" } },
+        ],
         select: {
           relationship: true,
           isPrimary: true,
@@ -84,19 +94,50 @@ export default async function ParentPortalPage() {
   return (
     <div className="space-y-6">
       <header>
-        <p className="eyebrow">Parent portal foundation</p>
+        <p className="eyebrow">Parent portal</p>
         <h1 className="page-title">Welcome, {guardian.firstName}</h1>
-        <p className="page-subtitle">Your account is linked only to the Petra student records connected to {guardian.firstName} {guardian.lastName}.</p>
+        <p className="page-subtitle">
+          Select a child to view fees, receipts, attendance, published results,
+          report cards and announcements. Your account can see only students
+          linked to {guardian.firstName} {guardian.lastName}.
+        </p>
       </header>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <article className="card p-5"><UsersRound className="text-[#d71920]" size={22} /><strong className="mt-3 block text-2xl">{guardian.students.length}</strong><p className="text-sm text-[#6f7782]">Linked student{guardian.students.length === 1 ? "" : "s"}</p></article>
-        <article className="card p-5"><WalletCards className="text-[#d71920]" size={22} /><strong className="mt-3 block text-2xl">{naira(totalBalance)}</strong><p className="text-sm text-[#6f7782]">Combined outstanding balance</p></article>
-        <article className="card p-5"><ShieldCheck className="text-[#d71920]" size={22} /><strong className="mt-3 block text-lg">Private access</strong><p className="text-sm text-[#6f7782]">No other family records are visible</p></article>
+        <article className="card p-5">
+          <UsersRound className="text-[#d71920]" size={22} />
+          <strong className="mt-3 block text-2xl">
+            {guardian.students.length}
+          </strong>
+          <p className="text-sm text-[#6f7782]">
+            Linked student{guardian.students.length === 1 ? "" : "s"}
+          </p>
+        </article>
+        <article className="card p-5">
+          <WalletCards className="text-[#d71920]" size={22} />
+          <strong className="mt-3 block text-2xl">
+            {naira(totalBalance)}
+          </strong>
+          <p className="text-sm text-[#6f7782]">
+            Combined outstanding balance
+          </p>
+        </article>
+        <article className="card p-5">
+          <ShieldCheck className="text-[#d71920]" size={22} />
+          <strong className="mt-3 block text-lg">Private access</strong>
+          <p className="text-sm text-[#6f7782]">
+            No other family records are visible
+          </p>
+        </article>
       </section>
 
-      <section className="space-y-4">
-        <div><h2 className="text-xl font-black">Your children</h2><p className="mt-1 text-sm text-[#6f7782]">Detailed fees, receipts, attendance, published results and announcements will use these secure links.</p></div>
+      <section className="space-y-4" id="children">
+        <div>
+          <h2 className="text-xl font-black">Your children</h2>
+          <p className="mt-1 text-sm text-[#6f7782]">
+            Open a child record for the complete parent view.
+          </p>
+        </div>
         <div className="grid gap-4 xl:grid-cols-2">
           {guardian.students.map((link) => {
             const student = link.student;
@@ -105,20 +146,65 @@ export default async function ParentPortalPage() {
               <article className="card p-5" key={student.id}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="grid size-11 place-items-center rounded-xl bg-[#fff0f1] text-[#b91118]"><GraduationCap size={22} /></span>
-                    <div><h3 className="text-lg font-black">{student.firstName} {student.middleName ?? ""} {student.lastName}</h3><p className="font-mono text-xs text-[#747c87]">{student.admissionNumber}</p></div>
+                    <span className="grid size-11 place-items-center rounded-xl bg-[#fff0f1] text-[#b91118]">
+                      <GraduationCap size={22} />
+                    </span>
+                    <div>
+                      <h3 className="text-lg font-black">
+                        {student.firstName} {student.middleName ?? ""}{" "}
+                        {student.lastName}
+                      </h3>
+                      <p className="font-mono text-xs text-[#747c87]">
+                        {student.admissionNumber}
+                      </p>
+                    </div>
                   </div>
-                  <span className="pill" data-tone={student.status === "ACTIVE" ? "success" : undefined}>{student.status}</span>
+                  <span
+                    className="pill"
+                    data-tone={
+                      student.status === "ACTIVE" ? "success" : undefined
+                    }
+                  >
+                    {student.status}
+                  </span>
                 </div>
                 <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
-                  <div className="rounded-xl bg-[#f6f7f8] p-3"><dt className="text-xs font-black uppercase tracking-wide text-[#7b838e]">Campus and class</dt><dd className="mt-1 font-black">{student.campus.name}<br />{enrollment ? `${enrollment.classArm.classLevel.name} ${enrollment.classArm.name}` : "Placement pending"}</dd></div>
-                  <div className="rounded-xl bg-[#f6f7f8] p-3"><dt className="text-xs font-black uppercase tracking-wide text-[#7b838e]">Outstanding balance</dt><dd className="mt-1 text-lg font-black">{naira(balanceByStudent.get(student.id) ?? 0)}</dd></div>
+                  <div className="rounded-xl bg-[#f6f7f8] p-3">
+                    <dt className="text-xs font-black uppercase tracking-wide text-[#7b838e]">
+                      Campus and class
+                    </dt>
+                    <dd className="mt-1 font-black">
+                      {student.campus.name}
+                      <br />
+                      {enrollment
+                        ? `${enrollment.classArm.classLevel.name} ${enrollment.classArm.name}`
+                        : "Placement pending"}
+                    </dd>
+                  </div>
+                  <div className="rounded-xl bg-[#f6f7f8] p-3">
+                    <dt className="text-xs font-black uppercase tracking-wide text-[#7b838e]">
+                      Outstanding balance
+                    </dt>
+                    <dd className="mt-1 text-lg font-black">
+                      {naira(balanceByStudent.get(student.id) ?? 0)}
+                    </dd>
+                  </div>
                 </dl>
+                <Link
+                  className="button mt-5 w-full"
+                  href={`/parent/students/${student.id}`}
+                >
+                  Open child record <ArrowRight size={17} />
+                </Link>
               </article>
             );
           })}
         </div>
-        {!guardian.students.length && <div className="card empty-state">No student is linked to this guardian record. Contact Petra Academy.</div>}
+        {!guardian.students.length && (
+          <div className="card empty-state">
+            No student is linked to this guardian record. Contact Petra Academy.
+          </div>
+        )}
       </section>
     </div>
   );
