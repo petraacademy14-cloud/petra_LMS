@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2, FileUp, LogOut, Save } from "lucide-react";
-import {
-  logoutApplicant,
-  saveApplication,
-  submitApplication,
-} from "@/app/actions/admissions";
+import { logoutApplicant, submitApplication } from "@/app/actions/admissions";
+import { saveApplicationDraft } from "@/app/actions/applicant-application";
 import { applicationStatusLabel, isEditableApplication, type ApplicationStatus } from "@/lib/admissions-rules";
 import { requireApplicant } from "@/lib/applicant-auth";
 import { db } from "@/lib/db";
@@ -98,29 +95,29 @@ export default async function ApplicationPage({ searchParams }: ApplicationPageP
         )}
 
         <div className="application-workspace-grid">
-          <form action={saveApplication} className="marketing-form marketing-card application-details-form">
+          <form action={saveApplicationDraft} className="marketing-form marketing-card application-details-form">
             <div className="form-heading">
               <div><span className="section-kicker">Student details</span><h2>Admission application</h2></div>
-              <span>{editable ? "Save as often as needed" : "Submitted record"}</span>
+              <span>{editable ? "Partial drafts are allowed" : "Submitted record"}</span>
             </div>
             <fieldset disabled={!editable}>
               <div className="field-grid">
-                <label><span>First name *</span><input defaultValue={application.studentFirstName ?? ""} name="studentFirstName" required /></label>
+                <label><span>First name *</span><input defaultValue={application.studentFirstName ?? ""} name="studentFirstName" /></label>
                 <label><span>Middle name</span><input defaultValue={application.studentMiddleName ?? ""} name="studentMiddleName" /></label>
-                <label><span>Last name *</span><input defaultValue={application.studentLastName ?? ""} name="studentLastName" required /></label>
+                <label><span>Last name *</span><input defaultValue={application.studentLastName ?? ""} name="studentLastName" /></label>
                 <label><span>Preferred name</span><input defaultValue={application.preferredName ?? ""} name="preferredName" /></label>
-                <label><span>Gender *</span><select defaultValue={application.gender ?? ""} name="gender" required><option value="" disabled>Select gender</option><option value="MALE">Male</option><option value="FEMALE">Female</option></select></label>
-                <label><span>Date of birth *</span><input defaultValue={application.dateOfBirth?.toISOString().slice(0, 10) ?? ""} name="dateOfBirth" required type="date" /></label>
-                <label><span>Preferred campus *</span><select defaultValue={application.campusId ?? ""} name="campusId" required><option value="" disabled>Select campus</option>{campuses.map((campus) => <option key={campus.id} value={campus.id}>{campus.name} — {campus.city}</option>)}</select></label>
-                <label><span>Class applying for *</span><select defaultValue={application.classLevelId ?? ""} name="classLevelId" required><option value="" disabled>Select class</option>{classLevels.map((level) => <option key={level.id} value={level.id}>{level.name}</option>)}</select></label>
-                <label className="field-full"><span>Home address *</span><textarea defaultValue={application.address ?? ""} name="address" required rows={4} /></label>
+                <label><span>Gender *</span><select defaultValue={application.gender ?? ""} name="gender"><option value="">Select gender</option><option value="MALE">Male</option><option value="FEMALE">Female</option></select></label>
+                <label><span>Date of birth *</span><input defaultValue={application.dateOfBirth?.toISOString().slice(0, 10) ?? ""} name="dateOfBirth" type="date" /></label>
+                <label><span>Preferred campus *</span><select defaultValue={application.campusId ?? ""} name="campusId"><option value="">Select campus</option>{campuses.map((campus) => <option key={campus.id} value={campus.id}>{campus.name} — {campus.city}</option>)}</select></label>
+                <label><span>Class applying for *</span><select defaultValue={application.classLevelId ?? ""} name="classLevelId"><option value="">Select class</option>{classLevels.map((level) => <option key={level.id} value={level.id}>{level.name}</option>)}</select></label>
+                <label className="field-full"><span>Home address *</span><textarea defaultValue={application.address ?? ""} name="address" rows={4} /></label>
                 <label><span>Previous school</span><input defaultValue={application.previousSchool ?? ""} name="previousSchool" /></label>
-                <label><span>Entrance examination mode *</span><select defaultValue={application.examMode ?? ""} name="examMode" required><option value="" disabled>Select mode</option><option value="ONLINE">Online examination</option><option value="ONSITE">Onsite examination</option></select></label>
+                <label><span>Entrance examination mode *</span><select defaultValue={application.examMode ?? ""} name="examMode"><option value="">Select mode</option><option value="ONLINE">Online examination</option><option value="ONSITE">Onsite examination</option></select></label>
                 <label className="field-full"><span>Medical, learning or support information</span><textarea defaultValue={application.medicalNotes ?? ""} name="medicalNotes" rows={5} /></label>
                 <label className="field-full checkbox-field"><input defaultChecked={application.termsAccepted} name="termsAccepted" type="checkbox" /><span>I confirm that the information provided is accurate and may be used for Petra Academy’s admission process. *</span></label>
               </div>
             </fieldset>
-            {editable && <button className="button button-lg" type="submit"><Save size={18} /> Save application</button>}
+            {editable && <button className="button button-lg" type="submit"><Save size={18} /> Save draft</button>}
           </form>
 
           <aside className="application-side-panel">
