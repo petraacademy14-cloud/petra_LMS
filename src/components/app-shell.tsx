@@ -116,7 +116,15 @@ export function AppShell({ children, viewer, permissions }: AppShellProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const permissionSet = new Set(permissions);
-  const links = navigation.filter(
+  const roleNavigation =
+    viewer.role === "TEACHER"
+      ? navigation.map((item) =>
+          item.href === "/dashboard"
+            ? { ...item, href: "/teacher", label: "Teacher overview" }
+            : item,
+        )
+      : navigation;
+  const links = roleNavigation.filter(
     (item) => !item.permission || permissionSet.has(item.permission),
   );
 
