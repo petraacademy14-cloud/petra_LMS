@@ -1,72 +1,47 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff, LoaderCircle, LockKeyhole, Mail } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
+import { useActionState, useState } from "react";
+import { Eye, EyeOff, LoaderCircle, LockKeyhole, UserRound } from "lucide-react";
+import { portalLogin, type PortalAuthState } from "@/app/actions/portal-auth";
+import type { PortalAccountRole } from "@/lib/portal-account";
 
-export function LoginForm() {
+const initialState: PortalAuthState = { status: "idle", message: "" };
+
+export function PortalLoginForm({ role }: { role: PortalAccountRole }) {
   const [showPassword, setShowPassword] = useState(false);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
-  const router = useRouter();
-
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-    setPending(true);
-
-    const form = new FormData(event.currentTarget);
-    const result = await authClient.signIn.email({
-      email: String(form.get("email")).trim().toLowerCase(),
-      password: String(form.get("password")),
-      rememberMe: true,
-    });
-
-    setPending(false);
-
-    if (result.error) {
-      setError("We could not sign you in. Check your email and password.");
-      return;
-    }
-
-    router.replace("/auth/route");
-    router.refresh();
-  }
+  const [state, action, pending] = useActionState(
+    portalLogin.bind(null, role),
+    initialState,
+  );
 
   return (
-    <form className="mt-8 space-y-5" onSubmit={onSubmit}>
+    <form action={action} className="mt-8 space-y-5">
       <div>
-        <label className="mb-2 block text-sm font-extrabold" htmlFor="email">
-          Email address
+        <label className="mb-2 block text-sm font-extrabold" htmlFor={`${role}-username`}>
+          Username
         </label>
         <div className="relative">
-          <Mail
+          <UserRound
             aria-hidden
             className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8c939e]"
             size={18}
           />
           <input
-            autoComplete="email"
+            autoCapitalize="none"
+            autoComplete="username"
             className="h-12 w-full rounded-xl border border-[#dfe2e6] bg-white pl-11 pr-3 outline-none transition focus:border-[#d71920]"
-            id="email"
-            name="email"
-            placeholder="you@petraacademy.com"
+            id={`${role}-username`}
+            name="username"
+            placeholder={role === "STUDENT" ? "Your admission number" : "Username issued by Petra"}
             required
-            type="email"
           />
         </div>
       </div>
 
       <div>
-        <div className="mb-2 flex items-center justify-between gap-4">
-          <label className="text-sm font-extrabold" htmlFor="password">
-            Password
-          </label>
-          <span className="text-xs font-bold text-[#8b929d]">
-            Minimum 10 characters
-          </span>
-        </div>
+        <label className="mb-2 block text-sm font-extrabold" htmlFor={`${role}-password`}>
+          Password
+        </label>
         <div className="relative">
           <LockKeyhole
             aria-hidden
@@ -76,8 +51,7 @@ export function LoginForm() {
           <input
             autoComplete="current-password"
             className="h-12 w-full rounded-xl border border-[#dfe2e6] bg-white pl-11 pr-12 outline-none transition focus:border-[#d71920]"
-            id="password"
-            minLength={10}
+            id={`${role}-password`}
             name="password"
             required
             type={showPassword ? "text" : "password"}
@@ -93,12 +67,12 @@ export function LoginForm() {
         </div>
       </div>
 
-      {error && (
+      {state.status === "error" && (
         <p
           aria-live="polite"
           className="rounded-xl border border-[#f2b8bc] bg-[#fff1f2] px-4 py-3 text-sm font-bold text-[#a20e14]"
         >
-          {error}
+          {state.message}
         </p>
       )}
 

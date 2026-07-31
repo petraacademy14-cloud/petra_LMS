@@ -36,6 +36,8 @@ export default defineConfig({
       "public.applicant_exam_answers",
       "public.admission_decisions",
       "public.student_admission_document_links",
+      "public.portal_accounts",
+      "public.portal_sessions",
     ],
   },
   enums: {
@@ -52,6 +54,8 @@ export default defineConfig({
       "public.ExamAnswerOption",
       "public.AdmissionDecisionOutcome",
       "public.AdmissionOfferResponse",
+      "public.PortalAccountRole",
+      "public.PortalAccountStatus",
     ],
   },
 });

@@ -20,7 +20,9 @@ describe("role permissions", () => {
   });
 
   it("limits teachers to assigned teaching workflows", () => {
+    expect(hasPermission("TEACHER", "people.read")).toBe(false);
     expect(hasPermission("TEACHER", "people.manage")).toBe(false);
+    expect(hasPermission("TEACHER", "academic.read")).toBe(false);
     expect(hasPermission("TEACHER", "admissions.read")).toBe(false);
     expect(hasPermission("TEACHER", "finance.read")).toBe(false);
     expect(hasPermission("TEACHER", "attendance.manage")).toBe(true);
