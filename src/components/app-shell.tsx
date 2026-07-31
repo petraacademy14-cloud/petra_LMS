@@ -100,6 +100,16 @@ const navigation: Array<{
   },
 ];
 
+const teacherRoutes: Record<string, { href: string; label: string }> = {
+  "/dashboard": { href: "/teacher", label: "Teacher overview" },
+  "/attendance": { href: "/teacher/attendance", label: "Attendance" },
+  "/results": { href: "/teacher/results", label: "Results" },
+  "/communications": {
+    href: "/teacher/communications",
+    label: "Class communications",
+  },
+};
+
 type AppShellProps = {
   children: React.ReactNode;
   viewer: {
@@ -118,11 +128,10 @@ export function AppShell({ children, viewer, permissions }: AppShellProps) {
   const permissionSet = new Set(permissions);
   const roleNavigation =
     viewer.role === "TEACHER"
-      ? navigation.map((item) =>
-          item.href === "/dashboard"
-            ? { ...item, href: "/teacher", label: "Teacher overview" }
-            : item,
-        )
+      ? navigation.map((item) => {
+          const teacherRoute = teacherRoutes[item.href];
+          return teacherRoute ? { ...item, ...teacherRoute } : item;
+        })
       : navigation;
   const links = roleNavigation.filter(
     (item) => !item.permission || permissionSet.has(item.permission),
@@ -161,7 +170,9 @@ export function AppShell({ children, viewer, permissions }: AppShellProps) {
           <div className="space-y-1">
             {links.map((item) => {
               const active =
-                pathname === item.href || pathname.startsWith(`${item.href}/`);
+                pathname === item.href ||
+                (item.href !== "/teacher" &&
+                  pathname.startsWith(`${item.href}/`));
               const Icon = item.icon;
 
               return (
