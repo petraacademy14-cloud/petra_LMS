@@ -16,6 +16,38 @@ e-learning platform.
 - Responsive application shell
 - PostgreSQL migrations, seed data, CI and environment runbooks
 
+## Phase 2 student management
+
+- Student profiles with campus, status and generated admission numbers
+- Multiple guardians and primary/pickup contact flags
+- Current class assignment and immutable enrolment history
+- Search by name, admission number or guardian plus campus/class/status filters
+- Atomic bulk promotion into a new academic session
+- All-or-nothing CSV/XLSX import with row-level validation
+- Optional private Supabase Storage documents
+
+## Phase 3 fees and payments
+
+- Class/term/campus fee structures and student-specific charges or discounts
+- Cash, transfer, POS and manually recorded online payments
+- Part payments, balances, receipt sequencing, printable/PDF receipts
+- Append-only ledger with reversal-based corrections
+- Students owing, collection filters, owner metrics and daily reconciliation
+- Draft reminder generation
+
+Payment gateways are intentionally excluded until manual recording and
+reconciliation are proven reliable.
+
+## Phase 4 attendance and results
+
+- Daily class registers with present, absent, late and excused statuses
+- Teacher submission, audited admin corrections and register locking
+- Attendance reports by date, campus, class and learner
+- Teaching assignments and continuous-assessment/exam score sheets
+- Configurable CA/exam weighting and grade bands
+- Draft, submitted, approved, published and locked result workflow
+- Printable and downloadable PDF report cards with attendance and promotion history
+
 ## Stack
 
 - Next.js 16, React 19 and TypeScript
@@ -68,5 +100,8 @@ This runs linting, TypeScript, unit tests and the production build.
 - [Security and permissions](docs/security.md)
 - [Environments, backups and restore](docs/operations.md)
 - [Phase 1 acceptance criteria](docs/phase-1-foundation.md)
+- [Phase 2 student management and import](docs/phase-2-students.md)
+- [Phase 3 fees and payments](docs/phase-3-fees-payments.md)
+- [Phase 4 attendance and results](docs/phase-4-attendance-results.md)
 
 Read `AGENTS.md` before starting any task.

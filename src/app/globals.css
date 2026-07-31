@@ -184,3 +184,25 @@ a {
     transition: none !important;
   }
 }
+
+@media print {
+  body {
+    background: white;
+  }
+
+  aside,
+  header,
+  .receipt-actions {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .receipt-sheet {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}

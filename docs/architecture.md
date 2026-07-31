@@ -30,7 +30,22 @@ checks the same boundary before data access.
 - `src/app/actions`: validated transactional mutations
 - `src/lib/audit.ts`: append-only audit event writer
 - `src/lib/error-log.ts`: structured application error capture
+- `src/lib/finance.ts`: receipt, money, balance and reconciliation rules
+- `src/lib/student-finance-sync.ts`: Phase 2 to finance projection boundary
+- `src/lib/academics.ts`: weighted scores, grade bands, attendance summaries and result transitions
 - `prisma/schema.prisma`: canonical data model
+
+## Student records
+
+`Student` belongs to one school and campus. `Guardian` is school-scoped so one
+guardian may be linked to siblings at either Petra campus. `StudentGuardian`
+stores the relationship and contact permissions. `Enrollment` is append-only
+history: promotion closes the current row and creates a row for the new session
+and class. The database migration rejects cross-school or cross-campus links.
+
+Admission numbers use `PET/{campus}/{year}/{sequence}`. A database-backed
+`AdmissionSequence` increment runs inside the student transaction, so concurrent
+creates cannot receive the same number.
 
 ## Decision rules
 
@@ -40,3 +55,8 @@ checks the same boundary before data access.
 - Return narrow DTOs/selects instead of full database records.
 - Recheck authorization close to every data source and mutation.
 - Keep important mutations and their audit event in one transaction.
+- Treat the fee ledger as the balance source. Never derive balances by mutating
+  a student total column.
+- Keep posted charges, payments, allocations and reversals append-only.
+- Treat published results and submitted attendance as controlled records. Later
+  changes require an explicit reason and correction history.

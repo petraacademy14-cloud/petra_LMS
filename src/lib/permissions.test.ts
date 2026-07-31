@@ -19,10 +19,24 @@ describe("role permissions", () => {
     expect(hasPermission("ADMIN", "system.manage")).toBe(false);
   });
 
-  it("limits teachers to read permissions", () => {
-    expect(permissionsFor("TEACHER").every((item) => item.endsWith(".read"))).toBe(
-      true,
-    );
+  it("limits teachers to assigned teaching workflows", () => {
     expect(hasPermission("TEACHER", "people.manage")).toBe(false);
+    expect(hasPermission("TEACHER", "finance.read")).toBe(false);
+    expect(hasPermission("TEACHER", "attendance.manage")).toBe(true);
+    expect(hasPermission("TEACHER", "attendance.correct")).toBe(false);
+    expect(hasPermission("TEACHER", "results.manage")).toBe(true);
+    expect(hasPermission("TEACHER", "results.approve")).toBe(false);
+  });
+
+  it("allows campus admins to correct attendance and approve results", () => {
+    expect(hasPermission("ADMIN", "attendance.correct")).toBe(true);
+    expect(hasPermission("ADMIN", "results.approve")).toBe(true);
+    expect(hasPermission("ADMIN", "results.publish")).toBe(true);
+  });
+
+  it("allows campus admins to record and reconcile fees", () => {
+    expect(hasPermission("ADMIN", "finance.read")).toBe(true);
+    expect(hasPermission("ADMIN", "finance.manage")).toBe(true);
+    expect(hasPermission("ADMIN", "finance.reconcile")).toBe(true);
   });
 });
