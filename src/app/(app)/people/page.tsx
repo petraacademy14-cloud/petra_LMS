@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Shield, UserRoundCheck } from "lucide-react";
+import Link from "next/link";
+import { KeyRound, Shield, UserRoundCheck } from "lucide-react";
 import type { Role } from "@/generated/prisma/enums";
 import { PageHeading } from "@/components/page-heading";
 import { requirePermission } from "@/lib/dal";
@@ -49,7 +50,14 @@ export default async function PeoplePage() {
   return (
     <div>
       <PageHeading
-        description="Every person receives a school membership, a role and—except school-wide owners—a campus scope. Accounts are issued by authorized staff; public sign-up is disabled."
+        action={
+          viewer.membership.role === "TEACHER" ? null : (
+            <Link className="button" href="/people/portal-accounts">
+              <KeyRound size={17} /> Parent and student accounts
+            </Link>
+          )
+        }
+        description="Every staff member receives a school membership, a role and—except school-wide owners—a campus scope. Parent and student accounts are issued separately by authorized staff."
         eyebrow="Identity & access"
         title="People, roles & permissions"
       />
