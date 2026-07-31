@@ -114,5 +114,6 @@ This runs linting, TypeScript, unit tests and the production build.
 - [Phase 2 student management and import](docs/phase-2-students.md)
 - [Phase 3 fees and payments](docs/phase-3-fees-payments.md)
 - [Phase 4 attendance and results](docs/phase-4-attendance-results.md)
+- [Phase 5 communication and digital presence](docs/phase-5-communications.md)
 
 Read `AGENTS.md` before starting any task.
