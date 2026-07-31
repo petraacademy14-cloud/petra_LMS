@@ -6,6 +6,7 @@ import {
   bulkPromoteStudents,
   createStudent,
   importStudents,
+  reactivateStudent,
   uploadStudentDocument,
 } from "@/app/actions/students";
 import type { StudentActionState } from "@/app/actions/students";
@@ -244,6 +245,46 @@ export function BulkPromotionForm({
       </div>
       <button className="button" disabled={pending} type="submit">
         {pending ? "Promoting…" : "Promote selected students"}
+      </button>
+    </form>
+  );
+}
+
+export function StudentReactivationForm({
+  studentId,
+  campuses,
+  classArms,
+  sessions,
+}: {
+  studentId: string;
+  campuses: Option[];
+  classArms: Option[];
+  sessions: Option[];
+}) {
+  const actionWithStudent = reactivateStudent.bind(null, studentId);
+  const [state, action, pending] = useActionState(
+    actionWithStudent,
+    initialStudentActionState,
+  );
+  return (
+    <form action={action} className="space-y-4">
+      <Feedback state={state} />
+      <p className="text-sm text-[#626b77]">
+        Reactivation creates a new current enrollment. Earlier enrollment records
+        remain unchanged.
+      </p>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Select label="Campus" name="campusId" options={campuses} />
+        <Select label="New class" name="classArmId" options={classArms} />
+        <Select
+          label="Academic session"
+          name="academicSessionId"
+          options={sessions}
+        />
+        <Input label="Starts on" name="startsOn" type="date" />
+      </div>
+      <button className="button" disabled={pending} type="submit">
+        {pending ? "Reactivating…" : "Reactivate and enroll"}
       </button>
     </form>
   );
