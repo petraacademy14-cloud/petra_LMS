@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./marketing.css";
+import "./application.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.BETTER_AUTH_URL ?? "https://petra-lms.vercel.app"),
