@@ -20,7 +20,7 @@ export default function LoginPage() {
       <div className="portal-entry-shell">
         <Link className="back-link" href="/"><ArrowLeft size={17} /> Back to website</Link>
         <div className="portal-entry-brand">
-          <Image src="/petra-academy-logo.svg" alt="Petra Academy" width={124} height={124} priority />
+          <Image src="/brand/petra-logo.webp" alt="Petra Academy" width={124} height={124} priority unoptimized />
           <span className="section-kicker">Petra Academy portals</span>
           <h1>Welcome back</h1>
           <p>Choose the portal that matches the credentials issued to you.</p>
