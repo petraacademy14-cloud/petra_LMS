@@ -27,8 +27,8 @@ export const metadata: Metadata = {
     "Petra Academy provides an inclusive, skill-based and technology-driven learning environment across its Awka and Nnewi campuses.",
   applicationName: "Petra Academy",
   icons: {
-    icon: [{ url: "/petra-academy-logo.jpg", type: "image/jpeg" }],
-    apple: "/petra-academy-logo.jpg",
+    icon: [{ url: "/petra-academy-logo.webp", type: "image/webp" }],
+    apple: "/petra-academy-logo.webp",
   },
   openGraph: {
     title: "Petra Academy | Skilled and Future-Ready Leaders",
@@ -37,9 +37,9 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/petra-academy-logo.jpg",
-        width: 480,
-        height: 480,
+        url: "/petra-academy-logo.webp",
+        width: 320,
+        height: 320,
         alt: "Petra Academy official logo",
       },
     ],
