@@ -23,3 +23,9 @@ textarea,
 .page-title {
   font-family: var(--font-merriweather), Merriweather, Georgia, "Times New Roman", serif;
 }
+
+/* Petra Academy's official motto is always presented in italics. */
+.hero-motto,
+.brand-lockup small {
+  font-style: italic;
+}
