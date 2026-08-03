@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ClipboardList, CreditCard, FileCheck2, MonitorCheck } from "lucide-react";
+import { ArrowRight, CheckCircle2, ClipboardList, CreditCard, MonitorCheck } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Admissions",
-  description: "Understand the Petra Academy application, entrance fee, examination and admission decision process.",
+  description: "Understand the Petra Academy application, entrance fee, examination, admission and school-fee process.",
 };
 
 const steps = [
   ["Complete the application", "Create an applicant account, provide the student and guardian details, and upload the requested documents.", ClipboardList],
   ["Pay the entrance fees", "View the entrance form and examination fee details, select an available payment method, and keep the receipt.", CreditCard],
   ["Take the entrance examination", "Eligible applicants can be scheduled for an approved online or onsite entrance examination.", MonitorCheck],
-  ["Receive the decision", "Track the application status and access the admission letter and next steps when an offer is made.", FileCheck2],
+  ["Pay school fees", "After an admission offer is made and accepted, pay the required school fees to secure the learner's place and continue enrolment.", CreditCard],
 ] as const;
 
 export default function AdmissionsPage() {
@@ -21,7 +21,7 @@ export default function AdmissionsPage() {
         <div className="marketing-shell">
           <span className="section-kicker">Admissions</span>
           <h1>A clear application journey for every family.</h1>
-          <p>Apply, see entrance fee details, complete the examination process and track the admission decision online.</p>
+          <p>Apply, see entrance fee details, complete the examination process, receive the admission decision and pay school fees online.</p>
           <div className="hero-actions">
             <Link className="button button-lg" href="/apply">Apply now <ArrowRight size={18} /></Link>
             <Link className="button button-secondary button-lg" href="/book-visit">Book a visit</Link>
