@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./marketing.css";
+import "./homepage-refresh.css";
 import "./application.css";
 import "./payment.css";
 import "./exam.css";
@@ -8,19 +9,29 @@ import "./exam.css";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.BETTER_AUTH_URL ?? "https://petra-lms.vercel.app"),
   title: {
-    default: "Petra Academy | Firm Foundation",
+    default: "Petra Academy | Skilled and Future-Ready Leaders",
     template: "%s | Petra Academy",
   },
-  description: "Petra Academy school website, admissions and operations platform.",
+  description:
+    "Petra Academy provides an inclusive, skill-based and technology-driven learning environment across its Awka and Nnewi campuses.",
   applicationName: "Petra Academy",
   icons: {
-    icon: "/icon.svg",
+    icon: [{ url: "/petra-academy-logo.jpg", type: "image/jpeg" }],
+    apple: "/petra-academy-logo.jpg",
   },
   openGraph: {
-    title: "Petra Academy | Firm Foundation",
-    description: "Strong academics, character and confident learners in Awka, Anambra State.",
+    title: "Petra Academy | Skilled and Future-Ready Leaders",
+    description:
+      "Firm foundation for building excellent leaders through academic excellence, innovation, practical skills and leadership development.",
     type: "website",
-    images: [{ url: "/petra-academy-logo.svg", width: 520, height: 520, alt: "Petra Academy" }],
+    images: [
+      {
+        url: "/petra-academy-logo.jpg",
+        width: 480,
+        height: 480,
+        alt: "Petra Academy official logo",
+      },
+    ],
   },
 };
 
