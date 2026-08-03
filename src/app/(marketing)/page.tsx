@@ -278,7 +278,7 @@ export default function HomePage() {
             <li><span>1</span><div><strong>Pay the application form fee</strong><small>Complete the approved payment step to unlock the online application form.</small></div></li>
             <li><span>2</span><div><strong>Complete the application</strong><small>Provide the learner, guardian, preferred campus and class information.</small></div></li>
             <li><span>3</span><div><strong>Take the entrance examination</strong><small>Follow the approved online or onsite examination process.</small></div></li>
-            <li><span>4</span><div><strong>Pay school fees</strong><small>After an offer is made and accepted, pay the required school fees to secure the learner's place.</small></div></li>
+            <li><span>4</span><div><strong>Pay school fees</strong><small>After an offer is made and accepted, pay the required school fees to secure enrolment.</small></div></li>
             <li><span>5</span><div><strong>Submit the remaining documents</strong><small>Accepted applicants provide the additional records required to complete enrolment.</small></div></li>
           </ol>
           <Link className="button button-light button-lg" href="/apply">Start an application <ArrowRight size={18} /></Link>
