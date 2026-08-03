@@ -12,14 +12,22 @@ if (process.env.VERCEL_ENV === "production") {
 }
 
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-const result = spawnSync(npmCommand, ["run", "db:seed"], {
-  env: process.env,
-  stdio: "inherit",
-});
 
-if (result.error) throw result.error;
-if (result.status !== 0) {
-  throw new Error(`Preview seed failed with exit code ${result.status ?? "unknown"}.`);
+function runScript(scriptName) {
+  const result = spawnSync(npmCommand, ["run", scriptName], {
+    env: process.env,
+    stdio: "inherit",
+  });
+
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    throw new Error(
+      `${scriptName} failed with exit code ${result.status ?? "unknown"}.`,
+    );
+  }
 }
+
+runScript("db:seed");
+runScript("db:repair-preview-staff");
 
 console.info("Preview seed completed successfully.");
