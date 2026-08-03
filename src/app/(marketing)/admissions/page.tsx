@@ -152,7 +152,7 @@ export default function AdmissionsPage() {
             <span className="section-kicker">Required Documents</span>
             <h2>What you need to complete the admission process.</h2>
             <p>
-              To finalise your child's admission into Petra Academy, please prepare the following documents for
+              To finalise your child&apos;s admission into Petra Academy, please prepare the following documents for
               submission when requested.
             </p>
           </div>
