@@ -62,7 +62,7 @@ export default function AboutPage() {
         <div className="marketing-shell page-hero-grid">
           <div>
             <span className="section-kicker">About Petra Academy</span>
-            <h1>More than a school. A community raising excellent leaders.</h1>
+            <h1>Rooted in purpose. Growing confident leaders.</h1>
             <p>
               Petra Academy is a nurturing learning community where confident, morally grounded and brilliant young
               leaders are raised to thrive, serve and lead in a rapidly changing world.
