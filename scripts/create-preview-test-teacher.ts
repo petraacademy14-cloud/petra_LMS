@@ -10,10 +10,11 @@ if (process.env.VERCEL_ENV === "production" || process.env.APP_ENV === "producti
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL is required.");
 
-const password = process.env.SEED_OWNER_PASSWORD;
-if (!password || password.length < 10) {
+const configuredPassword = process.env.SEED_OWNER_PASSWORD;
+if (!configuredPassword || configuredPassword.length < 10) {
   throw new Error("SEED_OWNER_PASSWORD must contain at least 10 characters.");
 }
+const password: string = configuredPassword;
 
 const email = (
   process.env.SEED_PREVIEW_TEACHER_EMAIL ??
@@ -57,22 +58,27 @@ async function main() {
     select: { id: true },
   });
 
-  let user = await db.user.findUnique({ where: { email } });
-  if (!user) {
+  const existingUser = await db.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+
+  let userId = existingUser?.id;
+  if (!userId) {
     const result = await auth.api.signUpEmail({
       body: { name, email, password },
     });
-    user = result.user;
+    userId = result.user.id;
   }
 
   await db.user.update({
-    where: { id: user.id },
+    where: { id: userId },
     data: { name, emailVerified: true },
   });
 
   const membership = await db.schoolMembership.findFirst({
     where: {
-      userId: user.id,
+      userId,
       schoolId: school.id,
       campusId: awka.id,
     },
@@ -87,7 +93,7 @@ async function main() {
   } else {
     await db.schoolMembership.create({
       data: {
-        userId: user.id,
+        userId,
         schoolId: school.id,
         campusId: awka.id,
         role: "TEACHER",
@@ -100,7 +106,7 @@ async function main() {
   await auth.api.signInEmail({
     body: { email, password, rememberMe: false },
   });
-  await db.session.deleteMany({ where: { userId: user.id } });
+  await db.session.deleteMany({ where: { userId } });
 
   console.info(
     JSON.stringify({
