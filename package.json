@@ -22,6 +22,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
+    "db:repair-preview-staff": "tsx scripts/repair-preview-staff.ts",
     "storage:ensure": "node scripts/ensure-storage-buckets.mjs",
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
     "check:production": "node scripts/verify-production.mjs"
