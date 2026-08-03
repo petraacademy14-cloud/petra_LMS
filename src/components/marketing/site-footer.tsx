@@ -7,13 +7,21 @@ export function SiteFooter() {
       <div className="marketing-shell footer-grid">
         <div>
           <Link className="brand-lockup footer-brand" href="/">
-            <Image src="/petra-academy-logo.svg" alt="Petra Academy" width={76} height={76} />
+            <Image src="/petra-academy-logo.jpg" alt="Petra Academy official logo" width={76} height={76} />
             <span>
               <strong>Petra Academy</strong>
-              <small>Firm Foundation</small>
+              <small>Firm foundation for building excellent leaders</small>
             </span>
           </Link>
-          <p>Building confident learners on a firm academic and moral foundation in Awka, Anambra State.</p>
+          <p>
+            An inclusive, skill-based and technology-driven learning environment preparing excellent,
+            confident and future-ready leaders.
+          </p>
+          <p className="footer-hours">
+            Mon–Fri: 7:30 AM–5:30 PM<br />
+            After-school Coding: Fri 4:30–6:30 PM<br />
+            Saturday: 9:00 AM–3:00 PM
+          </p>
         </div>
         <div>
           <h2>Explore</h2>
@@ -21,23 +29,32 @@ export function SiteFooter() {
           <Link href="/programs">Our programs</Link>
           <Link href="/admissions">Admissions</Link>
           <Link href="/news">News</Link>
-        </div>
-        <div>
-          <h2>Take the next step</h2>
-          <Link href="/apply">Apply now</Link>
-          <Link href="/book-visit">Book a visit</Link>
-          <Link href="/login">Login</Link>
           <Link href="/contact">Contact us</Link>
         </div>
         <div>
-          <h2>Petra Academy</h2>
-          <p>Awka, Anambra State, Nigeria</p>
-          <p>Monday to Friday · 8:00 AM–4:00 PM</p>
+          <h2>Awka Campus</h2>
+          <address>
+            <span>#5 Abakaliki Street, Iyiagu Estate, Awka, Anambra State</span>
+            <a href="tel:+2348033130456">08033130456</a>
+            <a href="tel:+2348121997970">08121997970</a>
+            <a href="mailto:admin@petraacademy.co">admin@petraacademy.co</a>
+            <span>@PetraAcademyAwka</span>
+          </address>
+        </div>
+        <div>
+          <h2>Nnewi Campus</h2>
+          <address>
+            <span>Lasel Junction, No. 11 Godwin Chris Street, off Ukpor Road, by Nwafor Junction, Umudim, Nnewi</span>
+            <a href="tel:+2348033130456">08033130456</a>
+            <a href="tel:+2348121997970">08121997970</a>
+            <a href="mailto:admin@petraacademy.co">admin@petraacademy.co</a>
+            <span>@PetraAcademyAwka</span>
+          </address>
         </div>
       </div>
       <div className="marketing-shell footer-bottom">
         <span>© {new Date().getFullYear()} Petra Academy. All rights reserved.</span>
-        <span>Firm Foundation</span>
+        <span>Awka Campus · Nnewi Campus</span>
       </div>
     </footer>
   );
