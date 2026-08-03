@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { CheckCircle2, LoaderCircle, Send } from "lucide-react";
 import {
   acknowledgeStudentFeedback,
@@ -21,10 +22,15 @@ export function ParentFeedbackResponseForm({
   existingComment: string | null;
   acknowledged: boolean;
 }) {
+  const router = useRouter();
   const [state, action, pending] = useActionState(
     acknowledgeStudentFeedback,
     initialState,
   );
+
+  useEffect(() => {
+    if (state.status === "success") router.refresh();
+  }, [router, state.status]);
 
   return (
     <form action={action} className="mt-5 rounded-2xl bg-[#f6f7f8] p-4">
