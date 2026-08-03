@@ -1,11 +1,10 @@
 import { spawnSync } from "node:child_process";
 
-if (process.env.RUN_SEED_ON_DEPLOY !== "true") {
-  console.info("Preview seed skipped. Set RUN_SEED_ON_DEPLOY=true to run it once.");
-  process.exit(0);
-}
+const isProduction = process.env.VERCEL_ENV === "production";
+const isPreview = process.env.VERCEL_ENV === "preview";
+const runFullSeed = process.env.RUN_SEED_ON_DEPLOY === "true";
 
-if (process.env.VERCEL_ENV === "production") {
+if (isProduction && runFullSeed) {
   throw new Error(
     "RUN_SEED_ON_DEPLOY is blocked in Production. Use the approved production recovery procedure instead.",
   );
@@ -27,7 +26,16 @@ function runScript(scriptName) {
   }
 }
 
-runScript("db:seed");
-runScript("db:create-preview-teacher");
+if (runFullSeed) {
+  runScript("db:seed");
+  console.info("Preview seed completed successfully.");
+} else {
+  console.info("Full Preview seed skipped because RUN_SEED_ON_DEPLOY is not true.");
+}
 
-console.info("Preview seed completed successfully.");
+// Keep verified test access available on every Vercel Preview deployment,
+// even after the one-time full seed switch has been disabled.
+if (isPreview) {
+  runScript("db:create-preview-teacher");
+  console.info("Preview Owner and Teacher logins verified successfully.");
+}
