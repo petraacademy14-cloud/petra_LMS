@@ -1,0 +1,362 @@
+.marketing-site,
+.portal-entry,
+.role-login-page {
+  --petra-red: #8f2026;
+  --petra-red-dark: #64151a;
+  --petra-red-soft: #fbf2f3;
+  --petra-silver: #d2d3d5;
+  --petra-ink: #202023;
+  --petra-muted: #62666d;
+  --petra-line: #e5e2e2;
+  --petra-cream: #faf8f6;
+  font-family: "Arial MT", Arial, "Helvetica Neue", sans-serif;
+}
+
+.hero-section {
+  background:
+    radial-gradient(circle at 88% 10%, rgb(143 32 38 / 0.09), transparent 26rem),
+    linear-gradient(145deg, #fff 0%, #fff 56%, #fcf6f6 100%);
+}
+
+.hero-copy h1,
+.page-hero h1,
+.split-section h2,
+.section-heading h2,
+.visit-banner h2,
+.form-layout h2,
+.admissions-note h2,
+.program-card h3,
+.value-card h3,
+.admission-card h3,
+.contact-card h2,
+.application-entry-card h2,
+.strength-grid h3,
+.brand-lockup strong,
+.hero-stat strong,
+.admissions-preview h2 {
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.brand-logo,
+.footer-brand img,
+.portal-entry-brand img,
+.role-login-brand img {
+  border-radius: 12px;
+  background: #fff;
+  object-fit: contain;
+}
+
+.brand-lockup small {
+  max-width: 230px;
+  font-size: 0.58rem;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+}
+
+.hero-logo-card {
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: 0 35px 80px rgb(73 21 25 / 0.12);
+}
+
+.hero-logo-card::before {
+  border-color: rgb(143 32 38 / 0.045);
+}
+
+.hero-logo-card img {
+  width: 94%;
+  filter: none;
+}
+
+.hero-motto {
+  margin-top: 18px;
+  color: var(--petra-red-dark);
+  font-size: 0.91rem;
+  font-weight: 800;
+}
+
+.school-section-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.school-section-card {
+  display: flex;
+  min-height: 250px;
+  flex-direction: column;
+  padding: 28px;
+}
+
+.school-section-card h3 {
+  margin: 22px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.45rem;
+}
+
+.school-section-card p {
+  margin-bottom: 0;
+  color: var(--petra-muted);
+  line-height: 1.65;
+}
+
+.school-section-card small {
+  margin-top: auto;
+  padding-top: 18px;
+  color: var(--petra-red);
+  font-size: 0.73rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.curriculum-overview {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+  align-items: start;
+  gap: 70px;
+}
+
+.curriculum-intro {
+  position: sticky;
+  top: 120px;
+}
+
+.curriculum-intro h2 {
+  margin: 11px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.2rem, 4.5vw, 3.45rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.curriculum-intro p {
+  color: var(--petra-muted);
+  line-height: 1.75;
+}
+
+.curriculum-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.curriculum-item {
+  display: flex;
+  gap: 13px;
+  min-height: 126px;
+  border: 1px solid var(--petra-line);
+  border-radius: 18px;
+  background: #fff;
+  padding: 20px;
+}
+
+.curriculum-item svg {
+  flex: 0 0 auto;
+  color: var(--petra-red);
+}
+
+.curriculum-item strong {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.curriculum-item p {
+  margin: 6px 0 0;
+  color: var(--petra-muted);
+  font-size: 0.83rem;
+  line-height: 1.55;
+}
+
+.strength-grid-six {
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 0;
+}
+
+.strength-grid-six article {
+  border-bottom: 1px solid var(--petra-line);
+}
+
+.strength-grid-six article:nth-child(3n) {
+  border-right: 0;
+}
+
+.strength-grid-six article:nth-child(3n + 1) {
+  padding-left: 0;
+}
+
+.offer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.offer-card {
+  padding: 30px;
+}
+
+.offer-card h3 {
+  margin: 20px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.4rem;
+}
+
+.offer-card ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 20px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.offer-card li {
+  position: relative;
+  padding-left: 19px;
+  color: var(--petra-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.offer-card li::before {
+  position: absolute;
+  top: 0.55em;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--petra-red);
+  content: "";
+}
+
+.campus-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.campus-card {
+  padding: 32px;
+}
+
+.campus-card h3 {
+  margin: 20px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.7rem;
+}
+
+.campus-contact-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.campus-contact-list span,
+.campus-contact-list a {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--petra-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.campus-contact-list svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--petra-red);
+}
+
+.shared-hours {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  margin-top: 20px;
+  border: 1px solid var(--petra-line);
+  border-radius: 20px;
+  background: var(--petra-cream);
+  padding: 23px;
+}
+
+.shared-hours svg {
+  flex: 0 0 auto;
+  color: var(--petra-red);
+}
+
+.shared-hours strong {
+  display: block;
+}
+
+.shared-hours p {
+  margin: 5px 0 0;
+  color: var(--petra-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.footer-grid address {
+  display: grid;
+  gap: 8px;
+  color: #bdb8b8;
+  font-size: 0.83rem;
+  font-style: normal;
+  line-height: 1.55;
+}
+
+.footer-grid address a {
+  color: #d4cece;
+}
+
+.footer-hours {
+  margin-top: 12px;
+}
+
+@media (max-width: 1050px) {
+  .school-section-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 820px) {
+  .curriculum-overview,
+  .campus-grid {
+    grid-template-columns: 1fr;
+    gap: 38px;
+  }
+
+  .curriculum-intro {
+    position: static;
+  }
+
+  .strength-grid-six {
+    grid-template-columns: 1fr;
+  }
+
+  .strength-grid-six article,
+  .strength-grid-six article:nth-child(3n + 1) {
+    border-right: 0;
+    padding: 28px 0;
+  }
+
+  .offer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 580px) {
+  .school-section-grid,
+  .curriculum-list,
+  .offer-card ul {
+    grid-template-columns: 1fr;
+  }
+
+  .school-section-card {
+    min-height: 220px;
+  }
+
+  .campus-card,
+  .offer-card {
+    padding: 24px;
+  }
+}
