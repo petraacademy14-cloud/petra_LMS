@@ -1,0 +1,39 @@
+model StudentFeedbackReport {
+  id                       String   @id @default(cuid())
+  schoolId                 String
+  campusId                 String
+  termId                   String
+  classArmId               String
+  studentId                String
+  teacherMembershipId      String
+  teacherUserId            String
+  feedbackDate             DateTime @db.Date
+  status                   String   @default("SENT")
+  studentNameSnapshot      String
+  classNameSnapshot        String
+  teacherNameSnapshot      String
+  homeworkStatus           String?
+  feedingStatus            String?
+  toiletStatus             String?
+  peerRelationshipStatus   String?
+  conductStatus             String?
+  breakTimeStatus          String?
+  classParticipationStatus String?
+  healthStatus             String?
+  arrivalStatus            String?
+  observationNote          String?
+  teacherComment           String?
+  sentAt                   DateTime @default(now())
+  parentGuardianId         String?
+  parentPortalAccountId    String?
+  parentComment            String?
+  acknowledgedAt           DateTime?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@unique([studentId, teacherMembershipId, feedbackDate])
+  @@index([schoolId, studentId, feedbackDate(sort: Desc)])
+  @@index([teacherMembershipId, feedbackDate(sort: Desc)])
+  @@index([parentGuardianId, acknowledgedAt])
+  @@map("student_feedback_reports")
+}
