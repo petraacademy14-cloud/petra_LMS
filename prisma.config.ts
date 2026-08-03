@@ -38,6 +38,10 @@ export default defineConfig({
       "public.student_admission_document_links",
       "public.portal_accounts",
       "public.portal_sessions",
+      "public.pilot_runs",
+      "public.pilot_checklist_items",
+      "public.pilot_issues",
+      "public.launch_approvals",
     ],
   },
   enums: {
@@ -56,6 +60,11 @@ export default defineConfig({
       "public.AdmissionOfferResponse",
       "public.PortalAccountRole",
       "public.PortalAccountStatus",
+      "public.PilotStatus",
+      "public.PilotChecklistStatus",
+      "public.PilotIssueSeverity",
+      "public.PilotIssueStatus",
+      "public.LaunchApprovalStatus",
     ],
   },
 });
