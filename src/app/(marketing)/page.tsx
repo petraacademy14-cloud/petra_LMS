@@ -269,14 +269,16 @@ export default function HomePage() {
             <span className="section-kicker section-kicker-light">Our admissions process</span>
             <h2>Your Petra journey starts here.</h2>
             <p>
-              Create an applicant account, complete the form, pay the approved entrance fees, select an online or
-              onsite examination and follow the admission decision from one secure account.
+              Pay the application form fee, complete the application, take the entrance examination, receive the
+              admission decision and submit the remaining documents from one secure applicant account.
             </p>
           </div>
           <ol className="admission-steps">
-            <li><span>1</span><div><strong>Submit an application</strong><small>Provide the learner and preferred campus information.</small></div></li>
-            <li><span>2</span><div><strong>Pay entrance fees</strong><small>View approved fee details and receive a payment receipt.</small></div></li>
-            <li><span>3</span><div><strong>Take the examination</strong><small>Use the approved online or onsite examination option.</small></div></li>
+            <li><span>1</span><div><strong>Pay the application form fee</strong><small>Complete the approved payment step to unlock the online application form.</small></div></li>
+            <li><span>2</span><div><strong>Complete the application</strong><small>Provide the learner, guardian, preferred campus and class information.</small></div></li>
+            <li><span>3</span><div><strong>Take the entrance examination</strong><small>Follow the approved online or onsite examination process.</small></div></li>
+            <li><span>4</span><div><strong>Receive the admission decision</strong><small>Track the accepted, waitlisted or unsuccessful decision securely online.</small></div></li>
+            <li><span>5</span><div><strong>Submit the remaining documents</strong><small>Accepted applicants provide the additional records required to complete enrolment.</small></div></li>
           </ol>
           <Link className="button button-light button-lg" href="/apply">Start an application <ArrowRight size={18} /></Link>
         </div>
