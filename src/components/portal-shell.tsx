@@ -21,7 +21,7 @@ export function PortalShell({ children, viewer }: PortalShellProps) {
       <header className="border-b border-[#e2e5e9] bg-white">
         <div className="mx-auto flex min-h-[4.75rem] max-w-[92rem] flex-wrap items-center justify-between gap-3 px-4 py-3 md:px-7">
           <Link className="flex items-center gap-3" href={home}>
-            <Image alt="Petra Academy" height={48} priority src="/petra-academy-logo.svg" width={48} />
+            <Image alt="Petra Academy" height={48} priority src="/brand/petra-logo.webp" width={48} unoptimized />
             <span>
               <strong className="block text-base leading-tight">Petra Academy</strong>
               <small className="block text-xs font-bold uppercase tracking-[0.12em] text-[#858d98]">
