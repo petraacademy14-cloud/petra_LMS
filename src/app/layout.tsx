@@ -4,6 +4,7 @@ import { AnnouncementRibbon } from "@/components/announcement-ribbon";
 import "./globals.css";
 import "./marketing.css";
 import "./homepage-refresh.css";
+import "./hero-fix.css";
 import "./brand-fonts.css";
 import "./announcement-ribbon.css";
 import "./application.css";
@@ -27,8 +28,8 @@ export const metadata: Metadata = {
     "Petra Academy provides an inclusive, skill-based and technology-driven learning environment across its Awka and Nnewi campuses.",
   applicationName: "Petra Academy",
   icons: {
-    icon: [{ url: "/petra-academy-logo.webp", type: "image/webp" }],
-    apple: "/petra-academy-logo.webp",
+    icon: [{ url: "/petra-academy-logo-v3.webp", type: "image/webp" }],
+    apple: "/petra-academy-logo-v3.webp",
   },
   openGraph: {
     title: "Petra Academy | Skilled and Future-Ready Leaders",
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/petra-academy-logo.webp",
+        url: "/petra-academy-logo-v3.webp",
         width: 320,
         height: 320,
         alt: "Petra Academy official logo",
