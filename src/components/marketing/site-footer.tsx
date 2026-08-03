@@ -8,7 +8,7 @@ export function SiteFooter() {
         <div>
           <Link className="brand-lockup footer-brand" href="/">
             <Image
-              src="/petra-academy-logo-v3.webp"
+              src="/brand/petra-logo.webp"
               alt="Petra Academy official logo"
               width={76}
               height={76}
