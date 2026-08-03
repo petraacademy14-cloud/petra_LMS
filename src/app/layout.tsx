@@ -6,6 +6,7 @@ import "./marketing.css";
 import "./homepage-refresh.css";
 import "./hero-fix.css";
 import "./brand-fonts.css";
+import "./about-page.css";
 import "./announcement-ribbon.css";
 import "./application.css";
 import "./payment.css";
