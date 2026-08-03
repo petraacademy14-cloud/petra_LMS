@@ -36,7 +36,7 @@ enum LaunchApprovalStatus {
 /// Launch-readiness records are maintained by reviewed SQL migrations.
 /// Core school, campus and user foreign keys remain database-enforced.
 model PilotRun {
-  id          String      @id
+  id          String      @id @default(cuid())
   schoolId    String
   name        String
   status      PilotStatus @default(PLANNED)
@@ -45,14 +45,14 @@ model PilotRun {
   notes       String?
   createdById String
   createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@index([schoolId, status, createdAt(sort: Desc)])
   @@map("pilot_runs")
 }
 
 model PilotChecklistItem {
-  id           String               @id
+  id           String               @id @default(cuid())
   pilotRunId   String
   key          String
   area         String
@@ -62,7 +62,7 @@ model PilotChecklistItem {
   verifiedById String?
   verifiedAt   DateTime?
   createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
 
   @@unique([pilotRunId, key])
   @@index([pilotRunId, area, status])
@@ -70,7 +70,7 @@ model PilotChecklistItem {
 }
 
 model PilotIssue {
-  id           String             @id
+  id           String             @id @default(cuid())
   schoolId     String
   campusId     String?
   pilotRunId   String
@@ -84,7 +84,7 @@ model PilotIssue {
   resolvedById String?
   resolvedAt   DateTime?
   createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
 
   @@index([schoolId, status, severity])
   @@index([pilotRunId, createdAt(sort: Desc)])
@@ -93,14 +93,14 @@ model PilotIssue {
 }
 
 model LaunchApproval {
-  id           String               @id
+  id           String               @id @default(cuid())
   pilotRunId   String               @unique
   status       LaunchApprovalStatus @default(DRAFT)
   summary      String?
   approvedById String?
   approvedAt   DateTime?
   createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
 
   @@index([status, approvedAt(sort: Desc)])
   @@map("launch_approvals")
