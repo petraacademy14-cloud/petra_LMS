@@ -18,6 +18,8 @@ const merriweather = Merriweather({
   display: "swap",
 });
 
+const officialLogo = "/brand/petra-logo.webp";
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.BETTER_AUTH_URL ?? "https://petra-lms.vercel.app"),
   title: {
@@ -28,8 +30,8 @@ export const metadata: Metadata = {
     "Petra Academy provides an inclusive, skill-based and technology-driven learning environment across its Awka and Nnewi campuses.",
   applicationName: "Petra Academy",
   icons: {
-    icon: [{ url: "/petra-academy-logo-v3.webp", type: "image/webp" }],
-    apple: "/petra-academy-logo-v3.webp",
+    icon: [{ url: officialLogo, type: "image/webp", sizes: "384x384" }],
+    apple: [{ url: officialLogo, sizes: "384x384" }],
   },
   openGraph: {
     title: "Petra Academy | Skilled and Future-Ready Leaders",
@@ -38,9 +40,9 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/petra-academy-logo-v3.webp",
-        width: 320,
-        height: 320,
+        url: officialLogo,
+        width: 384,
+        height: 384,
         alt: "Petra Academy official logo",
       },
     ],
