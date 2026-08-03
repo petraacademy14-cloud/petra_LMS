@@ -7,7 +7,6 @@ import type { Prisma } from "@/generated/prisma/client";
 import { requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
 import {
-  feedbackChoiceGroups,
   isFeedbackChoice,
   type FeedbackChoiceField,
 } from "@/lib/student-feedback";
@@ -310,5 +309,3 @@ export async function acknowledgeStudentFeedback(
     };
   }
 }
-
-export const studentFeedbackChoiceGroups = feedbackChoiceGroups;
