@@ -83,7 +83,7 @@ const curriculum = [
 const strengths = [
   ["Personalised education", "Every learner is known, supported and challenged to make meaningful progress.", Users],
   ["Inclusive classrooms", "Thoughtful care and support help learners, including pupils with special educational needs, to thrive.", HeartHandshake],
-  ["Technology-driven learning", "Coding, programming, robotics and STEM are embedded in a practical learning culture.", BrainCircuit],
+  ["Technology-driven learning", "Digital classrooms, coding, programming, robotics and STEM are embedded in a practical learning culture.", BrainCircuit],
   ["Leadership and character", "Weekly leadership, etiquette and responsibility sessions prepare learners to influence with excellence.", ShieldCheck],
   ["Creative expression", "Music, orchestra, ballet and creative arts help learners discover and strengthen their talents.", Music],
   ["Beyond the classroom", "Excursions, local and international tours, camps and team activities broaden each learner's world.", Globe2],
@@ -93,17 +93,25 @@ const offerGroups = [
   {
     title: "Academic and Technology",
     icon: Code2,
-    items: ["STEM classes", "Coding and programming", "Robotics", "Cambridge examinations", "Creative art classes"],
+    items: [
+      "Digital learning across the curriculum",
+      "Google Workspace-supported learning",
+      "STEM classes",
+      "Coding and programming",
+      "Robotics",
+      "Cambridge examinations",
+      "Creative art classes",
+    ],
   },
   {
     title: "Leadership and Life Skills",
     icon: Lightbulb,
-    items: ["Leadership classes", "Entrepreneurial classes", "Etiquette classes", "Emotional and social intelligence"],
+    items: ["Leadership classes", "Public speaking", "Entrepreneurial classes", "Etiquette classes", "Emotional and social intelligence"],
   },
   {
     title: "Sports and Performing Arts",
     icon: Music,
-    items: ["Taekwondo and self-defence", "Ballet classes", "Music and orchestra lessons"],
+    items: ["Football", "Taekwondo and self-defence", "Traditional dance", "Ballet classes", "Music and orchestra lessons"],
   },
   {
     title: "Care and Enrichment",
@@ -247,7 +255,7 @@ export default function HomePage() {
           <div className="section-heading">
             <span className="section-kicker">What we offer</span>
             <h2>Learning experiences that develop the whole child.</h2>
-            <p>Academic depth, technology, leadership, creativity, sport and enriching experiences work together.</p>
+            <p>Academic depth, digital learning, technology, leadership, creativity, sport and enriching experiences work together.</p>
           </div>
           <div className="offer-grid">
             {offerGroups.map(({ title, icon: Icon, items }) => (
@@ -299,7 +307,7 @@ export default function HomePage() {
               <div className="campus-contact-list">
                 <span><MapPin size={18} />#5 Abakaliki Street, Iyiagu Estate, Awka, Anambra State</span>
                 <a href="tel:+2348033130456"><Phone size={18} />08033130456 · 08121997970</a>
-                <a href="mailto:admin@petraacademy.co"><Mail size={18} />admin@petraacademy.co</a>
+                <a href="mailto:awkaadmin@petraacademy.co"><Mail size={18} />awkaadmin@petraacademy.co</a>
                 <span><Users size={18} />@PetraAcademyAwka</span>
               </div>
             </article>
@@ -309,7 +317,7 @@ export default function HomePage() {
               <div className="campus-contact-list">
                 <span><MapPin size={18} />Lasel Junction, No. 11 Godwin Chris Street, off Ukpor Road, by Nwafor Junction, Umudim, Nnewi</span>
                 <a href="tel:+2348033130456"><Phone size={18} />08033130456 · 08121997970</a>
-                <a href="mailto:admin@petraacademy.co"><Mail size={18} />admin@petraacademy.co</a>
+                <a href="mailto:nnewadmin@petraacademy.co"><Mail size={18} />nnewadmin@petraacademy.co</a>
                 <span><Users size={18} />@PetraAcademyAwka</span>
               </div>
             </article>
@@ -317,8 +325,13 @@ export default function HomePage() {
           <div className="shared-hours">
             <Clock size={22} />
             <div>
-              <strong>School hours</strong>
-              <p>Monday–Friday: 7:30 AM–5:30 PM · After-school Coding: Friday 4:30–6:30 PM · Saturday: 9:00 AM–3:00 PM</p>
+              <strong>School and after-school hours</strong>
+              <ul className="school-hours-list">
+                <li><span>Regular school</span><strong>Monday–Friday, 7:30 AM–5:30 PM</strong></li>
+                <li><span>After-school Coding</span><strong>Friday, 3:00 PM–5:00 PM</strong></li>
+                <li><span>After-school Mathematics</span><strong>Saturday, 9:00 AM–12 noon</strong></li>
+                <li><span>After-school Coding</span><strong>Saturday, 12 noon–4:00 PM</strong></li>
+              </ul>
             </div>
           </div>
         </div>
