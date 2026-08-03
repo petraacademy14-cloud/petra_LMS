@@ -16,7 +16,7 @@ export function SiteHeader() {
         <Link className="brand-lockup" href="/" aria-label="Petra Academy home">
           <Image
             className="brand-logo"
-            src="/petra-academy-logo.jpg"
+            src="/petra-academy-logo.webp"
             alt="Petra Academy official logo"
             width={64}
             height={64}
