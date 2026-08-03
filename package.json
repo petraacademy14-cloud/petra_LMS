@@ -15,7 +15,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest",
+    "test:watch": "vitest run",
     "test:coverage": "vitest run --coverage",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
@@ -23,6 +23,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:repair-preview-staff": "tsx scripts/repair-preview-staff.ts",
+    "db:create-preview-teacher": "tsx scripts/create-preview-test-teacher.ts",
     "storage:ensure": "node scripts/ensure-storage-buckets.mjs",
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
     "check:production": "node scripts/verify-production.mjs"
