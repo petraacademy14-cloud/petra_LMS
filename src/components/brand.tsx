@@ -5,7 +5,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
     <div className="flex items-center gap-3">
       <Image
         className="size-11 shrink-0 rounded-xl border border-[#e4e6ea] bg-white object-contain shadow-sm"
-        src="/petra-academy-logo.jpg"
+        src="/petra-academy-logo.webp"
         alt="Petra Academy official logo"
         width={44}
         height={44}
