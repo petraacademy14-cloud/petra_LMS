@@ -140,10 +140,10 @@ export default function HomePage() {
           <div className="hero-visual" aria-label="Petra Academy identity">
             <div className="hero-logo-card">
               <Image
-                src="/petra-academy-logo.jpg"
+                src="/petra-academy-logo.webp"
                 alt="Petra Academy official logo — Firm Foundation"
-                width={480}
-                height={480}
+                width={320}
+                height={320}
                 priority
               />
             </div>
