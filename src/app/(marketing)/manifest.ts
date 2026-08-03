@@ -9,6 +9,13 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#a50e12",
-    icons: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml" }],
+    icons: [
+      {
+        src: "/brand/petra-logo.webp",
+        sizes: "384x384",
+        type: "image/webp",
+        purpose: "any",
+      },
+    ],
   };
 }
