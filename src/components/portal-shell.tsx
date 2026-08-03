@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Home, LogOut, ShieldCheck } from "lucide-react";
+import { LogOut, ShieldCheck } from "lucide-react";
 import { logoutPortal } from "@/app/actions/portal-auth";
+import { PortalNavigation } from "@/components/portal-navigation";
 import { portalHome, portalRoleLabel, type PortalAccountRole } from "@/lib/portal-account";
 
 type PortalShellProps = {
@@ -49,11 +50,7 @@ export function PortalShell({ children, viewer }: PortalShellProps) {
             <strong className="mt-2 block">Private family access</strong>
             <p className="mt-1 text-xs leading-5">Only records linked to this account are available.</p>
           </div>
-          <nav aria-label="Portal navigation" className="mt-3">
-            <Link className="flex min-h-11 items-center gap-3 rounded-xl bg-[#fff0f1] px-3 text-sm font-black text-[#b91118]" href={home}>
-              <Home size={18} /> Overview
-            </Link>
-          </nav>
+          <PortalNavigation home={home} role={viewer.role} />
           <Link className="mt-3 block px-3 py-2 text-sm font-bold text-[#5f6874] hover:text-[#b91118]" href="/">School website</Link>
         </aside>
 
