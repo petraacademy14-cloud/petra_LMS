@@ -48,9 +48,12 @@
 
 .brand-lockup small {
   max-width: 230px;
-  font-size: 0.58rem;
+  font-family: "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+  font-size: 0.54rem;
+  font-weight: 650;
   line-height: 1.35;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.035em;
+  text-transform: none;
 }
 
 .hero-logo-card {
@@ -71,8 +74,10 @@
 .hero-motto {
   margin-top: 18px;
   color: var(--petra-red-dark);
-  font-size: 0.91rem;
-  font-weight: 800;
+  font-family: "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
 }
 
 .school-section-grid {
@@ -284,15 +289,35 @@
   color: var(--petra-red);
 }
 
-.shared-hours strong {
+.shared-hours > div > strong {
   display: block;
 }
 
-.shared-hours p {
-  margin: 5px 0 0;
+.school-hours-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 18px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.school-hours-list li {
+  display: grid;
+  gap: 3px;
+  border-left: 3px solid var(--petra-red);
+  padding-left: 12px;
+}
+
+.school-hours-list li span {
   color: var(--petra-muted);
-  font-size: 0.85rem;
-  line-height: 1.6;
+  font-size: 0.78rem;
+}
+
+.school-hours-list li strong {
+  color: var(--petra-ink);
+  font-size: 0.86rem;
+  line-height: 1.45;
 }
 
 .footer-grid address {
@@ -310,6 +335,64 @@
 
 .footer-hours {
   margin-top: 12px;
+}
+
+.footer-affiliates {
+  margin-top: 42px;
+  border-top: 1px solid #303031;
+  padding-top: 28px;
+}
+
+.footer-affiliates > h2 {
+  margin: 0 0 16px;
+  color: #fff;
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.affiliate-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.affiliate-logo {
+  display: flex;
+  min-height: 84px;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #343436;
+  border-radius: 16px;
+  background: #202022;
+  padding: 14px 16px;
+}
+
+.affiliate-mark {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+}
+
+.cisco-mark {
+  fill: #4eb3e8;
+}
+
+.affiliate-logo span {
+  display: grid;
+  gap: 3px;
+}
+
+.affiliate-logo strong {
+  color: #fff;
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.affiliate-logo small {
+  color: #aaa5a5;
+  font-size: 0.72rem;
+  line-height: 1.35;
 }
 
 @media (max-width: 1050px) {
@@ -342,12 +425,17 @@
   .offer-grid {
     grid-template-columns: 1fr;
   }
+
+  .affiliate-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 580px) {
   .school-section-grid,
   .curriculum-list,
-  .offer-card ul {
+  .offer-card ul,
+  .school-hours-list {
     grid-template-columns: 1fr;
   }
 
