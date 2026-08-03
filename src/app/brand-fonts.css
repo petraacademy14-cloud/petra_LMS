@@ -1,0 +1,25 @@
+body,
+button,
+input,
+select,
+textarea,
+.marketing-site,
+.portal-entry,
+.role-login-page {
+  font-family: "Arial Rounded MT Bold", "Arial Rounded MT", Arial, "Helvetica Neue", sans-serif;
+}
+
+.marketing-site h1,
+.marketing-site h2,
+.marketing-site h3,
+.portal-entry h1,
+.portal-entry h2,
+.portal-entry h3,
+.role-login-page h1,
+.role-login-page h2,
+.role-login-page h3,
+.brand-lockup strong,
+.hero-stat strong,
+.page-title {
+  font-family: var(--font-merriweather), Merriweather, Georgia, "Times New Roman", serif;
+}
