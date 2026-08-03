@@ -1,0 +1,115 @@
+.announcement-ribbon {
+  width: 100%;
+  border-bottom: 1px solid rgb(255 255 255 / 0.16);
+  background: #64151a;
+  color: #fff;
+}
+
+.announcement-ribbon-inner {
+  display: flex;
+  width: min(1180px, calc(100% - 32px));
+  min-height: 43px;
+  align-items: center;
+  gap: 12px;
+  margin-inline: auto;
+  padding: 7px 0;
+}
+
+.announcement-ribbon-label {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.14);
+  padding: 5px 10px;
+  font-size: 0.67rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.announcement-ribbon-message {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.announcement-ribbon-message strong {
+  flex: 0 0 auto;
+  font-family: var(--font-merriweather), Merriweather, Georgia, serif;
+  font-size: 0.8rem;
+}
+
+.announcement-ribbon-message > span {
+  min-width: 0;
+  overflow: hidden;
+  color: #f4dcde;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.announcement-ribbon-message em {
+  margin-right: 4px;
+  color: #fff;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.announcement-ribbon-count {
+  flex: 0 0 auto;
+  color: #e7c4c7;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+@media (max-width: 700px) {
+  .announcement-ribbon-inner {
+    align-items: flex-start;
+    gap: 9px;
+    padding-block: 8px;
+  }
+
+  .announcement-ribbon-label {
+    padding-inline: 8px;
+  }
+
+  .announcement-ribbon-label svg {
+    display: none;
+  }
+
+  .announcement-ribbon-message {
+    display: grid;
+    gap: 2px;
+  }
+
+  .announcement-ribbon-message strong {
+    font-size: 0.76rem;
+  }
+
+  .announcement-ribbon-message > span {
+    display: -webkit-box;
+    overflow: hidden;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}
+
+@media (max-width: 460px) {
+  .announcement-ribbon-label {
+    max-width: 82px;
+    border-radius: 10px;
+    line-height: 1.2;
+  }
+}
+
+@media print {
+  .announcement-ribbon {
+    display: none !important;
+  }
+}
