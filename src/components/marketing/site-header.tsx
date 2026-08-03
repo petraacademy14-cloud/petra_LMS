@@ -16,15 +16,15 @@ export function SiteHeader() {
         <Link className="brand-lockup" href="/" aria-label="Petra Academy home">
           <Image
             className="brand-logo"
-            src="/petra-academy-logo.svg"
-            alt=""
+            src="/petra-academy-logo.jpg"
+            alt="Petra Academy official logo"
             width={64}
             height={64}
             priority
           />
           <span>
             <strong>Petra Academy</strong>
-            <small>Firm Foundation</small>
+            <small>Firm foundation for building excellent leaders</small>
           </span>
         </Link>
 
