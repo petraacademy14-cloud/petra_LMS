@@ -48,7 +48,7 @@ export default async function RoleLoginPage({ params }: { params: Promise<{ role
         <Link className="back-link" href="/login"><ArrowLeft size={17} /> Choose another portal</Link>
         <div className="role-login-card">
           <div className="role-login-brand">
-            <Image src="/petra-academy-logo.svg" alt="Petra Academy" width={86} height={86} priority />
+            <Image src="/brand/petra-logo.webp" alt="Petra Academy" width={86} height={86} priority unoptimized />
             <span className="portal-choice-icon"><Icon size={25} /></span>
           </div>
           <span className="section-kicker">Petra Academy</span>
