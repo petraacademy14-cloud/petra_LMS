@@ -56,4 +56,11 @@ describe("role permissions", () => {
     expect(hasPermission("ADMIN", "communications.review")).toBe(true);
     expect(hasPermission("ADMIN", "communications.publish")).toBe(true);
   });
+  it("reserves final launch approval for the owner", () => {
+    expect(hasPermission("OWNER", "launch.approve")).toBe(true);
+    expect(hasPermission("ADMIN", "launch.read")).toBe(true);
+    expect(hasPermission("ADMIN", "launch.manage")).toBe(true);
+    expect(hasPermission("ADMIN", "launch.approve")).toBe(false);
+    expect(hasPermission("TEACHER", "launch.read")).toBe(false);
+  });
 });

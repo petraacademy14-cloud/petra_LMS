@@ -59,6 +59,15 @@ reconciliation are proven reliable.
 
 Private chat and automatic external delivery remain outside the V1 boundary.
 
+## Phase 6 pilot and launch readiness
+
+- Automated environment and core-data readiness indicators
+- Twenty-point end-to-end pilot checklist with recorded evidence
+- Scoped defect reporting, severity and resolution tracking
+- Database-backed final launch gate reserved for the owner
+- Public database health endpoint for deployment monitoring
+- Backup, restore, rollback, staff training and release runbooks
+
 ## Stack
 
 - Next.js 16, React 19 and TypeScript
@@ -115,5 +124,6 @@ This runs linting, TypeScript, unit tests and the production build.
 - [Phase 3 fees and payments](docs/phase-3-fees-payments.md)
 - [Phase 4 attendance and results](docs/phase-4-attendance-results.md)
 - [Phase 5 communication and digital presence](docs/phase-5-communications.md)
+- [Phase 6 pilot and launch plan](docs/phase-6-pilot-launch.md)
 
 Read `AGENTS.md` before starting any task.

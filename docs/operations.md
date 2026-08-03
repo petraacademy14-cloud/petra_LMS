@@ -62,6 +62,13 @@ Supabase Storage bucket named `communication-media` before testing uploads.
 The migration has scope checks and is restore-based after real communications
 or subscribers have been recorded.
 
+### Phase 6 migration and launch gate
+
+The Phase 6 migration stores pilot checklists, issues and final approval evidence.
+It does not modify operational student, finance, attendance or result records.
+Run `npm run check:production` after production deployment and complete the
+restore exercise in `docs/phase-6-pilot-launch.md` before owner approval.
+
 ## Backup policy
 
 Use the managed PostgreSQL provider's automated backups:

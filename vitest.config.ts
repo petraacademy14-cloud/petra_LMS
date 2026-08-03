@@ -16,6 +16,7 @@ export default defineConfig({
         "src/lib/academics.ts",
         "src/lib/communications.ts",
         "src/lib/finance.ts",
+        "src/lib/launch-readiness.ts",
         "src/lib/permissions.ts",
         "src/lib/scope.ts",
       ],
