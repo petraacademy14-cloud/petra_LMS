@@ -344,33 +344,33 @@
 }
 
 .footer-affiliates > h2 {
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   color: #fff;
-  font-size: 0.76rem;
-  letter-spacing: 0.14em;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .affiliate-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 10px;
 }
 
 .affiliate-logo {
   display: flex;
-  min-height: 84px;
+  min-height: 48px;
   align-items: center;
-  gap: 14px;
+  gap: 8px;
   border: 1px solid #343436;
-  border-radius: 16px;
+  border-radius: 10px;
   background: #202022;
-  padding: 14px 16px;
+  padding: 7px 9px;
 }
 
 .affiliate-mark {
-  width: 46px;
-  height: 46px;
+  width: 20px;
+  height: 20px;
   flex: 0 0 auto;
 }
 
@@ -380,19 +380,19 @@
 
 .affiliate-logo span {
   display: grid;
-  gap: 3px;
+  gap: 1px;
 }
 
 .affiliate-logo strong {
   color: #fff;
-  font-size: 0.9rem;
-  line-height: 1.25;
+  font-size: 0.74rem;
+  line-height: 1.2;
 }
 
 .affiliate-logo small {
   color: #aaa5a5;
-  font-size: 0.72rem;
-  line-height: 1.35;
+  font-size: 0.58rem;
+  line-height: 1.25;
 }
 
 @media (max-width: 1050px) {
