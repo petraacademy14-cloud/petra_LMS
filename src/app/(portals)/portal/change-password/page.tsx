@@ -17,7 +17,7 @@ export default async function PortalChangePasswordPage() {
       <div className="role-login-shell">
         <div className="role-login-card">
           <div className="role-login-brand">
-            <Image src="/petra-academy-logo.svg" alt="Petra Academy" width={86} height={86} priority />
+            <Image src="/brand/petra-logo.webp" alt="Petra Academy" width={86} height={86} priority unoptimized />
             <span className="portal-choice-icon"><KeyRound size={25} /></span>
           </div>
           <span className="section-kicker">First secure sign-in</span>
