@@ -140,7 +140,7 @@ export default function HomePage() {
           <div className="hero-visual" aria-label="Petra Academy identity">
             <div className="hero-logo-card">
               <Image
-                src="/petra-academy-logo-v3.webp"
+                src="/brand/petra-logo.webp"
                 alt="Petra Academy official logo — Firm Foundation"
                 width={480}
                 height={480}
@@ -271,14 +271,14 @@ export default function HomePage() {
             <h2>Your Petra journey starts here.</h2>
             <p>
               Pay the application form fee, complete the application, take the entrance examination, receive the
-              admission decision and submit the remaining documents from one secure applicant account.
+              admission decision, pay school fees and submit the remaining documents from one secure applicant account.
             </p>
           </div>
           <ol className="admission-steps">
             <li><span>1</span><div><strong>Pay the application form fee</strong><small>Complete the approved payment step to unlock the online application form.</small></div></li>
             <li><span>2</span><div><strong>Complete the application</strong><small>Provide the learner, guardian, preferred campus and class information.</small></div></li>
             <li><span>3</span><div><strong>Take the entrance examination</strong><small>Follow the approved online or onsite examination process.</small></div></li>
-            <li><span>4</span><div><strong>Receive the admission decision</strong><small>Track the accepted, waitlisted or unsuccessful decision securely online.</small></div></li>
+            <li><span>4</span><div><strong>Pay school fees</strong><small>After an offer is made and accepted, pay the required school fees to secure the learner's place.</small></div></li>
             <li><span>5</span><div><strong>Submit the remaining documents</strong><small>Accepted applicants provide the additional records required to complete enrolment.</small></div></li>
           </ol>
           <Link className="button button-light button-lg" href="/apply">Start an application <ArrowRight size={18} /></Link>
