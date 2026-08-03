@@ -28,6 +28,6 @@ function runScript(scriptName) {
 }
 
 runScript("db:seed");
-runScript("db:repair-preview-staff");
+runScript("db:create-preview-teacher");
 
 console.info("Preview seed completed successfully.");
