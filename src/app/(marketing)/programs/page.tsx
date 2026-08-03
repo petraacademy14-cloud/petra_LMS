@@ -9,15 +9,10 @@ import {
   CheckCircle2,
   Clock3,
   Code2,
-  Drama,
   Gamepad2,
-  Globe2,
   GraduationCap,
   HeartHandshake,
-  Lightbulb,
-  Music2,
   Palette,
-  Puzzle,
   Rocket,
   School,
   ShieldCheck,
@@ -65,10 +60,26 @@ const schoolSections = [
 ] as const;
 
 const curriculumFeatures = [
-  ["STEM from the early years", "Early exposure to Science, Technology, Engineering and Mathematics through practical, age-appropriate projects.", BrainCircuit],
-  ["Robotics and Coding", "Coding, programming, robotics and digital literacy begin from the primary years and grow with each learner.", Code2],
-  ["Weekly Leadership", "Leadership development sessions strengthen confidence, communication, responsibility and positive influence.", Target],
-  ["Social and Emotional Intelligence", "Team-based activities build self-awareness, empathy, collaboration and healthy relationships.", HeartHandshake],
+  [
+    "STEM from the early years",
+    "Early exposure to Science, Technology, Engineering and Mathematics through practical, age-appropriate projects.",
+    BrainCircuit,
+  ],
+  [
+    "Robotics and Coding",
+    "Coding, programming, robotics and digital literacy begin from the primary years and grow with each learner.",
+    Code2,
+  ],
+  [
+    "Weekly Leadership",
+    "Leadership development sessions strengthen confidence, communication, responsibility and positive influence.",
+    Target,
+  ],
+  [
+    "Social and Emotional Intelligence",
+    "Team-based activities build self-awareness, empathy, collaboration and healthy relationships.",
+    HeartHandshake,
+  ],
 ] as const;
 
 const signaturePrograms = [
@@ -78,7 +89,19 @@ const signaturePrograms = [
     detail:
       "Intensive, focused preparation for learners sitting major national and international examinations. Experienced tutors provide structured revision, personalised coaching, practice tests and progress guidance.",
     icon: Trophy,
-    highlights: ["WAEC", "NECO", "JAMB", "NABTEB", "BECE", "Common Entrance", "IELTS", "TOEFL", "SAT", "GRE", "MAT"],
+    highlights: [
+      "WAEC",
+      "NECO",
+      "JAMB",
+      "NABTEB",
+      "BECE",
+      "Common Entrance",
+      "IELTS",
+      "TOEFL",
+      "SAT",
+      "GRE",
+      "MAT",
+    ],
   },
   {
     title: "Petra Tech Hub",
@@ -86,7 +109,14 @@ const signaturePrograms = [
     detail:
       "Our dedicated coding and technology centre develops practical confidence in Python, Artificial Intelligence, web development, digital literacy and problem-solving through project-based learning.",
     icon: Rocket,
-    highlights: ["Python", "Artificial Intelligence", "Web development", "Digital literacy", "Coding projects", "After-school sessions"],
+    highlights: [
+      "Python",
+      "Artificial Intelligence",
+      "Web development",
+      "Digital literacy",
+      "Coding projects",
+      "After-school sessions",
+    ],
   },
   {
     title: "After-School and Weekend Programs",
@@ -94,7 +124,14 @@ const signaturePrograms = [
     detail:
       "Academic coaching during the week and enrichment classes at weekends help learners close gaps, strengthen confidence and give motivated students room to move further ahead.",
     icon: Clock3,
-    highlights: ["Academic coaching", "Homework support", "Weekend enrichment", "Exam revision", "Skill development", "Coding classes"],
+    highlights: [
+      "Academic coaching",
+      "Homework support",
+      "Weekend enrichment",
+      "Exam revision",
+      "Skill development",
+      "Coding classes",
+    ],
   },
 ] as const;
 
@@ -138,10 +175,22 @@ const clubGroups = [
 ] as const;
 
 const inclusiveSupports = [
-  ["Individualised Learning Plans", "Clear, personalised goals based on each learner&apos;s strengths and identified needs."],
-  ["Inclusive classrooms", "Differentiated teaching helps learners participate meaningfully in the same caring school community."],
-  ["Counselling and guidance", "Thoughtful emotional, behavioural and academic support for learners and families."],
-  ["Specialised skill support", "Targeted programmes in literacy, numeracy and practical life skills, delivered in partnership with parents."],
+  [
+    "Individualised Learning Plans",
+    "Clear, personalised goals based on each learner's strengths and identified needs.",
+  ],
+  [
+    "Inclusive classrooms",
+    "Differentiated teaching helps learners participate meaningfully in the same caring school community.",
+  ],
+  [
+    "Counselling and guidance",
+    "Thoughtful emotional, behavioural and academic support for learners and families.",
+  ],
+  [
+    "Specialised skill support",
+    "Targeted programmes in literacy, numeracy and practical life skills, delivered in partnership with parents.",
+  ],
 ] as const;
 
 export default function ProgramsPage() {
@@ -157,8 +206,12 @@ export default function ProgramsPage() {
               programmes help every child grow with confidence, competence and purpose.
             </p>
             <div className="hero-actions">
-              <Link className="button button-lg" href="/apply">Apply for admission <ArrowRight size={18} /></Link>
-              <Link className="button button-secondary button-lg" href="/book-visit">Book a school visit</Link>
+              <Link className="button button-lg" href="/apply">
+                Apply for admission <ArrowRight size={18} />
+              </Link>
+              <Link className="button button-secondary button-lg" href="/book-visit">
+                Book a school visit
+              </Link>
             </div>
             <div className="hero-proof">
               <span><CheckCircle2 size={18} /> Daycare to College</span>
@@ -198,7 +251,12 @@ export default function ProgramsPage() {
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               {["Academic excellence", "Digital confidence", "Creative expression", "Leadership", "Wellbeing"].map((item) => (
-                <span className="rounded-full border border-[#e7e3e3] bg-white px-4 py-2 text-sm font-black text-[#78080b]" key={item}>{item}</span>
+                <span
+                  className="rounded-full border border-[#e7e3e3] bg-white px-4 py-2 text-sm font-black text-[#78080b]"
+                  key={item}
+                >
+                  {item}
+                </span>
               ))}
             </div>
           </div>
@@ -310,7 +368,9 @@ export default function ProgramsPage() {
           </div>
           <div>
             <span className="section-kicker">Inclusive Education</span>
-            <h2 className="mt-3 font-[var(--font-merriweather)] text-[clamp(2.4rem,5vw,4rem)] leading-[1.06] tracking-[-0.04em]">Every child belongs here.</h2>
+            <h2 className="mt-3 font-[var(--font-merriweather)] text-[clamp(2.4rem,5vw,4rem)] leading-[1.06] tracking-[-0.04em]">
+              Every child belongs here.
+            </h2>
             <p className="mt-6 text-[1.05rem] leading-8 text-[#666b73]">
               Petra Academy is committed to ensuring that no learner is left behind. We identify individual learning
               needs early and provide thoughtful, personalised support within a caring and inclusive school community.
@@ -320,7 +380,7 @@ export default function ProgramsPage() {
                 <article className="rounded-2xl border border-[#e7e3e3] bg-white p-5" key={title}>
                   <ShieldCheck className="text-[#a50e12]" size={22} />
                   <strong className="mt-4 block">{title}</strong>
-                  <p className="mt-2 text-sm leading-6 text-[#666b73]" dangerouslySetInnerHTML={{ __html: detail }} />
+                  <p className="mt-2 text-sm leading-6 text-[#666b73]">{detail}</p>
                 </article>
               ))}
             </div>
@@ -333,11 +393,17 @@ export default function ProgramsPage() {
           <div>
             <span className="section-kicker">Next Step</span>
             <h2>Ready to give your child the Petra advantage?</h2>
-            <p>Begin an application online or visit our Awka or Nnewi campus to discuss the right programme for your child.</p>
+            <p>
+              Begin an application online or visit our Awka or Nnewi campus to discuss the right programme for your child.
+            </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link className="button button-lg" href="/apply">Apply for admission <ArrowRight size={18} /></Link>
-            <Link className="button button-secondary button-lg" href="/book-visit"><School size={18} /> Book a visit</Link>
+            <Link className="button button-lg" href="/apply">
+              Apply for admission <ArrowRight size={18} />
+            </Link>
+            <Link className="button button-secondary button-lg" href="/book-visit">
+              <School size={18} /> Book a visit
+            </Link>
           </div>
         </div>
       </section>
