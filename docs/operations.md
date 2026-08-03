@@ -62,6 +62,29 @@ Supabase Storage bucket named `communication-media` before testing uploads.
 The migration has scope checks and is restore-based after real communications
 or subscribers have been recorded.
 
+### Phase 6 admissions and portal migrations
+
+Phase 6 adds applicant accounts, applications, entrance-fee ledgers,
+examinations, admission decisions and school-issued portal accounts. Deploy all
+migrations to the dedicated Preview database before owner testing. Create a
+private Supabase Storage bucket named `admission-documents` before testing
+uploads. Do not expose this bucket publicly.
+
+### Phase 6 integration and website-corrections gate
+
+Use `phase-6/integration` as the only Phase 6 Preview branch. Record requested
+website corrections against that branch, implement them there, and rerun CI and
+Preview acceptance before production merge. Do not approve launch while any
+unreviewed website correction or unresolved high/critical defect remains.
+
+### Phase 6 launch-readiness migration
+
+The launch-readiness migration stores pilot checklists, website-correction and
+defect evidence, and final approval records. It does not rewrite operational
+student, finance, attendance or result records. Run `npm run check:production`
+after production deployment and complete the restore exercise in
+`docs/phase-6-pilot-launch.md` before owner approval.
+
 ## Backup policy
 
 Use the managed PostgreSQL provider's automated backups:
@@ -79,12 +102,14 @@ isolated database at least quarterly.
 
 1. Create a new isolated restore database.
 2. Restore the selected production recovery point.
-3. set `DATABASE_URL` only in an isolated test environment.
+3. Set `DATABASE_URL` only in an isolated test environment.
 4. Run `npm run db:deploy` to apply any later compatible migrations.
 5. Verify sign-in, campus counts, current session, audit history and a sampled
    record from each completed module. For Phase 3, verify one posted payment,
    receipt download, balance, reversal and reconciliation batch. For Phase 4,
-   verify one attendance correction and one published/locked report card.
+   verify one attendance correction and one published/locked report card. For
+   Phase 6, verify an applicant, examination registration, admission decision,
+   parent/student account and one portal download.
 6. Record restore time, recovery point, failures and follow-up actions.
 7. Destroy the temporary restored database after approval.
 
