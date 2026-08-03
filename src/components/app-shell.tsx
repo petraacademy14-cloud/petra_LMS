@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   Menu,
   Megaphone,
+  Rocket,
   Settings,
   ShieldCheck,
   Users,
@@ -85,6 +86,12 @@ const navigation: Array<{
     label: "Communications",
     icon: Megaphone,
     permission: "communications.read",
+  },
+  {
+    href: "/launch-readiness",
+    label: "Launch readiness",
+    icon: Rocket,
+    permission: "launch.read",
   },
   {
     href: "/audit",
