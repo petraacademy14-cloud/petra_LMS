@@ -53,26 +53,31 @@ const requiredDocuments = [
     title: "Copy of birth certificate",
     detail: "Official proof of your child's date of birth.",
     icon: FileText,
+    optional: false,
   },
   {
     title: "Copy of immunisation card",
     detail: "Current vaccination and immunisation records.",
     icon: ShieldCheck,
+    optional: false,
   },
   {
     title: "Copy of last academic year's result",
     detail: "The learner's most recent school report or academic transcript.",
     icon: GraduationCap,
+    optional: false,
   },
   {
     title: "Transfer letter",
     detail: "Required when the learner is transferring from another school.",
     icon: ArrowRightLeft,
+    optional: false,
   },
   {
     title: "Two passport photographs",
     detail: "Two recent passport-size photographs of the learner.",
     icon: Camera,
+    optional: false,
   },
   {
     title: "Copy of the learner's NIN",
