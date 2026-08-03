@@ -25,7 +25,7 @@ export default function AboutPage() {
             <h1>Rooted in purpose. Growing confident learners.</h1>
             <p>Petra Academy exists to give children a firm academic, moral and social foundation for a meaningful future.</p>
           </div>
-          <Image className="page-hero-logo" src="/petra-academy-logo.svg" alt="Petra Academy logo" width={320} height={320} />
+          <Image className="page-hero-logo" src="/brand/petra-logo.webp" alt="Petra Academy logo" width={320} height={320} unoptimized />
         </div>
       </section>
 
