@@ -1,0 +1,169 @@
+/* Animated teaching-team visual on the About page. */
+.marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child {
+  isolation: isolate;
+  min-height: 25rem;
+  background:
+    radial-gradient(circle at 50% 45%, rgb(165 14 18 / 0.09), transparent 10rem),
+    linear-gradient(145deg, #ffffff 0%, #fff8f8 55%, #f4f1f1 100%);
+}
+
+.marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child::before {
+  position: absolute;
+  z-index: 0;
+  width: min(78%, 19rem);
+  aspect-ratio: 1;
+  border: 1px dashed rgb(165 14 18 / 0.3);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 0, #a50e12 0 5px, transparent 6px),
+    radial-gradient(circle at 100% 50%, #c5c5c5 0 6px, transparent 7px),
+    radial-gradient(circle at 50% 100%, #a50e12 0 5px, transparent 6px),
+    radial-gradient(circle at 0 50%, #c5c5c5 0 6px, transparent 7px);
+  content: "";
+  animation: petra-teacher-orbit 18s linear infinite;
+}
+
+.marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child::after {
+  position: absolute;
+  z-index: 0;
+  width: min(58%, 14rem);
+  aspect-ratio: 1;
+  border: 18px solid rgb(165 14 18 / 0.045);
+  border-radius: 50%;
+  content: "";
+  animation: petra-teacher-breathe 4.8s ease-in-out infinite;
+}
+
+.marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+}
+
+.marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div::before,
+.marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div::after {
+  position: absolute;
+  display: grid;
+  min-width: 8.5rem;
+  min-height: 2.75rem;
+  place-items: center;
+  border: 1px solid rgb(231 227 227 / 0.9);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.94);
+  box-shadow: 0 14px 34px rgb(83 25 27 / 0.12);
+  color: #78080b;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+}
+
+.marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div::before {
+  top: -5.3rem;
+  left: -8.7rem;
+  content: "Knowledge";
+  animation: petra-teacher-float-a 5.6s ease-in-out infinite;
+}
+
+.marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div::after {
+  right: -9rem;
+  bottom: -4.8rem;
+  content: "Leadership";
+  animation: petra-teacher-float-b 6.2s ease-in-out infinite;
+}
+
+.marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div > span {
+  position: relative;
+  box-shadow:
+    0 18px 40px rgb(165 14 18 / 0.18),
+    0 0 0 12px rgb(165 14 18 / 0.045);
+  animation: petra-teacher-icon 4.2s ease-in-out infinite;
+}
+
+.marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div > span::after {
+  position: absolute;
+  right: -4.8rem;
+  top: -1.6rem;
+  display: grid;
+  width: 4.2rem;
+  height: 2.35rem;
+  place-items: center;
+  border-radius: 999px;
+  background: #78080b;
+  box-shadow: 0 12px 25px rgb(120 8 11 / 0.2);
+  color: #fff;
+  content: "Care";
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  animation: petra-teacher-float-c 5s ease-in-out infinite;
+}
+
+.marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child strong,
+.marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child small {
+  position: relative;
+  z-index: 3;
+}
+
+@keyframes petra-teacher-orbit {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes petra-teacher-breathe {
+  0%, 100% { opacity: 0.65; transform: scale(0.94); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
+@keyframes petra-teacher-icon {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+@keyframes petra-teacher-float-a {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
+  50% { transform: translate3d(8px, -9px, 0) rotate(1deg); }
+}
+
+@keyframes petra-teacher-float-b {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(2deg); }
+  50% { transform: translate3d(-9px, 8px, 0) rotate(-1deg); }
+}
+
+@keyframes petra-teacher-float-c {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(7px); }
+}
+
+@media (max-width: 640px) {
+  .marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child {
+    min-height: 22rem;
+  }
+
+  .marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div::before {
+    top: -5rem;
+    left: -4.4rem;
+  }
+
+  .marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div::after {
+    right: -4.7rem;
+    bottom: -4.5rem;
+  }
+
+  .marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div > span::after {
+    right: -3.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child::before,
+  .marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child::after,
+  .marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div::before,
+  .marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div::after,
+  .marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div > span,
+  .marketing-site section.section-tint:has(.inline-cta[href="/book-visit"]) .marketing-shell > div:first-child > div > span::after {
+    animation: none;
+  }
+}
