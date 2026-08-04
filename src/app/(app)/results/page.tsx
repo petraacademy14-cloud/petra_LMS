@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { createResultSheet } from "@/app/actions/results";
+import { createClassTeacherResultSheet } from "@/app/actions/class-results";
 import { AcademicsNav } from "@/components/academics-nav";
 import { PageHeading } from "@/components/page-heading";
 import { requirePermission } from "@/lib/dal";
@@ -22,7 +22,6 @@ export default async function ResultsPage() {
     terms,
     classArms,
     subjects,
-    teachers,
     schemes,
   ] = await Promise.all([
     db.resultSheet.findMany({
@@ -70,7 +69,6 @@ export default async function ResultsPage() {
         termId: true,
         classArmId: true,
         subjectId: true,
-        teacherMembershipId: true,
       },
     }),
     db.campus.findMany({
@@ -102,22 +100,6 @@ export default async function ResultsPage() {
       select: { id: true, name: true },
       orderBy: { name: "asc" },
     }),
-    db.schoolMembership.findMany({
-      where: {
-        schoolId: viewer.membership.schoolId,
-        role: "TEACHER",
-        status: "ACTIVE",
-        ...(viewer.membership.role === "OWNER"
-          ? {}
-          : { campusId: viewer.membership.campusId ?? "__none__" }),
-      },
-      select: {
-        id: true,
-        campusId: true,
-        user: { select: { name: true } },
-      },
-      orderBy: { user: { name: "asc" } },
-    }),
     db.gradingScheme.findMany({
       where: { schoolId: viewer.membership.schoolId },
       select: { id: true, name: true, isDefault: true },
@@ -127,9 +109,6 @@ export default async function ResultsPage() {
   const canManageResults = hasPermission(
     viewer.membership.role,
     "results.manage",
-  );
-  const assignedTeacherIds = new Set(
-    assignments.map((assignment) => assignment.teacherMembershipId),
   );
 
   return (
@@ -205,7 +184,7 @@ export default async function ResultsPage() {
             Create a result sheet
           </summary>
           <form
-            action={createResultSheet}
+            action={createClassTeacherResultSheet}
             className="mt-4 grid gap-3 md:grid-cols-3"
           >
             <select
@@ -258,25 +237,6 @@ export default async function ResultsPage() {
             </select>
             <select
               className="h-11 rounded-xl border px-3"
-              name="teacherMembershipId"
-              required
-            >
-              <option value="">Assigned class teacher</option>
-              {teachers
-                .filter(
-                  (teacher) =>
-                    assignedTeacherIds.has(teacher.id) &&
-                    (viewer.membership.role !== "TEACHER" ||
-                      teacher.id === viewer.membership.id),
-                )
-                .map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.user.name}
-                  </option>
-                ))}
-            </select>
-            <select
-              className="h-11 rounded-xl border px-3"
               name="gradingSchemeId"
               required
             >
@@ -293,9 +253,9 @@ export default async function ResultsPage() {
             </button>
           </form>
           <p className="mt-3 text-xs text-[#747d88]">
-            Class teachers are assigned from Academics. The selected combination
-            must match an existing class-teacher assignment. {assignments.length}{" "}
-            subject access records are available.
+            The class teacher is selected automatically from Academics. If the
+            class has no teacher assignment, the sheet cannot be created. {assignments.length}{" "}
+            class-subject access records are available.
           </p>
         </details>
       )}
