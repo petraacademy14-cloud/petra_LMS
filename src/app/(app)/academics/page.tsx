@@ -10,6 +10,12 @@ export const metadata: Metadata = {
   title: "Academics",
 };
 
+type ClassTeacherAssignmentRow = {
+  classArmId: string;
+  teacherMembershipId: string;
+  teacherName: string;
+};
+
 export default async function AcademicsPage() {
   const viewer = await requirePermission("academic.read");
   const schoolId = viewer.membership.schoolId;
@@ -18,7 +24,45 @@ export default async function AcademicsPage() {
       ? undefined
       : (viewer.membership.campusId ?? "__none__");
 
-  const [sessions, classLevels, subjects, campuses] = await Promise.all([
+  const classTeacherAssignmentsPromise = campusId
+    ? db.$queryRaw<ClassTeacherAssignmentRow[]>`
+        SELECT
+          assignment."classArmId",
+          assignment."teacherMembershipId",
+          teacher."name" AS "teacherName"
+        FROM "class_teacher_assignments" assignment
+        JOIN "academic_sessions" session
+          ON session."id" = assignment."academicSessionId"
+        JOIN "school_memberships" membership
+          ON membership."id" = assignment."teacherMembershipId"
+        JOIN "users" teacher ON teacher."id" = membership."userId"
+        WHERE assignment."schoolId" = ${schoolId}
+          AND assignment."campusId" = ${campusId}
+          AND session."isCurrent" = true
+      `
+    : db.$queryRaw<ClassTeacherAssignmentRow[]>`
+        SELECT
+          assignment."classArmId",
+          assignment."teacherMembershipId",
+          teacher."name" AS "teacherName"
+        FROM "class_teacher_assignments" assignment
+        JOIN "academic_sessions" session
+          ON session."id" = assignment."academicSessionId"
+        JOIN "school_memberships" membership
+          ON membership."id" = assignment."teacherMembershipId"
+        JOIN "users" teacher ON teacher."id" = membership."userId"
+        WHERE assignment."schoolId" = ${schoolId}
+          AND session."isCurrent" = true
+      `;
+
+  const [
+    sessions,
+    classLevels,
+    subjects,
+    campuses,
+    teachers,
+    classTeacherAssignments,
+  ] = await Promise.all([
     db.academicSession.findMany({
       where: { schoolId },
       orderBy: { startsOn: "desc" },
@@ -55,11 +99,23 @@ export default async function AcademicsPage() {
             isActive: true,
             ...(campusId ? { campusId } : {}),
           },
+          orderBy: [{ campus: { name: "asc" } }, { name: "asc" }],
           select: {
             id: true,
+            campusId: true,
             name: true,
             code: true,
             campus: { select: { name: true } },
+            _count: {
+              select: {
+                enrollments: {
+                  where: {
+                    status: "CURRENT",
+                    student: { status: "ACTIVE" },
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -91,16 +147,63 @@ export default async function AcademicsPage() {
       orderBy: { name: "asc" },
       select: { id: true, name: true },
     }),
+    db.schoolMembership.findMany({
+      where: {
+        schoolId,
+        role: "TEACHER",
+        status: "ACTIVE",
+        ...(campusId ? { campusId } : {}),
+      },
+      orderBy: { user: { name: "asc" } },
+      select: {
+        id: true,
+        campusId: true,
+        user: { select: { name: true } },
+      },
+    }),
+    classTeacherAssignmentsPromise,
   ]);
 
-  const currentSession = sessions.find((session) => session.isCurrent);
+  const currentSession = sessions.find((session) => session.isCurrent) ?? null;
+  const assignmentByClassArm = new Map(
+    classTeacherAssignments.map((assignment) => [
+      assignment.classArmId,
+      assignment,
+    ]),
+  );
+  const classArmOptions = classLevels.flatMap((level) =>
+    level.arms.map((arm) => {
+      const assignment = assignmentByClassArm.get(arm.id);
+      return {
+        id: arm.id,
+        campusId: arm.campusId,
+        campusName: arm.campus.name,
+        label: `${level.name} ${arm.name}`,
+        studentCount: arm._count.enrollments,
+        currentTeacherMembershipId:
+          assignment?.teacherMembershipId ?? null,
+        currentTeacherName: assignment?.teacherName ?? null,
+      };
+    }),
+  );
+  const teacherOptions = teachers.flatMap((teacher) =>
+    teacher.campusId
+      ? [
+          {
+            id: teacher.id,
+            campusId: teacher.campusId,
+            name: teacher.user.name,
+          },
+        ]
+      : [],
+  );
 
   return (
     <div>
       <PageHeading
-        description="Sessions belong to the school; terms, class arms and subject offerings are campus-aware so Awka and Nnewi can run correctly."
+        description="Create each class once with A and B arms, assign one class teacher per arm, and add subjects to the correct campus."
         eyebrow="Academic setup"
-        title="Sessions, classes & subjects"
+        title="Classes, teachers & subjects"
       />
 
       <section className="mt-7 grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
@@ -167,7 +270,7 @@ export default async function AcademicsPage() {
             <div>
               <h2 className="font-black">Class structure</h2>
               <p className="text-xs text-[#747c87]">
-                {classLevels.length} active levels
+                {classLevels.length} active levels · A and B arms
               </p>
             </div>
           </div>
@@ -181,11 +284,15 @@ export default async function AcademicsPage() {
                   </span>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {level.arms.map((arm) => (
-                    <span className="pill" key={arm.id}>
-                      {arm.campus.name}: {arm.name}
-                    </span>
-                  ))}
+                  {level.arms.map((arm) => {
+                    const assignment = assignmentByClassArm.get(arm.id);
+                    return (
+                      <span className="pill" key={arm.id}>
+                        {arm.campus.name}: {arm.name}
+                        {assignment ? ` · ${assignment.teacherName}` : ""}
+                      </span>
+                    );
+                  })}
                   {!level.arms.length && (
                     <span className="text-xs text-[#9299a3]">
                       No arms in this scope
@@ -195,7 +302,7 @@ export default async function AcademicsPage() {
               </div>
             ))}
             {!classLevels.length && (
-              <div className="empty-state">No class levels configured.</div>
+              <div className="empty-state">No classes configured.</div>
             )}
           </div>
         </article>
@@ -209,7 +316,7 @@ export default async function AcademicsPage() {
           <div>
             <h2 className="font-black">Subject catalogue</h2>
             <p className="text-xs text-[#747c87]">
-              School-wide subjects with campus offerings
+              Add a subject once and enable it for the selected campus
             </p>
           </div>
         </div>
@@ -270,9 +377,14 @@ export default async function AcademicsPage() {
           viewer.membership.role,
           "school.manage",
         )}
-        classLevels={classLevels.map(({ id, name }) => ({ id, name }))}
+        classArms={classArmOptions}
+        currentSession={
+          currentSession
+            ? { id: currentSession.id, name: currentSession.name }
+            : null
+        }
         sessions={sessions.map(({ id, name }) => ({ id, name }))}
-        subjects={subjects.map(({ id, name }) => ({ id, name }))}
+        teachers={teacherOptions}
       />
     </div>
   );
