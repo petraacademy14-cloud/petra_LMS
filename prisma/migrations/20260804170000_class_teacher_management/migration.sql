@@ -83,27 +83,25 @@ FOR EACH ROW EXECUTE FUNCTION validate_class_teacher_assignment_scope();
 CREATE OR REPLACE FUNCTION sync_class_teacher_assignment_access()
 RETURNS TRIGGER AS $$
 BEGIN
-  IF TG_OP = 'UPDATE' AND OLD."teacherMembershipId" <> NEW."teacherMembershipId" THEN
-    DELETE FROM "teaching_assignments" assignment
-    USING "terms" term
-    WHERE assignment."termId" = term."id"
-      AND term."academicSessionId" = NEW."academicSessionId"
-      AND term."campusId" = NEW."campusId"
-      AND assignment."classArmId" = NEW."classArmId"
-      AND assignment."teacherMembershipId" = OLD."teacherMembershipId";
+  DELETE FROM "teaching_assignments" assignment
+  USING "terms" term
+  WHERE assignment."termId" = term."id"
+    AND term."academicSessionId" = NEW."academicSessionId"
+    AND term."campusId" = NEW."campusId"
+    AND assignment."classArmId" = NEW."classArmId"
+    AND assignment."teacherMembershipId" <> NEW."teacherMembershipId";
 
-    UPDATE "result_sheets" sheet
-    SET
-      "teacherMembershipId" = NEW."teacherMembershipId",
-      "updatedAt" = CURRENT_TIMESTAMP
-    FROM "terms" term
-    WHERE sheet."termId" = term."id"
-      AND term."academicSessionId" = NEW."academicSessionId"
-      AND term."campusId" = NEW."campusId"
-      AND sheet."classArmId" = NEW."classArmId"
-      AND sheet."teacherMembershipId" = OLD."teacherMembershipId"
-      AND sheet."status" = 'DRAFT';
-  END IF;
+  UPDATE "result_sheets" sheet
+  SET
+    "teacherMembershipId" = NEW."teacherMembershipId",
+    "updatedAt" = CURRENT_TIMESTAMP
+  FROM "terms" term
+  WHERE sheet."termId" = term."id"
+    AND term."academicSessionId" = NEW."academicSessionId"
+    AND term."campusId" = NEW."campusId"
+    AND sheet."classArmId" = NEW."classArmId"
+    AND sheet."teacherMembershipId" <> NEW."teacherMembershipId"
+    AND sheet."status" = 'DRAFT';
 
   INSERT INTO "teaching_assignments" (
     "id",
