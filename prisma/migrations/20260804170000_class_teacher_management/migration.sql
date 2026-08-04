@@ -79,3 +79,146 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER "class_teacher_assignments_scope_guard"
 BEFORE INSERT OR UPDATE ON "class_teacher_assignments"
 FOR EACH ROW EXECUTE FUNCTION validate_class_teacher_assignment_scope();
+
+CREATE OR REPLACE FUNCTION sync_class_teacher_assignment_access()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'UPDATE' AND OLD."teacherMembershipId" <> NEW."teacherMembershipId" THEN
+    DELETE FROM "teaching_assignments" assignment
+    USING "terms" term
+    WHERE assignment."termId" = term."id"
+      AND term."academicSessionId" = NEW."academicSessionId"
+      AND term."campusId" = NEW."campusId"
+      AND assignment."classArmId" = NEW."classArmId"
+      AND assignment."teacherMembershipId" = OLD."teacherMembershipId";
+
+    UPDATE "result_sheets" sheet
+    SET
+      "teacherMembershipId" = NEW."teacherMembershipId",
+      "updatedAt" = CURRENT_TIMESTAMP
+    FROM "terms" term
+    WHERE sheet."termId" = term."id"
+      AND term."academicSessionId" = NEW."academicSessionId"
+      AND term."campusId" = NEW."campusId"
+      AND sheet."classArmId" = NEW."classArmId"
+      AND sheet."teacherMembershipId" = OLD."teacherMembershipId"
+      AND sheet."status" = 'DRAFT';
+  END IF;
+
+  INSERT INTO "teaching_assignments" (
+    "id",
+    "schoolId",
+    "campusId",
+    "termId",
+    "classArmId",
+    "subjectId",
+    "teacherMembershipId",
+    "createdAt"
+  )
+  SELECT
+    'ta_' || md5(
+      random()::text || clock_timestamp()::text || NEW."id" || term."id" || offering."subjectId"
+    ),
+    NEW."schoolId",
+    NEW."campusId",
+    term."id",
+    NEW."classArmId",
+    offering."subjectId",
+    NEW."teacherMembershipId",
+    CURRENT_TIMESTAMP
+  FROM "terms" term
+  JOIN "campus_subjects" offering
+    ON offering."campusId" = NEW."campusId"
+   AND offering."isActive" = true
+  WHERE term."academicSessionId" = NEW."academicSessionId"
+    AND term."campusId" = NEW."campusId"
+  ON CONFLICT DO NOTHING;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER "class_teacher_assignments_access_sync"
+AFTER INSERT OR UPDATE OF "teacherMembershipId" ON "class_teacher_assignments"
+FOR EACH ROW EXECUTE FUNCTION sync_class_teacher_assignment_access();
+
+CREATE OR REPLACE FUNCTION sync_class_teachers_for_new_term()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO "teaching_assignments" (
+    "id",
+    "schoolId",
+    "campusId",
+    "termId",
+    "classArmId",
+    "subjectId",
+    "teacherMembershipId",
+    "createdAt"
+  )
+  SELECT
+    'ta_' || md5(
+      random()::text || clock_timestamp()::text || class_teacher."id" || NEW."id" || offering."subjectId"
+    ),
+    class_teacher."schoolId",
+    class_teacher."campusId",
+    NEW."id",
+    class_teacher."classArmId",
+    offering."subjectId",
+    class_teacher."teacherMembershipId",
+    CURRENT_TIMESTAMP
+  FROM "class_teacher_assignments" class_teacher
+  JOIN "campus_subjects" offering
+    ON offering."campusId" = NEW."campusId"
+   AND offering."isActive" = true
+  WHERE class_teacher."academicSessionId" = NEW."academicSessionId"
+    AND class_teacher."campusId" = NEW."campusId"
+  ON CONFLICT DO NOTHING;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER "terms_class_teacher_access_sync"
+AFTER INSERT ON "terms"
+FOR EACH ROW EXECUTE FUNCTION sync_class_teachers_for_new_term();
+
+CREATE OR REPLACE FUNCTION sync_class_teachers_for_subject()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW."isActive" = true THEN
+    INSERT INTO "teaching_assignments" (
+      "id",
+      "schoolId",
+      "campusId",
+      "termId",
+      "classArmId",
+      "subjectId",
+      "teacherMembershipId",
+      "createdAt"
+    )
+    SELECT
+      'ta_' || md5(
+        random()::text || clock_timestamp()::text || class_teacher."id" || term."id" || NEW."subjectId"
+      ),
+      class_teacher."schoolId",
+      class_teacher."campusId",
+      term."id",
+      class_teacher."classArmId",
+      NEW."subjectId",
+      class_teacher."teacherMembershipId",
+      CURRENT_TIMESTAMP
+    FROM "class_teacher_assignments" class_teacher
+    JOIN "terms" term
+      ON term."academicSessionId" = class_teacher."academicSessionId"
+     AND term."campusId" = class_teacher."campusId"
+    WHERE class_teacher."campusId" = NEW."campusId"
+    ON CONFLICT DO NOTHING;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER "campus_subjects_class_teacher_access_sync"
+AFTER INSERT OR UPDATE OF "isActive" ON "campus_subjects"
+FOR EACH ROW EXECUTE FUNCTION sync_class_teachers_for_subject();
