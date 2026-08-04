@@ -42,6 +42,7 @@ export default defineConfig({
       "public.pilot_checklist_items",
       "public.pilot_issues",
       "public.launch_approvals",
+      "public.class_teacher_assignments",
     ],
   },
   enums: {
