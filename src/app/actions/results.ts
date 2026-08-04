@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { z } from "zod";
 import type { Prisma } from "@/generated/prisma/client";
-import { canTransitionResult } from "@/lib/academics";
+import { canTransitionResult, PETRA_RESULT_COMPONENTS } from "@/lib/academics";
 import { requireCampusAccess, requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
 
@@ -135,7 +135,7 @@ export async function createResultSheet(formData: FormData) {
   });
   const scheme = await db.gradingScheme.findFirst({
     where: { id: input.gradingSchemeId, schoolId: viewer.membership.schoolId },
-    select: { caWeight: true, examWeight: true },
+    select: { id: true },
   });
   if (!assignment || !scheme) throw new Error("INVALID:RESULT_SHEET_SCOPE");
   if (
@@ -148,34 +148,11 @@ export async function createResultSheet(formData: FormData) {
     const sheet = await tx.resultSheet.create({
       data: { schoolId: viewer.membership.schoolId, ...input },
     });
-    const halfCa = Number(scheme.caWeight) / 2;
     await tx.assessmentComponent.createMany({
-      data: [
-        {
-          sheetId: sheet.id,
-          name: "Continuous assessment 1",
-          kind: "CONTINUOUS_ASSESSMENT",
-          maxScore: 20,
-          weight: halfCa,
-          sortOrder: 1,
-        },
-        {
-          sheetId: sheet.id,
-          name: "Continuous assessment 2",
-          kind: "CONTINUOUS_ASSESSMENT",
-          maxScore: 20,
-          weight: halfCa,
-          sortOrder: 2,
-        },
-        {
-          sheetId: sheet.id,
-          name: "Examination",
-          kind: "EXAM",
-          maxScore: 60,
-          weight: scheme.examWeight,
-          sortOrder: 3,
-        },
-      ],
+      data: PETRA_RESULT_COMPONENTS.map((component) => ({
+        sheetId: sheet.id,
+        ...component,
+      })),
     });
     await audit(tx, {
       schoolId: viewer.membership.schoolId,
