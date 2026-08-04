@@ -23,6 +23,22 @@ type ServerAction = (
 
 type Option = { value: string; label: string };
 
+type ClassArmOption = {
+  id: string;
+  campusId: string;
+  campusName: string;
+  label: string;
+  studentCount: number;
+  currentTeacherMembershipId: string | null;
+  currentTeacherName: string | null;
+};
+
+type TeacherOption = {
+  id: string;
+  campusId: string;
+  name: string;
+};
+
 function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
@@ -41,7 +57,6 @@ function Field({
   min,
   max,
   required = true,
-  help,
 }: {
   label: string;
   name: string;
@@ -50,7 +65,6 @@ function Field({
   min?: string | number;
   max?: string | number;
   required?: boolean;
-  help?: string;
 }) {
   return (
     <label className="block">
@@ -59,14 +73,6 @@ function Field({
       </span>
       <input
         className="h-11 w-full rounded-xl border border-[#dfe2e6] bg-white px-3 outline-none transition focus:border-[#d71920]"
-        max={max}
-        min={min}
-        name={name}
-        placeholder={placeholder}
-        required={required}
-        type={type}
-      />
-      {help && <span className="mt-1 block text-xs text-[#7a828d]">-none transition focus:border-[#d71920]"
         max={max}
         min={min}
         name={name}
@@ -131,7 +137,12 @@ function ActionForm({
   action,
   label,
   children,
-}: = useActionState(action, initialActionState);
+}: {
+  action: ServerAction;
+  label: string;
+  children: React.ReactNode;
+}) {
+  const [state, formAction] = useActionState(action, initialActionState);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -158,7 +169,6 @@ function FormPanel({
 }) {
   return (
     <details className="card group p-4 open:p-5">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 fontdetails className="card group p-4 open:p-5">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-black">
         <span>
           {title}
@@ -170,42 +180,52 @@ function FormPanel({
           <Plus size={18} />
         </span>
       </summary>
-      <div className="mt-5 border-t border-[#e8eaed] pt-5">{children  classArmId,
-  currentTeacherMembershipId,
+      <div className="mt-5 border-t border-[#e8eaed] pt-5">{children}</div>
+    </details>
+  );
+}
+
+function ClassTeacherForm({
+  classArm,
+  currentSessionId,
   teachers,
 }: {
-  campusId: string;
-  academicSessionId: string;
-  classArmId: string;
-  currentTeacherMembershipId: string | null;
-  teachers: Option[];
+  classArm: ClassArmOption;
+  currentSessionId: string;
+  teachers: TeacherOption[];
 }) {
-  const [state, action] = useActionState(assignClassTeacher, initialActionState);
-  return (
-    <form action={action} className="mt-3teacher) => teacher.campusId === classArm.campusId,
+  const [state, action, pending] = useActionState(
+    assignClassTeacher,
+    initialActionState,
+  );
+  const availableTeachers = teachers.filter(
+    (teacher) => teacher.campusId === classArm.campusId,
   );
 
   return (
     <form action={action} className="rounded-xl border border-[#e3e6ea] p-4">
-      <input name="academicSessionId" type="hidden" value={currentSession.id} />
+      <input name="academicSessionId" type="hidden" value={currentSessionId} />
       <input name="campusId" type="hidden" value={classArm.campusId} />
       <input name="classArmId" type="hidden" value={classArm.id} />
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-black">{classArm.label}</h3>
-            <span className="pill">{classArm.studentCount} students</span>
+            <span className="pill">
+              {classArm.studentCount} student
+              {classArm.studentCount === 1 ? "" : "s"}
+            </span>
           </div>
           <p className="mt-1 text-xs text-[#747c87]">
-            {classArm.teacherName
-              ? `Current class teacher: ${classArm.teacherName}`
+            {classArm.campusName} · {classArm.currentTeacherName
+              ? `Current class teacher: ${classArm.currentTeacherName}`
               : "No class teacher assigned"}
           </p>
         </div>
         <div className="grid gap-2 sm:grid-cols-[minmax(220px,1fr)_auto]">
           <select
             className="h-11 rounded-xl border border-[#dfe2e6] bg-white px-3 font-bold outline-none focus:border-[#d71920]"
-            defaultValue={classArm.teacherMembershipId ?? ""}
+            defaultValue={classArm.currentTeacherMembershipId ?? ""}
             name="teacherMembershipId"
             required
           >
@@ -221,7 +241,7 @@ function FormPanel({
           <button className="button" disabled={pending} type="submit">
             {pending
               ? "Saving…"
-              : classArm.teacherMembershipId
+              : classArm.currentTeacherMembershipId
                 ? "Replace teacher"
                 : "Assign teacher"}
           </button>
@@ -264,53 +284,53 @@ export function AcademicSetupForms({
   teachers,
 }: {
   canManageSchool: boolean;
- (
-            <div className="grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
-              {classArms.map((arm) => {
-                const teacherOptions = teachers
-                  .filter((teacher) => teacher.campusId === arm.campusId)
-                  .map((teacher) => ({ value: teacher.id, label: teacher.name }));
-                return (
-                  <article
-                    className="rounded-2xl border border-[#e4e7eb] p-4"
-                    key={arm.id}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-black">{arm.label}</p>
-                        <p className="mt-1 text-xs text-[#747c87]">
-                          {arm.campusName} · {arm.studentCount} active student
-                          {arm.studentCount === 1 ? "" : "s"}
-                        </p>
-                      </div>
-                      <span
-                        className="pill"
-                        data-tone={arm.currentTeacherName ? "success" : undefined}
-                      >
-                        {arm.currentTeacherName ?? "Unassigned"}
-                      </span>
-                    </div>
-                    {teacherOptions.length ? (
-                      <ClassTeacherForm
-                        academicSessionId={currentSession.id}
-                        campusId={arm.campusId}
-                        classArmId={arm.id}
-                        currentTeacherMembershipId={
-                          arm.currentTeacherMembershipId
-                        }
-                        teachers={teacherOptions}
-                      />
-                    ) : (
-                      <p className="mt-4 rounded-xl bg-[#fff7e8] p-3 text-xs font-bold text-[#8a5708]">
-                        Add an active teacher to this campus before assigning a
-                        class teacher.
-                      </p>
-                    )}
-                  </article>
-                );
-              })}
+  canManageAcademics: boolean;
+  campuses: Array<{ id: string; name: string }>;
+  sessions: Array<{ id: string; name: string }>;
+  currentSession: { id: string; name: string } | null;
+  classArms: ClassArmOption[];
+  teachers: TeacherOption[];
+}) {
+  if (!canManageSchool && !canManageAcademics) return null;
+
+  const campusOptions = campuses.map((campus) => ({
+    value: campus.id,
+    label: campus.name,
+  }));
+  const sessionOptions = sessions.map((session) => ({
+    value: session.id,
+    label: session.name,
+  }));
+
+  return (
+    <>
+      {canManageAcademics && (
+        <section className="card mt-5 overflow-hidden">
+          <div className="flex items-center gap-3 border-b border-[#e8eaed] p-5">
+            <span className="grid size-10 place-items-center rounded-xl bg-[#fff0f1] text-[#bd1218]">
+              <UsersRound size={20} />
+            </span>
+            <div>
+              <h2 className="font-black">Class teachers</h2>
+              <p className="text-xs text-[#747c87]">
+                {currentSession
+                  ? `${currentSession.name} · one class teacher per arm`
+                  : "Set a current academic session before assigning teachers"}
+              </p>
+            </div>
+          </div>
+          {currentSession ? (
+            <div className="grid gap-3 p-5 xl:grid-cols-2">
+              {classArms.map((classArm) => (
+                <ClassTeacherForm
+                  classArm={classArm}
+                  currentSessionId={currentSession.id}
+                  key={classArm.id}
+                  teachers={teachers}
+                />
+              ))}
               {!classArms.length && (
-                <div className="empty-state md:col-span-2 xl:col-span-3">
+                <div className="empty-state xl:col-span-2">
                   Add a class below. Arm A and Arm B will be created automatically.
                 </div>
               )}
@@ -321,65 +341,70 @@ export function AcademicSetupForms({
             </div>
           )}
         </section>
- },
-                      { value: "THIRD", label: "Third term" },
-                      { value: "CUSTOM", label: "Custom term" },
-                    ]}
-                  />
+      )}
+
+      <section className="mt-5">
+        <p className="eyebrow mb-3">Setup actions</p>
+        <div className="grid gap-3 xl:grid-cols-2">
+          {canManageSchool && (
+            <FormPanel
+              description="School-wide date range"
+              title="Add academic session"
+            >
+              <ActionForm
+                action={createAcademicSession}
+                label="Create session"
+              >
+                <div className="grid gap-4 sm:grid-cols-3">
                   <Field
-                    label="Display name"
+                    label="Session name"
                     name="name"
-                    placeholder="First Term"
+                    placeholder="2026/2027"
                   />
                   <Field label="Starts" name="startsOn" type="date" />
                   <Field label="Ends" name="endsOn" type="date" />
                 </div>
                 <label className="flex items-center gap-2 text-sm font-bold">
                   <input name="isCurrent" type="checkbox" value="yes" />
-                  Make this the current term for the campus
+                  Make this the current session
                 </label>
               </ActionForm>
             </FormPanel>
+          )}
 
-            <FormPanel
-              description="Creates Arm A and Arm B automatically"
-              title="Add a class"
-            >
-              <ActionForm
-                action={createClassWithDefaultArms}
-                label="Create class with A & B"
+          {canManageAcademics && (
+            <>
+              <FormPanel
+                description="Campus-specific calendar"
+                title="Add term"
               >
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <SelectField
-                    label="Campus"
-                    name="campusId"
-                    options={campusOptions}
-                  />
-                  <Field
-                    label="Class name"
-                    name="name"
-                    placeholder="Primary 1"
-                  />
-                  <Field
-                    label="Class code (optional)"
-                    name="code"
-                    placeholder="Auto: PRI-1"
-                    required={false}
-                  />
-                  <Field
-                    label="Capacity per arm (optional)"
-                    max={1000}
-                    min={1}
-                    name="capacity"
-                    placeholder="30"
-                    required={false}
-                    type="number"
-                  />
-                </div>
-                <p className="text-xs text-[#747c87]">
-                  The class is added once and Petra creates separate A and B arms
-                  for student placement and class-teacher assignment.
-                </                    />
+                <ActionForm action={createTerm} label="Create term">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <SelectField
+                      label="Academic session"
+                      name="academicSessionId"
+                      options={sessionOptions}
+                    />
+                    <SelectField
+                      label="Campus"
+                      name="campusId"
+                      options={campusOptions}
+                    />
+                    <SelectField
+                      label="Term"
+                      name="kind"
+                      options={[
+                        { value: "FIRST", label: "First term" },
+                        { value: "SECOND", label: "Second term" },
+                        { value: "THIRD", label: "Third term" },
+                        { value: "CUSTOM", label: "Custom term" },
+                      ]}
+                    />
+                    <Field
+                      label="Display name"
+                      name="name"
+                      placeholder="First Term"
+                    />
                     <Field label="Starts" name="startsOn" type="date" />
                     <Field label="Ends" name="endsOn" type="date" />
                   </div>
@@ -410,27 +435,30 @@ export function AcademicSetupForms({
                       placeholder="Primary 1"
                     />
                     <Field
-                      help="Optional. A code such as PRI-1 will be generated automatically."
-                      label="Class code"
+                      label="Class code (optional)"
                       name="code"
-                      placeholder="PRI-1"
+                      placeholder="Auto: PRI-1"
                       required={false}
                     />
                     <Field
-                      help="Optional. The same capacity is applied to both arms."
-                      label="Capacity per arm"
+                      label="Capacity per arm (optional)"
                       max={1000}
                       min={1}
                       name="capacity"
+                      placeholder="30"
                       required={false}
                       type="number"
                     />
                   </div>
+                  <p className="text-xs text-[#747c87]">
+                    Petra creates separate A and B arms for student placement and
+                    class-teacher assignment.
+                  </p>
                 </ActionForm>
               </FormPanel>
 
               <FormPanel
-                description="Creates the subject and enables it at the selected campus"
+                description="Creates and enables it at the selected campus"
                 title="Add a subject"
               >
                 <ActionForm
@@ -449,10 +477,9 @@ export function AcademicSetupForms({
                       placeholder="Mathematics"
                     />
                     <Field
-                      help="Optional. A short code will be generated from the name."
-                      label="Subject code"
+                      label="Subject code (optional)"
                       name="code"
-                      placeholder="MATH"
+                      placeholder="Auto: MAT"
                       required={false}
                     />
                   </div>
