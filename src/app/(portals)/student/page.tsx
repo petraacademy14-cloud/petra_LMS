@@ -14,6 +14,7 @@ import {
 import {
   attendanceSummary,
   resolveGrade,
+  resultComponentLabel,
   totalWeightedScore,
 } from "@/lib/academics";
 import { db } from "@/lib/db";
@@ -164,7 +165,9 @@ export default async function StudentPortalPage() {
                 orderBy: { sortOrder: "asc" },
                 select: {
                   name: true,
+                  kind: true,
                   maxScore: true,
+                  sortOrder: true,
                   weight: true,
                   scores: {
                     where: { studentId: student.id },
@@ -450,7 +453,7 @@ export default async function StudentPortalPage() {
                   <td>
                     {entry.sheet.components.map((component) => (
                       <small className="block" key={component.name}>
-                        {component.name}: {Number(component.scores[0]!.score)} /{" "}
+                        {resultComponentLabel(component)}: {Number(component.scores[0]!.score)} /{" "}
                         {Number(component.maxScore)}
                       </small>
                     ))}
