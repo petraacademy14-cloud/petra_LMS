@@ -146,7 +146,7 @@ export default async function TeacherResultsPage() {
         <ArrowLeft size={17} /> Teacher overview
       </Link>
       <PageHeading
-        description="Create sheets only from your teaching assignments, enter every score and submit completed work for approval."
+        description="Enter First CAT over 20, Second CAT over 20 and Examination over 60 for every student, then submit completed work for approval."
         eyebrow="Teacher workspace"
         title="Results"
       />
@@ -181,8 +181,8 @@ export default async function TeacherResultsPage() {
           <div className="border-b border-[#e8eaed] p-5">
             <h2 className="font-black">Assignments without a result sheet</h2>
             <p className="text-sm text-[#68707d]">
-              Create the standard CA and examination sheet for an assigned
-              subject.
+              Create a First CAT (20), Second CAT (20) and Examination (60)
+              sheet for an assigned subject.
             </p>
           </div>
           <div className="grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-3">
