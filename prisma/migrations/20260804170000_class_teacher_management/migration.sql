@@ -36,6 +36,51 @@ ALTER TABLE "class_teacher_assignments"
   ADD CONSTRAINT "class_teacher_assignments_teacherMembershipId_fkey"
   FOREIGN KEY ("teacherMembershipId") REFERENCES "school_memberships"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
+WITH existing_class_offerings AS (
+  SELECT
+    arm."campusId",
+    arm."classLevelId",
+    MAX(arm."capacity") AS "capacity"
+  FROM "class_arms" arm
+  WHERE arm."isActive" = true
+  GROUP BY arm."campusId", arm."classLevelId"
+), required_arms AS (
+  SELECT * FROM (VALUES ('A'), ('B')) AS arm("code")
+)
+INSERT INTO "class_arms" (
+  "id",
+  "campusId",
+  "classLevelId",
+  "name",
+  "code",
+  "capacity",
+  "isActive",
+  "createdAt",
+  "updatedAt"
+)
+SELECT
+  'arm_' || md5(
+    random()::text || clock_timestamp()::text || offering."campusId" || offering."classLevelId" || required."code"
+  ),
+  offering."campusId",
+  offering."classLevelId",
+  required."code",
+  required."code",
+  offering."capacity",
+  true,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+FROM existing_class_offerings offering
+CROSS JOIN required_arms required
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM "class_arms" existing
+  WHERE existing."campusId" = offering."campusId"
+    AND existing."classLevelId" = offering."classLevelId"
+    AND existing."code" = required."code"
+)
+ON CONFLICT DO NOTHING;
+
 CREATE OR REPLACE FUNCTION validate_class_teacher_assignment_scope()
 RETURNS TRIGGER AS $$
 BEGIN
