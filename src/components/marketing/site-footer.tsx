@@ -99,7 +99,7 @@ export function SiteFooter() {
             <span>Lasel Junction, No. 11 Godwin Chris Street, off Ukpor Road, by Nwafor Junction, Umudim, Nnewi</span>
             <a href="tel:+2348033130456">08033130456</a>
             <a href="tel:+2348121997970">08121997970</a>
-            <a href="mailto:nnewiadmin@petraacdemy.co">nnewiadmin@petraacdemy.co</a>
+            <a href="mailto:nnewiadmin@petraacademy.co">nnewiadmin@petraacademy.co</a>
             <span>@PetraAcademyAwka</span>
           </address>
         </div>
