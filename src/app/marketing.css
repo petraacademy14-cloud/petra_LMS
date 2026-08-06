@@ -607,6 +607,34 @@
 .contact-prompt { display: flex; gap: 12px; margin-top: 25px; border-left: 3px solid var(--petra-red); background: #fff; padding: 18px; color: var(--petra-muted); font-size: 0.88rem; line-height: 1.6; }
 .contact-prompt svg { flex: 0 0 auto; color: var(--petra-red); }
 
+.success-banner,
+.error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 0.88rem;
+  font-weight: 720;
+  line-height: 1.5;
+}
+
+.success-banner {
+  border-color: #a8d9bd;
+  background: #edf9f2;
+  color: #12623b;
+}
+
+.error-banner {
+  border-color: #efb5b7;
+  background: #fff2f2;
+  color: #8d1116;
+}
+
+.success-banner svg,
+.error-banner svg { flex: 0 0 auto; margin-top: 1px; }
+
 .application-entry-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 980px; }
 .application-entry-card { display: flex; min-height: 520px; flex-direction: column; align-items: flex-start; }
 .application-entry-card .section-kicker { margin-top: 25px; }
