@@ -317,7 +317,7 @@ export default function HomePage() {
               <div className="campus-contact-list">
                 <span><MapPin size={18} />Lasel Junction, No. 11 Godwin Chris Street, off Ukpor Road, by Nwafor Junction, Umudim, Nnewi</span>
                 <a href="tel:+2348033130456"><Phone size={18} />08033130456 · 08121997970</a>
-                <a href="mailto:nnewiadmin@petraacdemy.co"><Mail size={18} />nnewiadmin@petraacdemy.co</a>
+                <a href="mailto:nnewiadmin@petraacademy.co"><Mail size={18} />nnewiadmin@petraacademy.co</a>
                 <span><Users size={18} />@PetraAcademyAwka</span>
               </div>
             </article>
