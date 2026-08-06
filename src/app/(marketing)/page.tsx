@@ -187,6 +187,31 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="marketing-section petra-life-section">
+        <div className="marketing-shell">
+          <div className="petra-life-heading">
+            <div>
+              <span className="section-kicker section-kicker-light">Life at Petra Academy</span>
+              <h2>Friendship, kindness and community.</h2>
+            </div>
+            <p>
+              School life is also about belonging, celebrating together and creating joyful memories that strengthen
+              our community.
+            </p>
+          </div>
+          <figure className="petra-life-photo">
+            <Image
+              src="/images/petra-love-feast.webp"
+              alt="Petra Academy students and staff celebrating their Valentine’s Day Love Feast"
+              width={1448}
+              height={1086}
+              sizes="(max-width: 720px) 100vw, 1200px"
+            />
+            <figcaption>Petra Academy Valentine’s Day Love Feast</figcaption>
+          </figure>
+        </div>
+      </section>
+
       <section className="marketing-section section-tint">
         <div className="marketing-shell">
           <div className="section-heading">

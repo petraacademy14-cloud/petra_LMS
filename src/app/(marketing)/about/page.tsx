@@ -111,6 +111,29 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <section className="marketing-section section-tint petra-students-section">
+        <div className="marketing-shell petra-students-grid">
+          <figure className="petra-editorial-photo">
+            <Image
+              src="/images/petra-students-group.webp"
+              alt="Petra Academy students in their burgundy school uniforms"
+              width={1535}
+              height={1024}
+              sizes="(max-width: 720px) 100vw, 58vw"
+            />
+          </figure>
+          <div>
+            <span className="section-kicker">Our Students</span>
+            <h2>Confident learners. Responsible leaders. Prepared for the future.</h2>
+            <p>
+              Petra learners are encouraged to ask thoughtful questions, work well with others and take responsibility
+              for their growth. Academic confidence, good character and practical ability develop side by side.
+            </p>
+            <Link className="inline-cta" href="/programs">Explore the Petra learning journey <ArrowRight size={17} /></Link>
+          </div>
+        </div>
+      </section>
+
       <section className="marketing-section section-tint">
         <div className="marketing-shell">
           <article className="overflow-hidden rounded-[2rem] bg-[#78080b] text-white shadow-[0_30px_80px_rgba(90,8,11,0.18)]">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -299,6 +300,58 @@ export default function ProgramsPage() {
                 </div>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="marketing-section petra-tech-learning-section">
+        <div className="marketing-shell">
+          <div className="section-heading">
+            <span className="section-kicker">Technology-enabled learning</span>
+            <h2>Building confident, creative and digitally capable learners.</h2>
+            <p>
+              Coding, Artificial Intelligence and Robotics are taught through collaboration, practical exploration and
+              real projects that make technology meaningful.
+            </p>
+          </div>
+          <div className="petra-tech-feature-grid">
+            <article className="petra-tech-feature">
+              <figure className="petra-editorial-photo">
+                <Image
+                  src="/images/petra-coding-students.webp"
+                  alt="Petra Academy students collaborating around a laptop"
+                  width={1535}
+                  height={1025}
+                  sizes="(max-width: 720px) 100vw, 50vw"
+                />
+              </figure>
+              <div>
+                <span className="section-kicker">Coding & AI</span>
+                <h3>Ideas become digital projects.</h3>
+                <p>
+                  Students strengthen logical thinking, communication and creativity while learning to use technology
+                  confidently and responsibly.
+                </p>
+              </div>
+            </article>
+            <article className="petra-tech-feature">
+              <figure className="petra-editorial-photo petra-robotics-photo">
+                <Image
+                  src="/images/petra-robotics-class.webp"
+                  alt="Petra Academy pupils building and testing a robotics project"
+                  width={1600}
+                  height={900}
+                  sizes="(max-width: 720px) 100vw, 50vw"
+                />
+              </figure>
+              <div>
+                <span className="section-kicker">Robotics & STEM</span>
+                <h3>Learning by building, testing and creating.</h3>
+                <p>
+                  Hands-on projects develop patience, teamwork and inventive problem-solving from the formative years.
+                </p>
+              </div>
+            </article>
           </div>
         </div>
       </section>
