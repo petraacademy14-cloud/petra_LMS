@@ -469,6 +469,57 @@
   line-height: 1.7;
 }
 
+.petra-college-section {
+  background: #fff;
+}
+
+.petra-college-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr);
+  align-items: center;
+  gap: clamp(42px, 7vw, 92px);
+}
+
+.petra-college-photo {
+  aspect-ratio: 2 / 3;
+}
+
+.petra-college-copy h2 {
+  margin: 14px 0 0;
+  max-width: 760px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.35rem, 5vw, 4.25rem);
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+}
+
+.petra-college-copy > p {
+  max-width: 720px;
+  margin-top: 24px;
+  color: var(--petra-muted);
+  font-size: 1.02rem;
+  line-height: 1.8;
+}
+
+.petra-college-points {
+  display: grid;
+  gap: 13px;
+  margin-top: 28px;
+}
+
+.petra-college-points span {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--petra-ink);
+  font-weight: 750;
+}
+
+.petra-college-points svg {
+  flex: 0 0 auto;
+  color: var(--petra-red);
+}
+
 .footer-affiliates > h2 {
   margin: 0 0 12px;
   color: #fff;
@@ -530,13 +581,19 @@
 @media (max-width: 820px) {
   .petra-life-heading,
   .petra-students-grid,
-  .petra-tech-feature-grid {
+  .petra-tech-feature-grid,
+  .petra-college-grid {
     grid-template-columns: 1fr;
   }
 
   .petra-life-heading,
-  .petra-students-grid {
+  .petra-students-grid,
+  .petra-college-grid {
     gap: 30px;
+  }
+
+  .petra-college-photo {
+    max-width: 560px;
   }
 
   .curriculum-overview,

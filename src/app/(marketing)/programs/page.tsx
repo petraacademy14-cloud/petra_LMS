@@ -284,6 +284,34 @@ export default function ProgramsPage() {
         </div>
       </section>
 
+      <section className="marketing-section petra-college-section">
+        <div className="marketing-shell petra-college-grid">
+          <figure className="petra-editorial-photo petra-college-photo">
+            <Image
+              src="/images/petra-college-students.webp"
+              alt="Petra Academy College students holding a laptop and books"
+              width={1023}
+              height={1537}
+              sizes="(max-width: 820px) 100vw, 44vw"
+            />
+          </figure>
+          <div className="petra-college-copy">
+            <span className="section-kicker">College · Grades 7–12</span>
+            <h2>Prepared for examinations, leadership and life beyond school.</h2>
+            <p>
+              Petra College combines strong subject teaching with technology, leadership development and purposeful
+              guidance. Learners build the discipline, confidence and practical skills needed for higher education and
+              a fast-changing world.
+            </p>
+            <div className="petra-college-points">
+              <span><CheckCircle2 size={19} /> Focused examination preparation</span>
+              <span><CheckCircle2 size={19} /> Technology and digital confidence</span>
+              <span><CheckCircle2 size={19} /> Leadership, character and career guidance</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="marketing-section">
         <div className="marketing-shell">
           <div className="section-heading">
