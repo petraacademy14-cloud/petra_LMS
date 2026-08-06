@@ -50,39 +50,44 @@ export async function sendContactEnquiry(formData: FormData) {
   const recipient = campusRecipients[enquiry.campus];
   const phone = enquiry.phone || "Not provided";
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to: [recipient],
-      reply_to: enquiry.email,
-      subject: `Website enquiry — ${campusName}: ${plainTextLine(enquiry.subject)}`,
-      text: [
-        "A new enquiry was submitted through the Petra Academy website.",
-        "",
-        `Campus: ${campusName}`,
-        `Name: ${plainTextLine(enquiry.name)}`,
-        `Email: ${plainTextLine(enquiry.email)}`,
-        `Phone: ${plainTextLine(phone)}`,
-        `Subject: ${plainTextLine(enquiry.subject)}`,
-        "",
-        "Message:",
-        enquiry.message,
-      ].join("\n"),
-    }),
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    const providerMessage = await response.text();
-    console.error("Contact enquiry delivery failed.", {
-      status: response.status,
-      providerMessage: providerMessage.slice(0, 500),
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to: [recipient],
+        reply_to: enquiry.email,
+        subject: `Website enquiry — ${campusName}: ${plainTextLine(enquiry.subject)}`,
+        text: [
+          "A new enquiry was submitted through the Petra Academy website.",
+          "",
+          `Campus: ${campusName}`,
+          `Name: ${plainTextLine(enquiry.name)}`,
+          `Email: ${plainTextLine(enquiry.email)}`,
+          `Phone: ${plainTextLine(phone)}`,
+          `Subject: ${plainTextLine(enquiry.subject)}`,
+          "",
+          "Message:",
+          enquiry.message,
+        ].join("\n"),
+      }),
+      cache: "no-store",
     });
+
+    if (!response.ok) {
+      const providerMessage = await response.text();
+      console.error("Contact enquiry delivery failed.", {
+        status: response.status,
+        providerMessage: providerMessage.slice(0, 500),
+      });
+      redirect("/contact?status=failed#enquiry");
+    }
+  } catch (error) {
+    console.error("Contact enquiry delivery could not reach the email provider.", error);
     redirect("/contact?status=failed#enquiry");
   }
 
