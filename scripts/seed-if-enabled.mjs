@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 const isProduction = process.env.VERCEL_ENV === "production";
 const isPreview = process.env.VERCEL_ENV === "preview";
 const runFullSeed = process.env.RUN_SEED_ON_DEPLOY === "true";
+const isWebsitePreview = process.env.VERCEL_GIT_COMMIT_REF?.startsWith("website/");
 
 if (isProduction && runFullSeed) {
   throw new Error(
@@ -26,16 +27,18 @@ function runScript(scriptName) {
   }
 }
 
-if (runFullSeed) {
+if (runFullSeed && !isWebsitePreview) {
   runScript("db:seed");
   console.info("Preview seed completed successfully.");
 } else {
-  console.info("Full Preview seed skipped because RUN_SEED_ON_DEPLOY is not true.");
+  console.info("Full Preview seed skipped for this deployment.");
 }
 
-// Keep verified test access available on every Vercel Preview deployment,
-// even after the one-time full seed switch has been disabled.
-if (isPreview) {
+// Keep verified test access available on LMS Preview deployments. Marketing
+// website previews do not need database seed credentials or test accounts.
+if (isPreview && !isWebsitePreview) {
   runScript("db:create-preview-teacher");
   console.info("Preview Owner and Teacher logins verified successfully.");
+} else if (isWebsitePreview) {
+  console.info("Preview account verification skipped for website branch.");
 }
