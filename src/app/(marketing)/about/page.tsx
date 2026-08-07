@@ -136,8 +136,8 @@ export default function AboutPage() {
       <section className="marketing-section section-tint">
         <div className="marketing-shell">
           <article className="overflow-hidden rounded-[2rem] bg-[#78080b] text-white shadow-[0_30px_80px_rgba(90,8,11,0.18)]">
-            <div className="grid items-stretch lg:grid-cols-[0.88fr_1.12fr]">
-              <figure className="relative min-h-[470px] overflow-hidden border-b border-white/10 bg-[radial-gradient(circle_at_50%_28%,rgba(255,255,255,0.18),transparent_42%),linear-gradient(145deg,#a01931,#4f0715)] sm:min-h-[620px] lg:min-h-[650px] lg:border-b-0 lg:border-r">
+            <div className="grid items-stretch lg:grid-cols-[0.8fr_1.2fr]">
+              <figure className="relative min-h-[430px] overflow-hidden border-b border-white/10 bg-[radial-gradient(circle_at_50%_28%,rgba(255,255,255,0.18),transparent_42%),linear-gradient(145deg,#a01931,#4f0715)] sm:min-h-[500px] lg:min-h-[520px] lg:border-b-0 lg:border-r">
                 <Image
                   src="/images/petra-principal-portrait.webp"
                   alt="Principal of Petra Academy"
@@ -146,10 +146,10 @@ export default function AboutPage() {
                   className="object-contain object-bottom"
                 />
               </figure>
-              <div className="flex flex-col justify-center p-8 text-[1rem] leading-8 text-[#f7e7e7] sm:p-12 lg:p-[clamp(3rem,5vw,4.5rem)]">
+              <div className="flex flex-col justify-center p-7 text-[1rem] leading-7 text-[#f7e7e7] sm:p-10 lg:p-[clamp(2.5rem,4vw,3.75rem)]">
                 <span className="section-kicker section-kicker-light">Principal&apos;s Word</span>
-                <h2 className="mb-6 mt-3 font-[var(--font-merriweather)] text-4xl leading-tight text-white sm:text-5xl">Welcome to Petra Academy</h2>
-                <div className="space-y-5">
+                <h2 className="mb-4 mt-3 font-[var(--font-merriweather)] text-4xl leading-tight text-white sm:text-5xl">Welcome to Petra Academy</h2>
+                <div className="space-y-4">
                   <p>
                     Petra Academy is a leading co-educational school serving learners from Daycare and Playgroup through
                     Nursery, Primary and College across our Awka and Nnewi campuses in Anambra State.
