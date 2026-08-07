@@ -10,7 +10,6 @@ import {
   GraduationCap,
   HeartHandshake,
   Lightbulb,
-  Quote,
   School,
   ShieldCheck,
   Sparkles,
@@ -137,30 +136,35 @@ export default function AboutPage() {
       <section className="marketing-section section-tint">
         <div className="marketing-shell">
           <article className="overflow-hidden rounded-[2rem] bg-[#78080b] text-white shadow-[0_30px_80px_rgba(90,8,11,0.18)]">
-            <div className="grid items-stretch lg:grid-cols-[0.72fr_1.28fr]">
-              <div className="relative grid min-h-72 place-items-center overflow-hidden border-b border-white/10 p-10 lg:border-b-0 lg:border-r">
-                <div className="absolute size-72 rounded-full border-[44px] border-white/5" />
-                <div className="relative text-center">
-                  <span className="mx-auto grid size-20 place-items-center rounded-3xl bg-white/10"><Quote size={38} /></span>
-                  <span className="section-kicker section-kicker-light mt-7">Principal&apos;s Word</span>
-                  <h2 className="mt-3 font-[var(--font-merriweather)] text-3xl leading-tight">Welcome to Petra Academy</h2>
+            <div className="grid items-stretch lg:grid-cols-[0.88fr_1.12fr]">
+              <figure className="relative min-h-[470px] overflow-hidden border-b border-white/10 bg-[radial-gradient(circle_at_50%_28%,rgba(255,255,255,0.18),transparent_42%),linear-gradient(145deg,#a01931,#4f0715)] sm:min-h-[620px] lg:min-h-[650px] lg:border-b-0 lg:border-r">
+                <Image
+                  src="/images/petra-principal-portrait.webp"
+                  alt="Principal of Petra Academy"
+                  fill
+                  sizes="(max-width: 960px) 88vw, 40vw"
+                  className="object-contain object-bottom"
+                />
+              </figure>
+              <div className="flex flex-col justify-center p-8 text-[1rem] leading-8 text-[#f7e7e7] sm:p-12 lg:p-[clamp(3rem,5vw,4.5rem)]">
+                <span className="section-kicker section-kicker-light">Principal&apos;s Word</span>
+                <h2 className="mb-6 mt-3 font-[var(--font-merriweather)] text-4xl leading-tight text-white sm:text-5xl">Welcome to Petra Academy</h2>
+                <div className="space-y-5">
+                  <p>
+                    Petra Academy is a leading co-educational school serving learners from Daycare and Playgroup through
+                    Nursery, Primary and College across our Awka and Nnewi campuses in Anambra State.
+                  </p>
+                  <p>
+                    We operate inclusive classrooms with differentiated learning, modern teaching methods and innovative
+                    classroom technologies. Our learners build strong early reading skills from the age of four while
+                    gaining practical exposure to Coding, Robotics and STEM education.
+                  </p>
+                  <p>
+                    We groom confident young leaders who communicate fluently, think critically and excel academically.
+                    Every learner is welcomed into a warm classroom atmosphere guided by caring, dedicated and highly
+                    professional teachers.
+                  </p>
                 </div>
-              </div>
-              <div className="space-y-5 p-8 text-[1rem] leading-8 text-[#f7e7e7] sm:p-12">
-                <p>
-                  Petra Academy is a leading co-educational school serving learners from Daycare and Playgroup through
-                  Nursery, Primary and College across our Awka and Nnewi campuses in Anambra State.
-                </p>
-                <p>
-                  We operate inclusive classrooms with differentiated learning, modern teaching methods and innovative
-                  classroom technologies. Our learners build strong early reading skills from the age of four while
-                  gaining practical exposure to Coding, Robotics and STEM education.
-                </p>
-                <p>
-                  We groom confident young leaders who communicate fluently, think critically and excel academically.
-                  Every learner is welcomed into a warm classroom atmosphere guided by caring, dedicated and highly
-                  professional teachers.
-                </p>
               </div>
             </div>
           </article>
@@ -254,42 +258,3 @@ export default function AboutPage() {
             </p>
             <p className="mt-4 text-[1.05rem] leading-8 text-[#666b73]">
               Through continuous development, collaboration and thoughtful use of technology, the Petra teaching team
-              delivers engaging lessons while paying close attention to the progress and needs of each child.
-            </p>
-            <Link className="inline-cta mt-5" href="/book-visit">Meet our school community <ArrowRight size={17} /></Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="marketing-section">
-        <div className="marketing-shell">
-          <article className="petra-campus-showcase">
-            <Image
-              className="petra-campus-showcase-image"
-              src="/images/petra-campus-full.webp"
-              alt="Petra Academy campus building and school vehicles"
-              fill
-              sizes="(max-width: 720px) 100vw, 1180px"
-            />
-            <div className="petra-campus-showcase-overlay">
-              <span className="section-kicker section-kicker-light">Two Campuses. One Petra Standard.</span>
-              <h2>Experience Petra Academy in Awka or Nnewi.</h2>
-              <p>
-                Visit our learning environment, meet the team and discover the right pathway from Daycare and
-                Playgroup through Nursery, Primary and College.
-              </p>
-              <div className="petra-campus-showcase-actions">
-                <Link className="button button-lg button-light" href="/book-visit">
-                  Book a school visit <ArrowRight size={18} />
-                </Link>
-                <Link className="button button-lg button-ghost-light" href="/contact">
-                  <School size={18} /> Contact us
-                </Link>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-    </>
-  );
-}
