@@ -732,7 +732,7 @@
 
 .affiliate-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -772,6 +772,28 @@
   color: #aaa5a5;
   font-size: 0.58rem;
   line-height: 1.25;
+}
+
+.affiliate-logo-link {
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.affiliate-logo-link:hover {
+  border-color: #5e5e62;
+  background: #29292c;
+}
+
+.codeai-affiliate {
+  gap: 10px;
+}
+
+.codeai-logo {
+  display: block;
+  width: 72px;
+  height: auto;
+  flex: 0 0 auto;
 }
 
 @media (max-width: 1050px) {
