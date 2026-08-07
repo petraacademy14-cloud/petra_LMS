@@ -501,14 +501,7 @@ export default function ProgramsPage() {
 
       <section className="marketing-section">
         <div className="marketing-shell inclusive-program-grid">
-          <div className="inclusive-program-visual" aria-hidden="true">
-            <div className="inclusive-ring inclusive-ring-one" />
-            <div className="inclusive-ring inclusive-ring-two" />
-            <span><HeartHandshake size={48} /></span>
-            <strong>Every child belongs</strong>
-            <small>Known · Supported · Included</small>
-          </div>
-          <div>
+          <div className="inclusive-program-copy">
             <span className="section-kicker">Inclusive Education</span>
             <h2 className="mt-3 font-[var(--font-merriweather)] text-[clamp(2.4rem,5vw,4rem)] leading-[1.06] tracking-[-0.04em]">
               Every child belongs here.
@@ -527,6 +520,19 @@ export default function ProgramsPage() {
               ))}
             </div>
           </div>
+          <figure className="inclusive-program-visual">
+            <div className="inclusive-ring inclusive-ring-one" aria-hidden="true" />
+            <div className="inclusive-ring inclusive-ring-two" aria-hidden="true" />
+            <Image
+              className="inclusive-student-cutout"
+              src="/images/petra-student-belonging-cutout.webp"
+              alt="Petra Academy student holding her books"
+              width={864}
+              height={1080}
+              sizes="(max-width: 960px) 78vw, 38vw"
+            />
+            <figcaption>Known · Supported · Included</figcaption>
+          </figure>
         </div>
       </section>
 

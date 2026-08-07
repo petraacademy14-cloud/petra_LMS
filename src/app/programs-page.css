@@ -242,7 +242,7 @@
 
 .inclusive-program-grid {
   display: grid;
-  grid-template-columns: minmax(340px, 0.86fr) minmax(0, 1.14fr);
+  grid-template-columns: minmax(0, 1.14fr) minmax(340px, 0.86fr);
   align-items: center;
   gap: 5rem;
 }
@@ -251,46 +251,42 @@
   position: relative;
   display: grid;
   min-height: 31rem;
-  place-items: center;
   overflow: hidden;
   border: 1px solid #e7e3e3;
   border-radius: 2.2rem;
-  background: linear-gradient(145deg, #fff, #fff4f4);
+  background:
+    radial-gradient(circle at 72% 30%, rgb(255 255 255 / 0.2), transparent 36%),
+    linear-gradient(145deg, #fff7f4 0%, #f3d9d8 42%, #8f1830 100%);
   box-shadow: 0 25px 65px rgb(75 19 21 / 0.1);
-  text-align: center;
 }
 
-.inclusive-program-visual > span {
-  position: relative;
-  z-index: 3;
-  display: grid;
-  width: 7rem;
-  height: 7rem;
-  place-items: center;
-  border-radius: 2.2rem;
-  background: #a50e12;
-  box-shadow: 0 20px 45px rgb(165 14 18 / 0.23);
-  color: #fff;
-  animation: inclusive-heart 4.6s ease-in-out infinite;
-}
-
-.inclusive-program-visual strong,
-.inclusive-program-visual small {
+.inclusive-student-cutout {
   position: absolute;
+  right: 50%;
+  bottom: 0;
   z-index: 3;
+  width: auto;
+  height: 95%;
+  max-width: none;
+  transform: translateX(50%);
+  object-fit: contain;
+  object-position: center bottom;
 }
 
-.inclusive-program-visual strong {
-  bottom: 5.2rem;
-  font-family: var(--font-merriweather), Merriweather, Georgia, serif;
-  font-size: 1.65rem;
-}
-
-.inclusive-program-visual small {
-  bottom: 3.5rem;
-  color: #777b82;
+.inclusive-program-visual figcaption {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 3;
+  border: 1px solid rgb(255 255 255 / 0.28);
+  border-radius: 999px;
+  background: rgb(68 8 20 / 0.72);
+  padding: 0.65rem 0.9rem;
+  color: #fff;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.06em;
+  backdrop-filter: blur(8px);
 }
 
 .inclusive-ring {
@@ -299,6 +295,8 @@
 }
 
 .inclusive-ring-one {
+  top: 8%;
+  right: 5%;
   width: 19rem;
   height: 19rem;
   border: 1px dashed rgb(165 14 18 / 0.3);
@@ -306,6 +304,8 @@
 }
 
 .inclusive-ring-two {
+  top: 18%;
+  left: 5%;
   width: 13rem;
   height: 13rem;
   border: 25px solid rgb(165 14 18 / 0.05);
