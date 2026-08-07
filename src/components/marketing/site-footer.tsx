@@ -32,6 +32,25 @@ function GoogleWorkspaceLogo() {
   );
 }
 
+function CodeAILogo() {
+  return (
+    <a
+      className="affiliate-logo affiliate-logo-link codeai-affiliate"
+      href="https://code.org/"
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Visit CodeAI"
+    >
+      <img
+        className="codeai-logo"
+        src="https://code.org/_next/static/media/codeai-logo-inverse.a30ff4e2.svg"
+        alt="CodeAI"
+      />
+      <span><small>AI + CS education</small></span>
+    </a>
+  );
+}
+
 function GoogleVerifiedLogo() {
   return (
     <div className="affiliate-logo" aria-label="Google Verified">
@@ -111,6 +130,7 @@ export function SiteFooter() {
           <CiscoNetworkingLogo />
           <GoogleWorkspaceLogo />
           <GoogleVerifiedLogo />
+          <CodeAILogo />
         </div>
       </div>
 
