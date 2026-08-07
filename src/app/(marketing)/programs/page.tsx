@@ -223,9 +223,18 @@ export default function ProgramsPage() {
 
           <div className="programs-visual" aria-label="Petra Academy learning ecosystem">
             <div className="programs-visual-core">
-              <span><School size={42} /></span>
-              <strong>One Petra education</strong>
-              <small>Academics · Skills · Character</small>
+              <Image
+                className="programs-visual-core-image"
+                src="/images/petra-campus-one-education.webp"
+                alt="Petra Academy school building"
+                fill
+                priority
+                sizes="(max-width: 640px) 62vw, 280px"
+              />
+              <div className="programs-visual-core-copy">
+                <strong>One Petra education</strong>
+                <small>Academics · Skills · Character</small>
+              </div>
             </div>
             <div className="programs-orbit programs-orbit-one"><Code2 size={22} /><span>Coding</span></div>
             <div className="programs-orbit programs-orbit-two"><Palette size={22} /><span>Creativity</span></div>

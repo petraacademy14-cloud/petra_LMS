@@ -84,38 +84,46 @@
 .programs-visual-core {
   position: relative;
   z-index: 3;
-  display: grid;
-  width: 13.5rem;
-  min-height: 12rem;
-  place-items: center;
-  border: 1px solid #e7e3e3;
+  width: 16rem;
+  min-height: 18rem;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.88);
   border-radius: 2rem;
-  background: rgb(255 255 255 / 0.96);
-  padding: 1.7rem;
-  text-align: center;
+  background: #5f1725;
   box-shadow: 0 22px 50px rgb(75 19 21 / 0.14);
   animation: programs-core-float 5.2s ease-in-out infinite;
 }
 
-.programs-visual-core > span {
+.programs-visual-core-image {
+  object-fit: cover;
+  object-position: 58% 34%;
+}
+
+.programs-visual-core-copy {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
   display: grid;
-  width: 5.3rem;
-  height: 5.3rem;
-  place-items: center;
-  border-radius: 1.7rem;
-  background: #fff0f1;
-  color: #a50e12;
+  gap: 0.4rem;
+  align-content: end;
+  min-height: 56%;
+  background: linear-gradient(180deg, transparent 0%, rgb(70 7 20 / 0.82) 42%, rgb(70 7 20 / 0.97) 100%);
+  padding: 4.5rem 1.25rem 1.35rem;
+  color: #fff;
+  text-align: center;
 }
 
 .programs-visual-core strong {
-  margin-top: 1rem;
   font-family: var(--font-merriweather), Merriweather, Georgia, serif;
-  font-size: 1.2rem;
+  font-size: 1.45rem;
+  line-height: 1.13;
+  text-shadow: 0 2px 16px rgb(30 0 5 / 0.45);
 }
 
 .programs-visual-core small {
-  margin-top: 0.35rem;
-  color: #737780;
+  color: rgb(255 255 255 / 0.82);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.05em;
