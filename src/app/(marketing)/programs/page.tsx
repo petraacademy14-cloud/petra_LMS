@@ -13,6 +13,7 @@ import {
   Gamepad2,
   GraduationCap,
   HeartHandshake,
+  Music,
   Palette,
   Rocket,
   School,
@@ -417,6 +418,37 @@ export default function ProgramsPage() {
               wellness while helping learners discover interests and talents.
             </p>
           </div>
+          <article className="petra-music-feature">
+            <div className="petra-music-gallery">
+              <figure className="petra-editorial-photo petra-music-photo petra-music-photo-primary">
+                <Image
+                  src="/images/petra-violin-ensemble.webp"
+                  alt="Petra Academy students performing together in a violin ensemble"
+                  width={1600}
+                  height={900}
+                  sizes="(max-width: 820px) 100vw, 58vw"
+                />
+              </figure>
+              <figure className="petra-editorial-photo petra-music-photo petra-music-photo-supporting">
+                <Image
+                  src="/images/petra-clarinet-ensemble.webp"
+                  alt="Petra Academy students performing with clarinets and brass instruments"
+                  width={1600}
+                  height={900}
+                  sizes="(max-width: 820px) 100vw, 36vw"
+                />
+              </figure>
+            </div>
+            <div className="petra-music-copy">
+              <span className="card-icon"><Music size={27} /></span>
+              <span className="section-kicker">Music &amp; Creative Arts</span>
+              <h3>Confidence takes the stage.</h3>
+              <p>
+                Instrumental training, ensemble practice and live performance help learners develop discipline,
+                concentration, creativity and the confidence to contribute as part of a team.
+              </p>
+            </div>
+          </article>
           <div className="grid gap-5 lg:grid-cols-2">
             {clubGroups.map(({ title, icon: Icon, items }) => (
               <article className="marketing-card p-7 sm:p-8" key={title}>
