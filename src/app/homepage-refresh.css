@@ -513,6 +513,79 @@
   line-height: 1.8;
 }
 
+.petra-campus-showcase {
+  position: relative;
+  min-height: clamp(500px, 62vw, 700px);
+  overflow: hidden;
+  border-radius: 34px;
+  background: #3d0a14;
+  box-shadow: 0 30px 80px rgb(55 24 25 / 0.18);
+}
+
+.petra-campus-showcase-image {
+  object-fit: cover;
+  object-position: center;
+}
+
+.petra-campus-showcase-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background:
+    linear-gradient(90deg, rgb(44 4 13 / 0.82) 0%, rgb(65 7 19 / 0.52) 42%, transparent 72%),
+    linear-gradient(0deg, rgb(35 3 10 / 0.92) 0%, rgb(35 3 10 / 0.3) 42%, transparent 68%);
+  padding: clamp(30px, 6vw, 76px);
+  color: #fff;
+}
+
+.petra-campus-showcase-overlay h2 {
+  max-width: 720px;
+  margin: 14px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.5rem, 5.5vw, 4.8rem);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  text-shadow: 0 3px 24px rgb(0 0 0 / 0.38);
+}
+
+.petra-campus-showcase-overlay p {
+  max-width: 650px;
+  margin: 20px 0 0;
+  color: rgb(255 255 255 / 0.88);
+  font-size: 1.04rem;
+  line-height: 1.7;
+}
+
+.petra-campus-showcase-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.button-light {
+  background: #fff;
+  color: #78080b;
+}
+
+.button-light:hover {
+  background: #fff1f1;
+}
+
+.button-ghost-light {
+  border: 1px solid rgb(255 255 255 / 0.5);
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+  backdrop-filter: blur(8px);
+}
+
+.button-ghost-light:hover {
+  border-color: #fff;
+  background: rgb(255 255 255 / 0.18);
+}
+
 .petra-college-points {
   display: grid;
   gap: 13px;
@@ -767,6 +840,29 @@
 }
 
 @media (max-width: 560px) {
+  .petra-campus-showcase {
+    min-height: 620px;
+    border-radius: 22px;
+  }
+
+  .petra-campus-showcase-image {
+    object-position: 61% center;
+  }
+
+  .petra-campus-showcase-overlay {
+    background: linear-gradient(0deg, rgb(35 3 10 / 0.96) 0%, rgb(35 3 10 / 0.62) 48%, transparent 78%);
+    padding: 26px 22px;
+  }
+
+  .petra-campus-showcase-overlay h2 {
+    font-size: clamp(2.3rem, 12vw, 3.25rem);
+  }
+
+  .petra-campus-showcase-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .petra-editorial-photo,
   .petra-life-photo,
   .petra-tech-feature {

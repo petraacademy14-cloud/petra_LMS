@@ -262,19 +262,32 @@ export default function AboutPage() {
       </section>
 
       <section className="marketing-section">
-        <div className="marketing-shell visit-banner">
-          <div>
-            <span className="section-kicker">Two campuses, one Petra standard</span>
-            <h2>Experience Petra Academy in Awka or Nnewi.</h2>
-            <p>
-              Visit our learning environment, meet the team and discover the right pathway from Daycare and Playgroup
-              through Nursery, Primary and College.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link className="button button-lg" href="/book-visit">Book a school visit <ArrowRight size={18} /></Link>
-            <Link className="button button-secondary button-lg" href="/contact"><School size={18} /> Contact us</Link>
-          </div>
+        <div className="marketing-shell">
+          <article className="petra-campus-showcase">
+            <Image
+              className="petra-campus-showcase-image"
+              src="/images/petra-campus-full.webp"
+              alt="Petra Academy campus building and school vehicles"
+              fill
+              sizes="(max-width: 720px) 100vw, 1180px"
+            />
+            <div className="petra-campus-showcase-overlay">
+              <span className="section-kicker section-kicker-light">Two Campuses. One Petra Standard.</span>
+              <h2>Experience Petra Academy in Awka or Nnewi.</h2>
+              <p>
+                Visit our learning environment, meet the team and discover the right pathway from Daycare and
+                Playgroup through Nursery, Primary and College.
+              </p>
+              <div className="petra-campus-showcase-actions">
+                <Link className="button button-lg button-light" href="/book-visit">
+                  Book a school visit <ArrowRight size={18} />
+                </Link>
+                <Link className="button button-lg button-ghost-light" href="/contact">
+                  <School size={18} /> Contact us
+                </Link>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
     </>
