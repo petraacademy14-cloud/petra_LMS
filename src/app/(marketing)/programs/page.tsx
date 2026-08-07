@@ -441,8 +441,10 @@ export default function ProgramsPage() {
             </div>
             <div className="petra-music-copy">
               <span className="card-icon"><Music size={27} /></span>
-              <span className="section-kicker">Music &amp; Creative Arts</span>
-              <h3>Confidence takes the stage.</h3>
+              <div>
+                <span className="section-kicker">Music &amp; Creative Arts</span>
+                <h3>Confidence takes the stage.</h3>
+              </div>
               <p>
                 Instrumental training, ensemble practice and live performance help learners develop discipline,
                 concentration, creativity and the confidence to contribute as part of a team.

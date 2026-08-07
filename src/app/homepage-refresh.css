@@ -521,51 +521,62 @@
 }
 
 .petra-music-feature {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
-  align-items: center;
-  gap: clamp(32px, 5vw, 68px);
+  overflow: hidden;
   margin-bottom: 40px;
   border: 1px solid var(--petra-line);
   border-radius: 32px;
-  background: #fff;
-  padding: clamp(18px, 3vw, 34px);
+  background: #71171c;
   box-shadow: 0 22px 55px rgb(55 24 25 / 0.09);
 }
 
 .petra-music-gallery {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(180px, 0.8fr);
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
 }
 
 .petra-music-photo {
   aspect-ratio: 16 / 9;
-  border-radius: 22px;
+  border-radius: 0;
   box-shadow: none;
 }
 
 .petra-music-photo-supporting {
-  align-self: end;
-  transform: translateY(22px);
+  border-left: 3px solid #fff;
+}
+
+.petra-music-copy {
+  display: grid;
+  grid-template-columns: auto minmax(210px, 0.55fr) minmax(280px, 1fr);
+  align-items: center;
+  gap: clamp(18px, 3vw, 42px);
+  padding: clamp(24px, 4vw, 42px);
+  color: #fff;
+}
+
+.petra-music-copy .card-icon {
+  border-color: rgb(255 255 255 / 0.28);
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
 }
 
 .petra-music-copy .section-kicker {
   display: block;
-  margin-top: 22px;
+  margin: 0;
+  color: #ffd4d4;
 }
 
 .petra-music-copy h3 {
-  margin: 12px 0 0;
+  margin: 8px 0 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2rem, 4vw, 3.35rem);
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
   line-height: 1.08;
   letter-spacing: -0.035em;
 }
 
 .petra-music-copy p {
-  margin: 18px 0 0;
-  color: var(--petra-muted);
+  margin: 0;
+  color: rgb(255 255 255 / 0.86);
   line-height: 1.75;
 }
 
@@ -631,8 +642,7 @@
   .petra-life-heading,
   .petra-students-grid,
   .petra-tech-feature-grid,
-  .petra-college-grid,
-  .petra-music-feature {
+  .petra-college-grid {
     grid-template-columns: 1fr;
   }
 
@@ -647,7 +657,11 @@
   }
 
   .petra-music-copy {
-    padding: 8px 6px 2px;
+    grid-template-columns: auto 1fr;
+  }
+
+  .petra-music-copy p {
+    grid-column: 1 / -1;
   }
 
   .curriculum-overview,
@@ -710,7 +724,8 @@
   }
 
   .petra-music-photo-supporting {
-    transform: none;
+    border-top: 3px solid #fff;
+    border-left: 0;
   }
 }
 
