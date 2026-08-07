@@ -258,3 +258,42 @@ export default function AboutPage() {
             </p>
             <p className="mt-4 text-[1.05rem] leading-8 text-[#666b73]">
               Through continuous development, collaboration and thoughtful use of technology, the Petra teaching team
+              delivers engaging lessons while paying close attention to the progress and needs of each child.
+            </p>
+            <Link className="inline-cta mt-5" href="/book-visit">Meet our school community <ArrowRight size={17} /></Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="marketing-section">
+        <div className="marketing-shell">
+          <article className="petra-campus-showcase">
+            <Image
+              className="petra-campus-showcase-image"
+              src="/images/petra-campus-full.webp"
+              alt="Petra Academy campus building and school vehicles"
+              fill
+              sizes="(max-width: 720px) 100vw, 1180px"
+            />
+            <div className="petra-campus-showcase-overlay">
+              <span className="section-kicker section-kicker-light">Two Campuses. One Petra Standard.</span>
+              <h2>Experience Petra Academy in Awka or Nnewi.</h2>
+              <p>
+                Visit our learning environment, meet the team and discover the right pathway from Daycare and
+                Playgroup through Nursery, Primary and College.
+              </p>
+              <div className="petra-campus-showcase-actions">
+                <Link className="button button-lg button-light" href="/book-visit">
+                  Book a school visit <ArrowRight size={18} />
+                </Link>
+                <Link className="button button-lg button-ghost-light" href="/contact">
+                  <School size={18} /> Contact us
+                </Link>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </>
+  );
+}
