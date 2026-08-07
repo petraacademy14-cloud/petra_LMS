@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { CalendarDays, CheckCircle2, Clock, MapPin } from "lucide-react";
 import { createVisitBooking } from "@/app/actions/admissions";
 import { db } from "@/lib/db";
@@ -19,8 +20,17 @@ export default async function BookVisitPage({ searchParams }: BookVisitPageProps
 
   return (
     <>
-      <section className="page-hero simple-page-hero">
-        <div className="marketing-shell">
+      <section className="page-hero simple-page-hero book-visit-hero">
+        <Image
+          className="book-visit-hero-image"
+          src="/images/petra-campus-full.webp"
+          alt="Petra Academy campus building and school vehicles"
+          fill
+          priority
+          sizes="100vw"
+        />
+        <div className="book-visit-hero-shade" aria-hidden="true" />
+        <div className="marketing-shell book-visit-hero-content">
           <span className="section-kicker">Book a visit</span>
           <h1>Come and experience Petra Academy.</h1>
           <p>Tell us about your family and preferred visit time. The admissions team will confirm the appointment.</p>
