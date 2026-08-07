@@ -529,17 +529,31 @@
 }
 
 .petra-college-award-photo {
+  position: relative;
   aspect-ratio: 16 / 9;
   border-radius: 0;
   box-shadow: none;
+}
+
+.petra-college-award-photo::after {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: clamp(92px, 16vw, 190px);
+  background: linear-gradient(to bottom, rgb(113 23 28 / 0), rgb(113 23 28 / 0.64) 58%, #71171c 100%);
+  content: "";
+  pointer-events: none;
 }
 
 .petra-college-award-caption {
   display: grid;
   grid-template-columns: minmax(220px, 0.75fr) minmax(280px, 1.25fr);
   align-items: end;
-  gap: 18px clamp(28px, 5vw, 72px);
-  padding: clamp(26px, 4vw, 46px);
+  gap: 24px clamp(36px, 6vw, 88px);
+  margin-top: -2px;
+  padding: clamp(34px, 5vw, 58px) clamp(30px, 5vw, 58px) clamp(38px, 5.5vw, 64px);
   color: #fff;
 }
 
@@ -556,10 +570,11 @@
 }
 
 .petra-college-award-caption p {
+  max-width: 610px;
   margin: 0;
   color: rgb(255 255 255 / 0.86);
-  font-size: 1.02rem;
-  line-height: 1.7;
+  font-size: 1.06rem;
+  line-height: 1.8;
 }
 
 .petra-music-feature {
