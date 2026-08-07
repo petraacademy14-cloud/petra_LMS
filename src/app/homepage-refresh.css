@@ -520,6 +520,48 @@
   color: var(--petra-red);
 }
 
+.petra-college-award-feature {
+  overflow: hidden;
+  margin-top: clamp(44px, 7vw, 86px);
+  border-radius: 32px;
+  background: #71171c;
+  box-shadow: 0 28px 70px rgb(60 22 24 / 0.16);
+}
+
+.petra-college-award-photo {
+  aspect-ratio: 16 / 9;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.petra-college-award-caption {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.75fr) minmax(280px, 1.25fr);
+  align-items: end;
+  gap: 18px clamp(28px, 5vw, 72px);
+  padding: clamp(26px, 4vw, 46px);
+  color: #fff;
+}
+
+.petra-college-award-caption .section-kicker {
+  grid-column: 1 / -1;
+}
+
+.petra-college-award-caption h3 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.9rem, 3.5vw, 3.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.petra-college-award-caption p {
+  margin: 0;
+  color: rgb(255 255 255 / 0.86);
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
 .petra-music-feature {
   overflow: hidden;
   margin-bottom: 40px;
@@ -654,6 +696,10 @@
 
   .petra-college-photo {
     max-width: 560px;
+  }
+
+  .petra-college-award-caption {
+    grid-template-columns: 1fr;
   }
 
   .petra-music-copy {

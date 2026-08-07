@@ -311,6 +311,22 @@ export default function ProgramsPage() {
             </div>
           </div>
         </div>
+        <article className="marketing-shell petra-college-award-feature">
+          <figure className="petra-editorial-photo petra-college-award-photo">
+            <Image
+              src="/images/petra-college-presentation-winners.webp"
+              alt="Petra College class presentation winners celebrating with their trophy and prizes"
+              width={1600}
+              height={900}
+              sizes="(max-width: 820px) 100vw, 1180px"
+            />
+          </figure>
+          <div className="petra-college-award-caption">
+            <span className="section-kicker section-kicker-light">Celebrating Achievement</span>
+            <h3>Petra College Class Presentation Winners</h3>
+            <p>Recognising teamwork, confidence, creativity and excellence.</p>
+          </div>
+        </article>
       </section>
 
       <section className="marketing-section">
