@@ -275,18 +275,33 @@
 
 .inclusive-program-visual figcaption {
   position: absolute;
-  right: 1.25rem;
-  bottom: 1.25rem;
-  z-index: 3;
-  border: 1px solid rgb(255 255 255 / 0.28);
-  border-radius: 999px;
-  background: rgb(68 8 20 / 0.72);
-  padding: 0.65rem 0.9rem;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 4;
+  display: grid;
+  gap: 0.25rem;
+  min-height: 5.5rem;
+  align-content: center;
+  background: linear-gradient(90deg, rgb(88 9 26 / 0.97), rgb(143 24 48 / 0.94));
+  padding: 1rem 1.4rem 1.1rem;
   color: #fff;
+  box-shadow: 0 -14px 30px rgb(68 8 20 / 0.16);
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.inclusive-program-visual figcaption strong {
+  font-family: var(--font-merriweather), Merriweather, Georgia, serif;
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  letter-spacing: -0.01em;
+}
+
+.inclusive-program-visual figcaption span {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.06em;
-  backdrop-filter: blur(8px);
+  opacity: 0.86;
 }
 
 .inclusive-ring {

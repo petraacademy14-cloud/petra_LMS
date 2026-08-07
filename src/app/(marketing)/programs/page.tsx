@@ -531,7 +531,10 @@ export default function ProgramsPage() {
               height={1080}
               sizes="(max-width: 960px) 78vw, 38vw"
             />
-            <figcaption>Known · Supported · Included</figcaption>
+            <figcaption>
+              <strong>Known. Supported. Included.</strong>
+              <span>Every learner has room to grow.</span>
+            </figcaption>
           </figure>
         </div>
       </section>
