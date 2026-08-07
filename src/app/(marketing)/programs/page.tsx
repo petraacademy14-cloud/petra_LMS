@@ -379,16 +379,27 @@ export default function ProgramsPage() {
                 </p>
               </div>
             </article>
-            <article className="petra-tech-feature">
-              <figure className="petra-editorial-photo petra-robotics-photo">
-                <Image
-                  src="/images/petra-robotics-class.webp"
-                  alt="Petra Academy pupils building and testing a robotics project"
-                  width={1600}
-                  height={900}
-                  sizes="(max-width: 720px) 100vw, 50vw"
-                />
-              </figure>
+            <article className="petra-tech-feature petra-robotics-feature">
+              <div className="petra-robotics-gallery">
+                <figure className="petra-editorial-photo petra-robotics-photo">
+                  <Image
+                    src="/images/petra-robotics-class.webp"
+                    alt="Petra Academy pupils building and testing a robotics project"
+                    width={1600}
+                    height={900}
+                    sizes="(max-width: 720px) 100vw, 25vw"
+                  />
+                </figure>
+                <figure className="petra-editorial-photo petra-robotics-photo">
+                  <Image
+                    src="/images/petra-robotics-instructor-demonstration.webp"
+                    alt="Petra Academy instructor demonstrating a robotic arm beside a laptop"
+                    width={1600}
+                    height={900}
+                    sizes="(max-width: 720px) 100vw, 25vw"
+                  />
+                </figure>
+              </div>
               <div>
                 <span className="section-kicker">Robotics & STEM</span>
                 <h3>Learning by building, testing and creating.</h3>

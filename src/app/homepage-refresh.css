@@ -455,6 +455,18 @@
   aspect-ratio: 16 / 9;
 }
 
+.petra-tech-feature > .petra-robotics-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  padding: 0;
+  background: var(--petra-line);
+}
+
+.petra-robotics-gallery .petra-robotics-photo {
+  min-height: 100%;
+}
+
 .petra-tech-feature > div {
   padding: 30px;
 }
@@ -774,6 +786,11 @@
 
   .petra-tech-feature > div {
     padding: 23px;
+  }
+
+  .petra-tech-feature > .petra-robotics-gallery {
+    grid-template-columns: 1fr;
+    padding: 0;
   }
 
   .petra-music-feature {
