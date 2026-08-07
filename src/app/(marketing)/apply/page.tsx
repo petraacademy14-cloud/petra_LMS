@@ -14,7 +14,7 @@ export default function ApplyPage() {
       <section className="page-hero simple-page-hero application-hero">
         <Image
           className="application-hero-image"
-          src="/images/petra-admissions-transformation.webp"
+          src="/images/petra-admissions-transformation-transparent.webp"
           alt="A girl in everyday clothes meeting her future self as a Petra Academy student"
           fill
           priority
