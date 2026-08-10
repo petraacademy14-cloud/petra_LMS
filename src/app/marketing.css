@@ -140,8 +140,10 @@
 .mobile-menu summary {
   list-style: none;
   cursor: pointer;
-  border: 1px solid var(--petra-line);
+  border: 1px solid var(--petra-red);
   border-radius: 999px;
+  background: var(--petra-red);
+  color: #fff;
   padding: 10px 15px;
   font-size: 0.84rem;
   font-weight: 800;
