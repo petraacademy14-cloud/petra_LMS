@@ -14,19 +14,21 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="marketing-shell header-inner">
         <Link className="brand-lockup" href="/" aria-label="Petra Academy home">
-          <Image
-            className="brand-logo"
-            src="/brand/petra-logo.webp"
-            alt="Petra Academy official logo"
-            width={64}
-            height={64}
-            priority
-            unoptimized
-          />
-          <span>
+          <span className="brand-mark">
+            <Image
+              className="brand-logo"
+              src="/brand/petra-logo.webp"
+              alt="Petra Academy official logo"
+              width={64}
+              height={64}
+              priority
+              unoptimized
+            />
+            <small className="brand-since">Since 2013</small>
+          </span>
+          <span className="brand-copy">
             <strong>Petra Academy</strong>
             <small>Firm foundation for building excellent leaders</small>
-            <small className="brand-since">Since 2013</small>
           </span>
         </Link>
 

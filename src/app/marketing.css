@@ -56,6 +56,12 @@
   object-fit: contain;
 }
 
+.brand-lockup .brand-mark {
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+}
+
 .brand-lockup span {
   display: grid;
 }
@@ -76,7 +82,7 @@
 }
 
 .brand-lockup .brand-since {
-  margin-top: 4px;
+  margin-top: 0;
   color: #777276;
   font-size: 0.55rem;
   font-style: normal;
