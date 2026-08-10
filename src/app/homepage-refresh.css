@@ -415,6 +415,20 @@
   backdrop-filter: blur(10px);
 }
 
+.petra-life-slider { position: relative; }
+.petra-life-slides { position: relative; min-height: clamp(390px, 48vw, 650px); overflow: hidden; border: 1px solid rgb(255 255 255 / 0.16); border-radius: 30px; background: radial-gradient(circle at 50% 42%, rgb(255 255 255 / 0.12), transparent 42%), #641117; box-shadow: 0 28px 65px rgb(41 5 9 / 0.28); }
+.petra-life-slider .petra-life-photo { position: absolute; inset: 0; max-width: none; aspect-ratio: auto; margin: 0; border-radius: 0; opacity: 0; pointer-events: none; transition: opacity 420ms ease; }
+.petra-life-slider .petra-life-photo figcaption { position: absolute; right: 18px; bottom: 18px; }
+.petra-life-slider .petra-life-photo.is-active { opacity: 1; pointer-events: auto; }
+.petra-life-slider .petra-life-photo-cover img { object-fit: cover; }
+.petra-life-slider .petra-life-photo-contain img { object-fit: contain; object-position: center; }
+.petra-life-controls { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 18px; }
+.petra-life-controls > button { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid rgb(255 255 255 / 0.28); border-radius: 50%; background: rgb(255 255 255 / 0.1); color: #fff; cursor: pointer; transition: background 160ms ease, transform 160ms ease; }
+.petra-life-controls > button:hover, .petra-life-controls > button:focus-visible { background: rgb(255 255 255 / 0.2); transform: translateY(-1px); }
+.petra-life-dots { display: flex; gap: 8px; }
+.petra-life-dots button { width: 9px; height: 9px; border: 0; border-radius: 999px; background: rgb(255 255 255 / 0.38); padding: 0; cursor: pointer; transition: width 180ms ease, background 180ms ease; }
+.petra-life-dots button.is-active { width: 26px; background: #fff; }
+
 .petra-students-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(290px, 0.75fr);

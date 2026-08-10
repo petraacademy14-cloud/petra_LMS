@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PetraLifeSlider } from "@/components/marketing/petra-life-slider";
 import {
   ArrowRight,
   Baby,
@@ -199,16 +200,7 @@ export default function HomePage() {
               our community.
             </p>
           </div>
-          <figure className="petra-life-photo">
-            <Image
-              src="/images/petra-love-feast.webp"
-              alt="Petra Academy students and staff celebrating their Valentine’s Day Love Feast"
-              width={1448}
-              height={1086}
-              sizes="(max-width: 720px) 100vw, 1200px"
-            />
-            <figcaption>Petra Academy Valentine’s Day Love Feast</figcaption>
-          </figure>
+          <PetraLifeSlider />
         </div>
       </section>
 
