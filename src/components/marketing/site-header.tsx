@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { MobileMenu } from "./mobile-menu";
 
 const links = [
   ["About", "/about"],
@@ -43,16 +44,7 @@ export function SiteHeader() {
           <Link className="button header-login" href="/login">Login</Link>
         </div>
 
-        <details className="mobile-menu">
-          <summary aria-label="Open navigation menu">Menu</summary>
-          <nav aria-label="Mobile navigation">
-            {links.map(([label, href]) => (
-              <Link key={href} href={href}>{label}</Link>
-            ))}
-            <Link href="/book-visit">Book a visit</Link>
-            <Link href="/login">Login</Link>
-          </nav>
-        </details>
+        <MobileMenu links={links} />
       </div>
     </header>
   );
