@@ -26,6 +26,7 @@ export function SiteHeader() {
           <span>
             <strong>Petra Academy</strong>
             <small>Firm foundation for building excellent leaders</small>
+            <small className="brand-since">Since 2013</small>
           </span>
         </Link>
 
