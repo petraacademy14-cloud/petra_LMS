@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -90,21 +91,32 @@ const requiredDocuments = [
 export default function AdmissionsPage() {
   return (
     <>
-      <section className="page-hero simple-page-hero">
-        <div className="marketing-shell">
-          <span className="section-kicker">Admissions</span>
-          <h1>A clear application journey for every family.</h1>
-          <p>
-            Pay the application form fee, complete the application, take the entrance examination, pay school fees and
-            submit the remaining documents through one guided admissions process.
-          </p>
-          <div className="hero-actions">
-            <Link className="button button-lg" href="/apply">
-              Apply now <ArrowRight size={18} />
-            </Link>
-            <Link className="button button-secondary button-lg" href="/book-visit">
-              Book a visit
-            </Link>
+      <section className="page-hero simple-page-hero application-hero">
+        <Image
+          className="application-hero-image"
+          src="/images/petra-admissions-transformation-transparent.webp"
+          alt="A girl in everyday clothes meeting her future self as a Petra Academy student"
+          fill
+          priority
+          sizes="100vw"
+        />
+        <div className="application-hero-shade" aria-hidden="true" />
+        <div className="marketing-shell application-hero-shell">
+          <div className="application-hero-content">
+            <span className="section-kicker">Admissions</span>
+            <h1>A clear application journey for every family.</h1>
+            <p>
+              Pay the application form fee, complete the application, take the entrance examination, pay school fees and
+              submit the remaining documents through one guided admissions process.
+            </p>
+            <div className="hero-actions">
+              <Link className="button button-lg" href="/apply">
+                Apply now <ArrowRight size={18} />
+              </Link>
+              <Link className="button button-secondary button-lg" href="/book-visit">
+                Book a visit
+              </Link>
+            </div>
           </div>
         </div>
       </section>
