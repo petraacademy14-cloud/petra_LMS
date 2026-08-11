@@ -23,12 +23,6 @@ const slides = [
     caption: "Dedicated teachers building strong foundations",
     fit: "cover",
   },
-  {
-    src: "/images/petra-staff-team.webp",
-    alt: "Petra Academy staff members gathered together outside the school building",
-    caption: "The dedicated team behind every Petra Academy learner",
-    fit: "cover",
-  },
 ] as const;
 
 export function PetraLifeSlider() {
