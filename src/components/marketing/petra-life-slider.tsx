@@ -12,10 +12,10 @@ const slides = [
     fit: "cover",
   },
   {
-    src: "/images/petra-teacher-practical-learning.webp",
-    alt: "A Petra Academy teacher guiding a practical classroom demonstration",
-    caption: "Practical learning guided by dedicated teachers",
-    fit: "contain",
+    src: "/images/petra-attentive-classroom.webp",
+    alt: "Petra Academy pupils listening attentively during a classroom lesson",
+    caption: "An attentive classroom where every learner is engaged",
+    fit: "cover",
   },
   {
     src: "/images/petra-focused-learning.webp",
