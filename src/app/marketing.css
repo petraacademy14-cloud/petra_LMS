@@ -397,10 +397,38 @@
 }
 
 .split-section p:first-child { margin-top: 0; }
+
+.entrance-exam-heading {
+  max-width: 760px;
+  margin-bottom: 44px;
+}
+
+.entrance-exam-heading h2 {
+  margin: 11px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.5rem, 5vw, 4.2rem);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+}
+
+.entrance-exam-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: clamp(44px, 6vw, 86px);
+}
+
+.entrance-exam-copy p {
+  margin: 0;
+  color: var(--petra-muted);
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
 .entrance-exam-photo {
   position: relative;
   aspect-ratio: 3 / 2;
-  margin: 32px 0 0;
+  margin: 0;
   overflow: hidden;
   border: 1px solid rgba(117, 17, 21, 0.12);
   border-radius: 28px;
@@ -810,7 +838,9 @@
   .trust-grid > div { min-height: 88px; border-right: 0; border-bottom: 1px solid var(--petra-line); padding-inline: 0; }
   .trust-grid > div:last-child { border-bottom: 0; }
   .marketing-section { padding: 70px 0; }
+  .entrance-exam-heading { margin-bottom: 32px; }
   .split-section,
+  .entrance-exam-grid,
   .admissions-preview-grid,
   .page-hero-grid,
   .form-layout { grid-template-columns: 1fr; gap: 38px; }

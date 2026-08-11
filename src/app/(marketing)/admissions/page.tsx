@@ -143,10 +143,12 @@ export default function AdmissionsPage() {
       </section>
 
       <section className="marketing-section section-tint">
-        <div className="marketing-shell split-section">
-          <div>
+        <div className="marketing-shell entrance-exam-section">
+          <header className="entrance-exam-heading">
             <span className="section-kicker">Entrance examination</span>
             <h2>Online and onsite options.</h2>
+          </header>
+          <div className="entrance-exam-grid">
             <figure className="entrance-exam-photo">
               <Image
                 src="/images/petra-entrance-exam-student.webp"
@@ -155,18 +157,18 @@ export default function AdmissionsPage() {
                 sizes="(max-width: 720px) 100vw, 46vw"
               />
             </figure>
-          </div>
-          <div>
-            <p>
-              Petra Academy can assign an applicant to either an online or onsite entrance examination. The approved
-              mode, date, time, venue and instructions will appear in the applicant portal after the entrance payment is
-              confirmed.
-            </p>
-            <ul className="check-list">
-              <li>Online examinations include a timer and automatic submission.</li>
-              <li>Onsite candidates receive a printable examination slip.</li>
-              <li>Results and admission decisions are released through the portal.</li>
-            </ul>
+            <div className="entrance-exam-copy">
+              <p>
+                Petra Academy can assign an applicant to either an online or onsite entrance examination. The approved
+                mode, date, time, venue and instructions will appear in the applicant portal after the entrance payment is
+                confirmed.
+              </p>
+              <ul className="check-list">
+                <li>Online examinations include a timer and automatic submission.</li>
+                <li>Onsite candidates receive a printable examination slip.</li>
+                <li>Results and admission decisions are released through the portal.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
