@@ -147,6 +147,14 @@ export default function AdmissionsPage() {
           <div>
             <span className="section-kicker">Entrance examination</span>
             <h2>Online and onsite options.</h2>
+            <figure className="entrance-exam-photo">
+              <Image
+                src="/images/petra-entrance-exam-student.webp"
+                alt="Petra Academy student completing written classwork at his desk"
+                fill
+                sizes="(max-width: 720px) 100vw, 46vw"
+              />
+            </figure>
           </div>
           <div>
             <p>

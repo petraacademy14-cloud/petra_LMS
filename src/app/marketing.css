@@ -397,6 +397,22 @@
 }
 
 .split-section p:first-child { margin-top: 0; }
+.entrance-exam-photo {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  margin: 32px 0 0;
+  overflow: hidden;
+  border: 1px solid rgba(117, 17, 21, 0.12);
+  border-radius: 28px;
+  background: #20352d;
+  box-shadow: 0 24px 60px rgba(60, 31, 31, 0.14);
+}
+
+.entrance-exam-photo img {
+  object-fit: cover;
+  object-position: center;
+}
+
 .inline-cta {
   display: inline-flex;
   align-items: center;
