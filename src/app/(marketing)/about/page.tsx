@@ -15,7 +15,6 @@ import {
   Sparkles,
   Target,
 } from "lucide-react";
-import { PetraTeachingTeamCarousel } from "@/components/marketing/petra-teaching-team-carousel";
 
 export const metadata: Metadata = {
   title: "About Petra Academy",
@@ -133,6 +132,33 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <section className="marketing-section">
+        <div className="marketing-shell">
+          <div className="section-heading">
+            <span className="section-kicker">Our School Community</span>
+            <h2>Learning, growing and celebrating together.</h2>
+            <p>
+              Petra Academy brings learners and educators together in a caring community where every child is known,
+              supported and encouraged to become confident, responsible and future-ready.
+            </p>
+          </div>
+          <figure className="overflow-hidden rounded-[2rem] border border-[#e7e3e3] bg-[#f7f3f1] shadow-[0_24px_70px_rgba(51,24,24,0.1)]">
+            <Image
+              className="block h-auto w-full"
+              src="/images/petra-school-community.webp"
+              alt="Petra Academy students and educators gathered together at the school"
+              width={1536}
+              height={1024}
+              sizes="(max-width: 720px) 100vw, 1180px"
+            />
+            <figcaption className="border-t border-[#e7e3e3] bg-white px-6 py-5 text-center sm:px-8 sm:py-6">
+              <strong className="block font-[var(--font-merriweather)] text-2xl text-[#211f20]">One Petra community</strong>
+              <small className="mt-2 block font-semibold tracking-wide text-[#666b73]">Learners · Educators · Leaders</small>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
       <section className="marketing-section section-tint">
         <div className="marketing-shell">
           <article className="overflow-hidden rounded-[2rem] bg-[#78080b] text-white shadow-[0_30px_80px_rgba(90,8,11,0.18)]">
@@ -240,7 +266,29 @@ export default function AboutPage() {
 
       <section className="marketing-section section-tint">
         <div className="marketing-shell grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-          <PetraTeachingTeamCarousel />
+          <div className="overflow-hidden rounded-[2rem] border border-[#e7e3e3] bg-white shadow-[0_20px_60px_rgba(51,24,24,0.08)]">
+            <div className="relative min-h-[18rem] overflow-hidden bg-[#241b1b] lg:min-h-[27rem]">
+              <Image
+                className="absolute inset-0 size-full scale-110 object-cover opacity-45 blur-2xl"
+                src="/images/petra-staff-team.webp"
+                alt=""
+                fill
+                sizes="(max-width: 1024px) 100vw, 46vw"
+                aria-hidden="true"
+              />
+              <Image
+                className="object-contain"
+                src="/images/petra-staff-team.webp"
+                alt="Petra Academy staff members gathered together outside the school building"
+                fill
+                sizes="(max-width: 1024px) 100vw, 46vw"
+              />
+            </div>
+            <div className="px-6 py-5 text-center sm:px-8 sm:py-6">
+              <strong className="block font-[var(--font-merriweather)] text-2xl text-[#211f20]">The Petra teaching team</strong>
+              <small className="mt-2 block font-semibold tracking-wide text-[#666b73]">Caring · Dedicated · Professional</small>
+            </div>
+          </div>
           <div>
             <span className="section-kicker">Our Teachers</span>
             <h2 className="mt-3 font-[var(--font-merriweather)] text-[clamp(2.3rem,5vw,3.8rem)] leading-[1.08] tracking-[-0.035em]">Teachers who know, support and inspire every learner.</h2>
