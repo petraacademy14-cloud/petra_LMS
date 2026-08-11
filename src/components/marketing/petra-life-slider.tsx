@@ -34,7 +34,24 @@ export function PetraLifeSlider() {
       <div className="petra-life-slides" aria-live="polite">
         {slides.map((slide, index) => (
           <figure className={`petra-life-photo petra-life-photo-${slide.fit}${index === active ? " is-active" : ""}`} key={slide.src} aria-hidden={index !== active}>
-            <Image src={slide.src} alt={slide.alt} fill sizes="(max-width: 720px) 100vw, 1200px" priority={index === 0} />
+            {slide.fit === "contain" ? (
+              <Image
+                className="petra-life-photo-backdrop"
+                src={slide.src}
+                alt=""
+                fill
+                sizes="(max-width: 720px) 100vw, 1200px"
+                aria-hidden="true"
+              />
+            ) : null}
+            <Image
+              className="petra-life-photo-foreground"
+              src={slide.src}
+              alt={slide.alt}
+              fill
+              sizes="(max-width: 720px) 100vw, 1200px"
+              priority={index === 0}
+            />
             <figcaption>{slide.caption}</figcaption>
           </figure>
         ))}
