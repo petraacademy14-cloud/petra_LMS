@@ -6,6 +6,11 @@ const targets = [
   ["/", "text/html"],
   ["/login", "text/html"],
   ["/news", "text/html"],
+  ["/apply", "text/html"],
+  [
+    "/images/petra-admissions-transformation-transparent.webp",
+    "image/webp",
+  ],
   ["/api/health", "application/json"],
 ];
 
