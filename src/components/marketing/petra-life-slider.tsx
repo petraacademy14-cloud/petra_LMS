@@ -18,10 +18,10 @@ const slides = [
     fit: "cover",
   },
   {
-    src: "/images/petra-focused-learning.webp",
-    alt: "A Petra Academy pupil concentrating while writing in his notebook",
-    caption: "Focused learning, one lesson at a time",
-    fit: "contain",
+    src: "/images/petra-teacher-writing.webp",
+    alt: "A Petra Academy teacher writing a classroom lesson on the whiteboard",
+    caption: "Dedicated teachers building strong foundations",
+    fit: "cover",
   },
 ] as const;
 
@@ -34,16 +34,6 @@ export function PetraLifeSlider() {
       <div className="petra-life-slides" aria-live="polite">
         {slides.map((slide, index) => (
           <figure className={`petra-life-photo petra-life-photo-${slide.fit}${index === active ? " is-active" : ""}`} key={slide.src} aria-hidden={index !== active}>
-            {slide.fit === "contain" ? (
-              <Image
-                className="petra-life-photo-backdrop"
-                src={slide.src}
-                alt=""
-                fill
-                sizes="(max-width: 720px) 100vw, 1200px"
-                aria-hidden="true"
-              />
-            ) : null}
             <Image
               className="petra-life-photo-foreground"
               src={slide.src}
