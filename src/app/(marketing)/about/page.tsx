@@ -15,6 +15,7 @@ import {
   Sparkles,
   Target,
 } from "lucide-react";
+import { PetraTeachingTeamCarousel } from "@/components/marketing/petra-teaching-team-carousel";
 
 export const metadata: Metadata = {
   title: "About Petra Academy",
@@ -239,29 +240,7 @@ export default function AboutPage() {
 
       <section className="marketing-section section-tint">
         <div className="marketing-shell grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="overflow-hidden rounded-[2rem] border border-[#e7e3e3] bg-white shadow-[0_20px_60px_rgba(51,24,24,0.08)]">
-            <div className="relative min-h-[18rem] overflow-hidden bg-[#241b1b] lg:min-h-[27rem]">
-              <Image
-                className="absolute inset-0 size-full scale-110 object-cover opacity-45 blur-2xl"
-                src="/images/petra-staff-team.webp"
-                alt=""
-                fill
-                sizes="(max-width: 1024px) 100vw, 46vw"
-                aria-hidden="true"
-              />
-              <Image
-                className="object-contain"
-                src="/images/petra-staff-team.webp"
-                alt="Petra Academy staff members gathered together outside the school building"
-                fill
-                sizes="(max-width: 1024px) 100vw, 46vw"
-              />
-            </div>
-            <div className="px-6 py-5 text-center sm:px-8 sm:py-6">
-              <strong className="block font-[var(--font-merriweather)] text-2xl text-[#211f20]">The Petra teaching team</strong>
-              <small className="mt-2 block font-semibold tracking-wide text-[#666b73]">Caring · Dedicated · Professional</small>
-            </div>
-          </div>
+          <PetraTeachingTeamCarousel />
           <div>
             <span className="section-kicker">Our Teachers</span>
             <h2 className="mt-3 font-[var(--font-merriweather)] text-[clamp(2.3rem,5vw,3.8rem)] leading-[1.08] tracking-[-0.035em]">Teachers who know, support and inspire every learner.</h2>
