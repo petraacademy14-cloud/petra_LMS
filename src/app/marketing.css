@@ -622,7 +622,7 @@
   right: 4% !important;
   left: auto !important;
   width: 48% !important;
-  z-index: -3;
+  z-index: 0;
   object-fit: contain;
   object-position: right center;
   filter: drop-shadow(-28px 22px 24px rgb(66 13 18 / 0.2));
@@ -630,14 +630,14 @@
 
 .application-hero-shade {
   position: absolute;
-  z-index: -2;
+  z-index: 1;
   inset: 0;
   background: linear-gradient(90deg, rgb(255 250 248 / 0.99) 0%, rgb(255 250 248 / 0.95) 37%, rgb(255 250 248 / 0.55) 55%, transparent 71%);
 }
 
 .application-hero-shell {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .application-hero-content {
