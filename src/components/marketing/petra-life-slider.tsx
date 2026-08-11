@@ -17,6 +17,12 @@ const slides = [
     caption: "Practical learning guided by dedicated teachers",
     fit: "contain",
   },
+  {
+    src: "/images/petra-focused-learning.webp",
+    alt: "A Petra Academy pupil concentrating while writing in his notebook",
+    caption: "Focused learning, one lesson at a time",
+    fit: "contain",
+  },
 ] as const;
 
 export function PetraLifeSlider() {
