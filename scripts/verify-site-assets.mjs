@@ -3,7 +3,7 @@ import { access, readFile } from "node:fs/promises";
 const requiredAssets = [
   {
     asset: "public/images/petra-admissions-transformation-transparent.webp",
-    page: "src/app/(marketing)/apply/page.tsx",
+    page: "src/app/(marketing)/admissions/page.tsx",
     reference: "/images/petra-admissions-transformation-transparent.webp",
   },
 ];
