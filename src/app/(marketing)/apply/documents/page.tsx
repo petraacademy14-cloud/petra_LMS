@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ArrowLeft, CheckCircle2, FileText, Upload } from "lucide-react";
 import { uploadApplicationDocument } from "@/app/actions/admissions";
 import { isEditableApplication, type ApplicationStatus } from "@/lib/admissions-rules";
@@ -24,6 +25,18 @@ type DocumentsPageProps = {
 export default async function ApplicationDocumentsPage({ searchParams }: DocumentsPageProps) {
   const viewer = await requireApplicant();
   const { uploaded } = await searchParams;
+  const [formPayment] = await db.$queryRaw<Array<{ amount: unknown; verified: unknown }>>`
+    SELECT c."amount",
+      COALESCE(SUM(CASE WHEN p."status"='VERIFIED' THEN p."amount" ELSE 0 END), 0) AS "verified"
+    FROM "applicant_charges" c
+    LEFT JOIN "applicant_payments" p ON p."chargeId"=c."id"
+    WHERE c."applicationId"=${viewer.applicationId} AND c."kind"='FORM'
+    GROUP BY c."id"
+    LIMIT 1
+  `;
+  if (!formPayment || Number(formPayment.amount) - Number(formPayment.verified) > 0) {
+    redirect("/apply/payment");
+  }
   const [application] = await db.$queryRaw<Array<{ status: ApplicationStatus }>>`
     SELECT "status"::text AS "status"
     FROM "admission_applications"
