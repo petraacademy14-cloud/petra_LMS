@@ -149,6 +149,18 @@ async function editableApplication(applicationId: string, accountId: string) {
   const application = rows[0];
   if (!application) throw new Error("NOT_FOUND:APPLICATION");
   if (application.status !== "DRAFT") throw new Error("LOCKED:APPLICATION");
+  const [formPayment] = await db.$queryRaw<Array<{ amount: unknown; verified: unknown }>>`
+    SELECT c."amount",
+      COALESCE(SUM(CASE WHEN p."status"='VERIFIED' THEN p."amount" ELSE 0 END), 0) AS "verified"
+    FROM "applicant_charges" c
+    LEFT JOIN "applicant_payments" p ON p."chargeId"=c."id"
+    WHERE c."applicationId"=${applicationId} AND c."kind"='FORM'
+    GROUP BY c."id"
+    LIMIT 1
+  `;
+  if (!formPayment || Number(formPayment.amount) - Number(formPayment.verified) > 0) {
+    throw new Error("LOCKED:FORM_PAYMENT_REQUIRED");
+  }
   return application;
 }
 
