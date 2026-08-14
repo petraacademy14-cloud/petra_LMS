@@ -108,7 +108,7 @@ export async function registerApplicant(formData: FormData) {
   });
 
   await createApplicantSession(accountId);
-  redirect("/apply/application?created=1");
+  redirect("/apply/setup?created=1");
 }
 
 export async function loginApplicant(formData: FormData) {
@@ -131,7 +131,7 @@ export async function loginApplicant(formData: FormData) {
   }
 
   await createApplicantSession(account.id);
-  redirect("/apply/application");
+  redirect("/apply/status");
 }
 
 export async function logoutApplicant() {
