@@ -315,7 +315,13 @@ export async function startEntrancePayment() {
   if (!["SUBMITTED", "AWAITING_PAYMENT"].includes(application.status)) {
     redirect("/apply/status");
   }
-  const charge = await addChargeFromSchedule(application, "FORM", null);
+  const currentBalances = await balances(application.id);
+  const form = currentBalances.find((row) => row.kind === "FORM");
+  const formSettled = Boolean(
+    form && Number(form.amount) - Number(form.verified) <= 0,
+  );
+  const kind: EntranceFeeKind = application.submittedAt && formSettled ? "EXAM" : "FORM";
+  const charge = await addChargeFromSchedule(application, kind, null);
   if (!charge) redirect("/apply/status?error=fee-not-configured");
   await reconcileApplication(application.id, null);
   await db.auditLog.create({
@@ -326,10 +332,11 @@ export async function startEntrancePayment() {
       action: "applicant_charge.created",
       entityType: "AdmissionApplication",
       entityId: application.id,
-      after: { kind: "FORM", applicationNumber: application.applicationNumber },
+      after: { kind, applicationNumber: application.applicationNumber },
     },
   });
   revalidatePath("/apply/status");
+  revalidatePath("/apply/payment");
   redirect("/apply/payment");
 }
 
@@ -517,7 +524,7 @@ export async function reverseApplicantPayment(paymentId: string, formData: FormD
   assertCampusAccess(viewer, payment.campusId);
   if (payment.status !== "VERIFIED") throw new Error("INVALID:PAYMENT_STATUS");
   const application = await applicationFinance(payment.applicationId);
-  if (!["AWAITING_PAYMENT", "AWAITING_EXAMINATION"].includes(application.status)) {
+  if (!["DRAFT", "AWAITING_PAYMENT", "AWAITING_EXAMINATION"].includes(application.status)) {
     throw new Error("LOCKED:APPLICATION_FINANCE");
   }
 
