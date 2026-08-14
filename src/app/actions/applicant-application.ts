@@ -18,8 +18,12 @@ const optionalDate = (value: FormDataEntryValue | null) => {
 
 export async function saveApplicationDraft(formData: FormData) {
   const viewer = await requireApplicant();
-  const [current] = await db.$queryRaw<Array<{ status: string }>>`
-    SELECT "status"::text AS "status"
+  const [current] = await db.$queryRaw<Array<{
+    status: string;
+    campusId: string | null;
+    classLevelId: string | null;
+  }>>`
+    SELECT "status"::text AS "status", "campusId", "classLevelId"
     FROM "admission_applications"
     WHERE "id" = ${viewer.applicationId} AND "accountId" = ${viewer.id}
     LIMIT 1
@@ -68,6 +72,10 @@ export async function saveApplicationDraft(formData: FormData) {
     examMode: nullable(formData.get("examMode")),
     termsAccepted: formData.get("termsAccepted") === "on",
   });
+
+  if (input.campusId !== current.campusId || input.classLevelId !== current.classLevelId) {
+    throw new Error("LOCKED:PAID_APPLICATION_PLACEMENT");
+  }
 
   if (input.classLevelId && !input.campusId) {
     throw new Error("INVALID:CLASS_WITHOUT_CAMPUS");
