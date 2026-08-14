@@ -140,8 +140,13 @@ export async function logoutApplicant() {
 }
 
 async function editableApplication(applicationId: string, accountId: string) {
-  const rows = await db.$queryRaw<Array<{ id: string; status: ApplicationStatus }>>`
-    SELECT "id", "status"::text AS "status"
+  const rows = await db.$queryRaw<Array<{
+    id: string;
+    status: ApplicationStatus;
+    campusId: string | null;
+    classLevelId: string | null;
+  }>>`
+    SELECT "id", "status"::text AS "status", "campusId", "classLevelId"
     FROM "admission_applications"
     WHERE "id" = ${applicationId} AND "accountId" = ${accountId}
     LIMIT 1
@@ -199,6 +204,10 @@ export async function saveApplication(formData: FormData) {
       examMode: formData.get("examMode"),
       termsAccepted: formData.get("termsAccepted") === "on",
     });
+
+  if (input.campusId !== application.campusId || input.classLevelId !== application.classLevelId) {
+    throw new Error("LOCKED:PAID_APPLICATION_PLACEMENT");
+  }
 
   const placement = await db.classArm.findFirst({
     where: {
