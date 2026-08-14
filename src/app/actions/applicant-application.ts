@@ -26,6 +26,18 @@ export async function saveApplicationDraft(formData: FormData) {
   `;
   if (!current) throw new Error("NOT_FOUND:APPLICATION");
   if (current.status !== "DRAFT") throw new Error("LOCKED:APPLICATION");
+  const [formPayment] = await db.$queryRaw<Array<{ amount: unknown; verified: unknown }>>`
+    SELECT c."amount",
+      COALESCE(SUM(CASE WHEN p."status"='VERIFIED' THEN p."amount" ELSE 0 END), 0) AS "verified"
+    FROM "applicant_charges" c
+    LEFT JOIN "applicant_payments" p ON p."chargeId"=c."id"
+    WHERE c."applicationId"=${viewer.applicationId} AND c."kind"='FORM'
+    GROUP BY c."id"
+    LIMIT 1
+  `;
+  if (!formPayment || Number(formPayment.amount) - Number(formPayment.verified) > 0) {
+    throw new Error("LOCKED:FORM_PAYMENT_REQUIRED");
+  }
 
   const input = z.object({
     campusId: z.string().nullable(),
