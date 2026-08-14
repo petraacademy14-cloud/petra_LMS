@@ -285,12 +285,12 @@ export default function AboutPage() {
               />
             </div>
             <div className="px-6 py-5 text-center sm:px-8 sm:py-6">
-              <strong className="block font-[var(--font-merriweather)] text-2xl text-[#211f20]">The Petra teaching team</strong>
+              <strong className="block font-[var(--font-merriweather)] text-2xl text-[#211f20]">The Petra Nursery and Elementary teaching team</strong>
               <small className="mt-2 block font-semibold tracking-wide text-[#666b73]">Caring · Dedicated · Professional</small>
             </div>
           </div>
           <div>
-            <span className="section-kicker">Our Teachers</span>
+            <span className="section-kicker">Nursery &amp; Elementary Teachers</span>
             <h2 className="mt-3 font-[var(--font-merriweather)] text-[clamp(2.3rem,5vw,3.8rem)] leading-[1.08] tracking-[-0.035em]">Teachers who know, support and inspire every learner.</h2>
             <p className="mt-6 text-[1.05rem] leading-8 text-[#666b73]">
               Our teachers combine professional competence with patience, care and high expectations. They create warm,
