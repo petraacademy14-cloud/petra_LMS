@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { CheckCircle2, FileUp, LogOut, Save } from "lucide-react";
 import { logoutApplicant, submitApplication } from "@/app/actions/admissions";
 import { saveApplicationDraft } from "@/app/actions/applicant-application";
@@ -43,6 +44,25 @@ export default async function ApplicationPage({ searchParams }: ApplicationPageP
     LIMIT 1
   `;
   if (!application) throw new Error("NOT_FOUND:APPLICATION");
+
+  if (!application.campusId || !application.classLevelId) {
+    redirect("/apply/setup");
+  }
+  const [formPayment] = await db.$queryRaw<Array<{ amount: unknown; verified: unknown }>>`
+    SELECT c."amount",
+      COALESCE(SUM(CASE WHEN p."status"='VERIFIED' THEN p."amount" ELSE 0 END), 0) AS "verified"
+    FROM "applicant_charges" c
+    LEFT JOIN "applicant_payments" p ON p."chargeId"=c."id"
+    WHERE c."applicationId"=${viewer.applicationId} AND c."kind"='FORM'
+    GROUP BY c."id"
+    LIMIT 1
+  `;
+  const formSettled = Boolean(
+    formPayment && Number(formPayment.amount) - Number(formPayment.verified) <= 0,
+  );
+  if (!formSettled) {
+    redirect("/apply/payment");
+  }
 
   const [campuses, classLevels, documentCountRows] = await Promise.all([
     db.campus.findMany({
