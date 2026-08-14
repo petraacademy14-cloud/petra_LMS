@@ -171,7 +171,7 @@ async function editableApplication(applicationId: string, accountId: string) {
 
 export async function saveApplication(formData: FormData) {
   const viewer = await requireApplicant();
-  await editableApplication(viewer.applicationId, viewer.id);
+  const application = await editableApplication(viewer.applicationId, viewer.id);
 
   const input = z
     .object({
