@@ -300,8 +300,8 @@ export default function HomePage() {
             </p>
           </div>
           <ol className="admission-steps">
-            <li><span>1</span><div><strong>Pay the application form fee</strong><small>Complete the approved payment step to unlock the online application form.</small></div></li>
-            <li><span>2</span><div><strong>Complete the application</strong><small>Provide the learner, guardian, preferred campus and class information.</small></div></li>
+            <li><span>1</span><div><strong>Create an account and pay the application-form fee</strong><small>Select the campus and class, then pay the required fee to unlock the complete application.</small></div></li>
+            <li><span>2</span><div><strong>Complete the application</strong><small>After payment verification, provide the remaining learner, guardian and document information.</small></div></li>
             <li><span>3</span><div><strong>Take the entrance examination</strong><small>Follow the approved online or onsite examination process.</small></div></li>
             <li><span>4</span><div><strong>Pay school fees</strong><small>After an offer is made and accepted, pay the required school fees to secure enrolment.</small></div></li>
             <li><span>5</span><div><strong>Submit the remaining documents</strong><small>Accepted applicants provide the additional records required to complete enrolment.</small></div></li>
