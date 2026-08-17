@@ -947,19 +947,22 @@
 }
 
 
-/* Subtle section motion as visitors move through public pages. */
+/* Clear, polished section motion as visitors move through public pages. */
 .scroll-reveal {
   opacity: 0;
-  transform: translateY(28px);
+  filter: blur(6px);
+  transform: translateY(72px) scale(0.985);
   transition:
-    opacity 650ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
+    opacity 320ms ease-out,
+    filter 420ms ease-out,
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, filter, transform;
 }
 
 .scroll-reveal.scroll-reveal-visible {
   opacity: 1;
-  transform: translateY(0);
+  filter: blur(0);
+  transform: translateY(0) scale(1);
 }
 
 @media (prefers-reduced-motion: reduce) {
