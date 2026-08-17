@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PetraLifeSlider } from "@/components/marketing/petra-life-slider";
 import {
   ArrowRight,
   Baby,
@@ -187,6 +188,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="marketing-section petra-life-section">
+        <div className="marketing-shell">
+          <div className="petra-life-heading">
+            <div>
+              <span className="section-kicker section-kicker-light">Life at Petra Academy</span>
+              <h2>Friendship, kindness and community.</h2>
+            </div>
+            <p>
+              School life is also about belonging, celebrating together and creating joyful memories that strengthen
+              our community.
+            </p>
+          </div>
+          <PetraLifeSlider />
+        </div>
+      </section>
+
       <section className="marketing-section section-tint">
         <div className="marketing-shell">
           <div className="section-heading">
@@ -283,8 +300,8 @@ export default function HomePage() {
             </p>
           </div>
           <ol className="admission-steps">
-            <li><span>1</span><div><strong>Pay the application form fee</strong><small>Complete the approved payment step to unlock the online application form.</small></div></li>
-            <li><span>2</span><div><strong>Complete the application</strong><small>Provide the learner, guardian, preferred campus and class information.</small></div></li>
+            <li><span>1</span><div><strong>Create an account and pay the application-form fee</strong><small>Select the campus and class, then pay the required fee to unlock the complete application.</small></div></li>
+            <li><span>2</span><div><strong>Complete the application</strong><small>After payment verification, provide the remaining learner, guardian and document information.</small></div></li>
             <li><span>3</span><div><strong>Take the entrance examination</strong><small>Follow the approved online or onsite examination process.</small></div></li>
             <li><span>4</span><div><strong>Pay school fees</strong><small>After an offer is made and accepted, pay the required school fees to secure enrolment.</small></div></li>
             <li><span>5</span><div><strong>Submit the remaining documents</strong><small>Accepted applicants provide the additional records required to complete enrolment.</small></div></li>
@@ -317,7 +334,7 @@ export default function HomePage() {
               <div className="campus-contact-list">
                 <span><MapPin size={18} />Lasel Junction, No. 11 Godwin Chris Street, off Ukpor Road, by Nwafor Junction, Umudim, Nnewi</span>
                 <a href="tel:+2348033130456"><Phone size={18} />08033130456 · 08121997970</a>
-                <a href="mailto:nnewiadmin@petraacdemy.co"><Mail size={18} />nnewiadmin@petraacdemy.co</a>
+                <a href="mailto:nnewiadmin@petraacademy.co"><Mail size={18} />nnewiadmin@petraacademy.co</a>
                 <span><Users size={18} />@PetraAcademyAwka</span>
               </div>
             </article>

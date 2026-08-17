@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, website/approved-images-preview]
 
 permissions:
   contents: read
@@ -43,6 +43,7 @@ jobs:
       - run: npm ci
       - run: npm run db:generate
       - run: npm run db:deploy
+      - run: npm run verify:site-assets
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test:coverage

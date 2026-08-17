@@ -18,14 +18,30 @@ const optionalDate = (value: FormDataEntryValue | null) => {
 
 export async function saveApplicationDraft(formData: FormData) {
   const viewer = await requireApplicant();
-  const [current] = await db.$queryRaw<Array<{ status: string }>>`
-    SELECT "status"::text AS "status"
+  const [current] = await db.$queryRaw<Array<{
+    status: string;
+    campusId: string | null;
+    classLevelId: string | null;
+  }>>`
+    SELECT "status"::text AS "status", "campusId", "classLevelId"
     FROM "admission_applications"
     WHERE "id" = ${viewer.applicationId} AND "accountId" = ${viewer.id}
     LIMIT 1
   `;
   if (!current) throw new Error("NOT_FOUND:APPLICATION");
   if (current.status !== "DRAFT") throw new Error("LOCKED:APPLICATION");
+  const [formPayment] = await db.$queryRaw<Array<{ amount: unknown; verified: unknown }>>`
+    SELECT c."amount",
+      COALESCE(SUM(CASE WHEN p."status"='VERIFIED' THEN p."amount" ELSE 0 END), 0) AS "verified"
+    FROM "applicant_charges" c
+    LEFT JOIN "applicant_payments" p ON p."chargeId"=c."id"
+    WHERE c."applicationId"=${viewer.applicationId} AND c."kind"='FORM'
+    GROUP BY c."id"
+    LIMIT 1
+  `;
+  if (!formPayment || Number(formPayment.amount) - Number(formPayment.verified) > 0) {
+    throw new Error("LOCKED:FORM_PAYMENT_REQUIRED");
+  }
 
   const input = z.object({
     campusId: z.string().nullable(),
@@ -56,6 +72,10 @@ export async function saveApplicationDraft(formData: FormData) {
     examMode: nullable(formData.get("examMode")),
     termsAccepted: formData.get("termsAccepted") === "on",
   });
+
+  if (input.campusId !== current.campusId || input.classLevelId !== current.classLevelId) {
+    throw new Error("LOCKED:PAID_APPLICATION_PLACEMENT");
+  }
 
   if (input.classLevelId && !input.campusId) {
     throw new Error("INVALID:CLASS_WITHOUT_CAMPUS");

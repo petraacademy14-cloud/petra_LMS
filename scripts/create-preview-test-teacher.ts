@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth/minimal";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { hashPassword } from "better-auth/crypto";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import type { Role } from "../src/generated/prisma/enums";
@@ -58,6 +59,23 @@ async function ensureVerifiedPreviewStaff(input: PreviewStaffInput) {
       body: { name: input.name, email, password },
     });
     userId = result.user.id;
+  } else {
+    const passwordHash = await hashPassword(password);
+    await db.account.upsert({
+      where: {
+        providerId_accountId: {
+          providerId: "credential",
+          accountId: userId,
+        },
+      },
+      create: {
+        userId,
+        providerId: "credential",
+        accountId: userId,
+        password: passwordHash,
+      },
+      update: { password: passwordHash },
+    });
   }
 
   await db.user.update({

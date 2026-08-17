@@ -4,8 +4,18 @@ const base = (
 
 const targets = [
   ["/", "text/html"],
+  ["/about", "text/html"],
+  ["/programs", "text/html"],
+  ["/admissions", "text/html"],
   ["/login", "text/html"],
   ["/news", "text/html"],
+  ["/contact", "text/html"],
+  ["/book-visit", "text/html"],
+  ["/apply", "text/html"],
+  [
+    "/images/petra-admissions-transformation-transparent.webp",
+    "image/webp",
+  ],
   ["/api/health", "application/json"],
 ];
 

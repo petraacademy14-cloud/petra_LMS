@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -12,6 +13,7 @@ import {
   Gamepad2,
   GraduationCap,
   HeartHandshake,
+  Music,
   Palette,
   Rocket,
   School,
@@ -221,9 +223,18 @@ export default function ProgramsPage() {
 
           <div className="programs-visual" aria-label="Petra Academy learning ecosystem">
             <div className="programs-visual-core">
-              <span><School size={42} /></span>
-              <strong>One Petra education</strong>
-              <small>Academics · Skills · Character</small>
+              <Image
+                className="programs-visual-core-image"
+                src="/images/petra-campus-one-education.webp"
+                alt="Petra Academy school building"
+                fill
+                priority
+                sizes="(max-width: 640px) 62vw, 280px"
+              />
+              <div className="programs-visual-core-copy">
+                <strong>One Petra education</strong>
+                <small>Academics · Skills · Character</small>
+              </div>
             </div>
             <div className="programs-orbit programs-orbit-one"><Code2 size={22} /><span>Coding</span></div>
             <div className="programs-orbit programs-orbit-two"><Palette size={22} /><span>Creativity</span></div>
@@ -283,6 +294,50 @@ export default function ProgramsPage() {
         </div>
       </section>
 
+      <section className="marketing-section petra-college-section">
+        <div className="marketing-shell petra-college-grid">
+          <figure className="petra-editorial-photo petra-college-photo">
+            <Image
+              src="/images/petra-college-students.webp"
+              alt="Petra Academy College students holding a laptop and books"
+              width={1023}
+              height={1537}
+              sizes="(max-width: 820px) 100vw, 44vw"
+            />
+          </figure>
+          <div className="petra-college-copy">
+            <span className="section-kicker">College · Grades 7–12</span>
+            <h2>Prepared for examinations, leadership and life beyond school.</h2>
+            <p>
+              Petra College combines strong subject teaching with technology, leadership development and purposeful
+              guidance. Learners build the discipline, confidence and practical skills needed for higher education and
+              a fast-changing world.
+            </p>
+            <div className="petra-college-points">
+              <span><CheckCircle2 size={19} /> Focused examination preparation</span>
+              <span><CheckCircle2 size={19} /> Technology and digital confidence</span>
+              <span><CheckCircle2 size={19} /> Leadership, character and career guidance</span>
+            </div>
+          </div>
+        </div>
+        <article className="marketing-shell petra-college-award-feature">
+          <figure className="petra-editorial-photo petra-college-award-photo">
+            <Image
+              src="/images/petra-college-presentation-winners.webp"
+              alt="Petra College class presentation winners celebrating with their trophy and prizes"
+              width={1600}
+              height={900}
+              sizes="(max-width: 820px) 100vw, 1180px"
+            />
+          </figure>
+          <div className="petra-college-award-caption">
+            <span className="section-kicker section-kicker-light">Celebrating Achievement</span>
+            <h3>Petra College Class Presentation Winners</h3>
+            <p>Recognising teamwork, confidence, creativity and excellence.</p>
+          </div>
+        </article>
+      </section>
+
       <section className="marketing-section">
         <div className="marketing-shell">
           <div className="section-heading">
@@ -299,6 +354,69 @@ export default function ProgramsPage() {
                 </div>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="marketing-section petra-tech-learning-section">
+        <div className="marketing-shell">
+          <div className="section-heading">
+            <span className="section-kicker">Technology-enabled learning</span>
+            <h2>Building confident, creative and digitally capable learners.</h2>
+            <p>
+              Coding, Artificial Intelligence and Robotics are taught through collaboration, practical exploration and
+              real projects that make technology meaningful.
+            </p>
+          </div>
+          <div className="petra-tech-feature-grid">
+            <article className="petra-tech-feature">
+              <figure className="petra-editorial-photo">
+                <Image
+                  src="/images/petra-coding-students.webp"
+                  alt="Petra Academy students collaborating around a laptop"
+                  width={1535}
+                  height={1025}
+                  sizes="(max-width: 720px) 100vw, 50vw"
+                />
+              </figure>
+              <div>
+                <span className="section-kicker">Coding & AI</span>
+                <h3>Ideas become digital projects.</h3>
+                <p>
+                  Students strengthen logical thinking, communication and creativity while learning to use technology
+                  confidently and responsibly.
+                </p>
+              </div>
+            </article>
+            <article className="petra-tech-feature petra-robotics-feature">
+              <div className="petra-robotics-gallery">
+                <figure className="petra-editorial-photo petra-robotics-photo">
+                  <Image
+                    src="/images/petra-robotics-class.webp"
+                    alt="Petra Academy pupils building and testing a robotics project"
+                    width={1600}
+                    height={900}
+                    sizes="(max-width: 720px) 100vw, 25vw"
+                  />
+                </figure>
+                <figure className="petra-editorial-photo petra-robotics-photo">
+                  <Image
+                    src="/images/petra-robotics-instructor-demonstration.webp"
+                    alt="Petra Academy instructor demonstrating a robotic arm beside a laptop"
+                    width={1600}
+                    height={900}
+                    sizes="(max-width: 720px) 100vw, 25vw"
+                  />
+                </figure>
+              </div>
+              <div>
+                <span className="section-kicker">Robotics & STEM</span>
+                <h3>Learning by building, testing and creating.</h3>
+                <p>
+                  Hands-on projects develop patience, teamwork and inventive problem-solving from the formative years.
+                </p>
+              </div>
+            </article>
           </div>
         </div>
       </section>
@@ -336,6 +454,39 @@ export default function ProgramsPage() {
               wellness while helping learners discover interests and talents.
             </p>
           </div>
+          <article className="petra-music-feature">
+            <div className="petra-music-gallery">
+              <figure className="petra-editorial-photo petra-music-photo petra-music-photo-primary">
+                <Image
+                  src="/images/petra-violin-ensemble.webp"
+                  alt="Petra Academy students performing together in a violin ensemble"
+                  width={1600}
+                  height={900}
+                  sizes="(max-width: 820px) 100vw, 58vw"
+                />
+              </figure>
+              <figure className="petra-editorial-photo petra-music-photo petra-music-photo-supporting">
+                <Image
+                  src="/images/petra-clarinet-ensemble.webp"
+                  alt="Petra Academy students performing with clarinets and brass instruments"
+                  width={1600}
+                  height={900}
+                  sizes="(max-width: 820px) 100vw, 36vw"
+                />
+              </figure>
+            </div>
+            <div className="petra-music-copy">
+              <span className="card-icon"><Music size={27} /></span>
+              <div>
+                <span className="section-kicker">Music &amp; Creative Arts</span>
+                <h3>Confidence takes the stage.</h3>
+              </div>
+              <p>
+                Instrumental training, ensemble practice and live performance help learners develop discipline,
+                concentration, creativity and the confidence to contribute as part of a team.
+              </p>
+            </div>
+          </article>
           <div className="grid gap-5 lg:grid-cols-2">
             {clubGroups.map(({ title, icon: Icon, items }) => (
               <article className="marketing-card p-7 sm:p-8" key={title}>
@@ -359,14 +510,7 @@ export default function ProgramsPage() {
 
       <section className="marketing-section">
         <div className="marketing-shell inclusive-program-grid">
-          <div className="inclusive-program-visual" aria-hidden="true">
-            <div className="inclusive-ring inclusive-ring-one" />
-            <div className="inclusive-ring inclusive-ring-two" />
-            <span><HeartHandshake size={48} /></span>
-            <strong>Every child belongs</strong>
-            <small>Known · Supported · Included</small>
-          </div>
-          <div>
+          <div className="inclusive-program-copy">
             <span className="section-kicker">Inclusive Education</span>
             <h2 className="mt-3 font-[var(--font-merriweather)] text-[clamp(2.4rem,5vw,4rem)] leading-[1.06] tracking-[-0.04em]">
               Every child belongs here.
@@ -385,6 +529,22 @@ export default function ProgramsPage() {
               ))}
             </div>
           </div>
+          <figure className="inclusive-program-visual">
+            <div className="inclusive-ring inclusive-ring-one" aria-hidden="true" />
+            <div className="inclusive-ring inclusive-ring-two" aria-hidden="true" />
+            <Image
+              className="inclusive-student-cutout"
+              src="/images/petra-student-belonging-cutout.webp"
+              alt="Petra Academy student holding her books"
+              width={864}
+              height={1080}
+              sizes="(max-width: 960px) 78vw, 38vw"
+            />
+            <figcaption>
+              <strong>Known. Supported. Included.</strong>
+              <span>Every learner has room to grow.</span>
+            </figcaption>
+          </figure>
         </div>
       </section>
 

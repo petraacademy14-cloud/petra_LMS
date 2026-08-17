@@ -32,6 +32,25 @@ function GoogleWorkspaceLogo() {
   );
 }
 
+function CodeAILogo() {
+  return (
+    <a
+      className="affiliate-logo affiliate-logo-link codeai-affiliate"
+      href="https://code.org/"
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Visit CodeAI"
+    >
+      <img
+        className="codeai-logo"
+        src="https://code.org/_next/static/media/codeai-logo-inverse.a30ff4e2.svg"
+        alt="CodeAI"
+      />
+      <span><small>AI + CS education</small></span>
+    </a>
+  );
+}
+
 function GoogleVerifiedLogo() {
   return (
     <div className="affiliate-logo" aria-label="Google Verified">
@@ -99,7 +118,7 @@ export function SiteFooter() {
             <span>Lasel Junction, No. 11 Godwin Chris Street, off Ukpor Road, by Nwafor Junction, Umudim, Nnewi</span>
             <a href="tel:+2348033130456">08033130456</a>
             <a href="tel:+2348121997970">08121997970</a>
-            <a href="mailto:nnewiadmin@petraacdemy.co">nnewiadmin@petraacdemy.co</a>
+            <a href="mailto:nnewiadmin@petraacademy.co">nnewiadmin@petraacademy.co</a>
             <span>@PetraAcademyAwka</span>
           </address>
         </div>
@@ -111,6 +130,7 @@ export function SiteFooter() {
           <CiscoNetworkingLogo />
           <GoogleWorkspaceLogo />
           <GoogleVerifiedLogo />
+          <CodeAILogo />
         </div>
       </div>
 

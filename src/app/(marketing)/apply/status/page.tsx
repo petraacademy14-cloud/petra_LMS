@@ -90,9 +90,20 @@ export default async function ApplicationStatusPage({ searchParams }: StatusPage
       WHERE p."id" = ${viewer.applicationId} AND p."accountId" = ${viewer.id}
       LIMIT 1
     `,
-    db.$queryRaw<Array<{ chargeCount: bigint }>>`
-      SELECT COUNT(*)::bigint AS "chargeCount"
-      FROM "applicant_charges" WHERE "applicationId"=${viewer.applicationId}
+    db.$queryRaw<Array<{
+      chargeCount: bigint;
+      examCount: bigint;
+      formAmount: unknown;
+      formVerified: unknown;
+    }>>`
+      SELECT
+        COUNT(DISTINCT c."id")::bigint AS "chargeCount",
+        COUNT(DISTINCT CASE WHEN c."kind"='EXAM' THEN c."id" END)::bigint AS "examCount",
+        COALESCE(MAX(CASE WHEN c."kind"='FORM' THEN c."amount" END), 0) AS "formAmount",
+        COALESCE(SUM(CASE WHEN c."kind"='FORM' AND p."status"='VERIFIED' THEN p."amount" ELSE 0 END), 0) AS "formVerified"
+      FROM "applicant_charges" c
+      LEFT JOIN "applicant_payments" p ON p."chargeId"=c."id"
+      WHERE c."applicationId"=${viewer.applicationId}
     `,
     db.$queryRaw<DecisionRow[]>`
       SELECT d."id", d."outcome"::text AS "outcome", d."applicantMessage",
@@ -107,6 +118,10 @@ export default async function ApplicationStatusPage({ searchParams }: StatusPage
   if (!application) throw new Error("NOT_FOUND:APPLICATION");
   const currentIndex = statusOrder.indexOf(application.status);
   const hasCharges = Number(finance?.chargeCount ?? 0) > 0;
+  const hasExamCharge = Number(finance?.examCount ?? 0) > 0;
+  const formSettled = Number(finance?.formAmount ?? 0) > 0 &&
+    Number(finance?.formAmount ?? 0) - Number(finance?.formVerified ?? 0) <= 0;
+  const setupComplete = Boolean(application.campusName && application.className);
   const expiredOffer = decision
     ? isOfferExpired(decision.offerResponse, decision.offerExpiresAt)
     : false;
@@ -129,9 +144,17 @@ export default async function ApplicationStatusPage({ searchParams }: StatusPage
             <span className="application-status-badge" data-status={application.status}>{applicationStatusLabel(application.status)}</span>
             <h2>{application.studentFirstName} {application.studentLastName}</h2>
             <p>{application.campusName ?? "Campus pending"} · {application.className ?? "Class pending"}</p>
-            <div className="status-guidance"><Clock3 size={22} /><div><strong>What happens next</strong><p>{guidance[application.status]}</p></div></div>
-            {application.status === "DRAFT" && <Link className="button" href="/apply/application">Continue application</Link>}
-            {application.status === "SUBMITTED" && !hasCharges && <form action={startEntrancePayment}><button className="button" type="submit"><DollarSign size={18} /> View entrance form fee</button></form>}
+            <div className="status-guidance"><Clock3 size={22} /><div><strong>What happens next</strong><p>{
+              application.status === "DRAFT" && !setupComplete
+                ? "Select the preferred campus and class to view the application-form fee."
+                : application.status === "DRAFT" && !formSettled
+                  ? "Complete the application-form payment and wait for verification."
+                  : guidance[application.status]
+            }</p></div></div>
+            {application.status === "DRAFT" && !setupComplete && <Link className="button" href="/apply/setup">Set campus and class</Link>}
+            {application.status === "DRAFT" && setupComplete && !formSettled && <Link className="button" href="/apply/payment"><DollarSign size={18} /> Application-form payment</Link>}
+            {application.status === "DRAFT" && formSettled && <Link className="button" href="/apply/application">Continue application</Link>}
+            {application.status === "SUBMITTED" && !hasExamCharge && <form action={startEntrancePayment}><button className="button" type="submit"><DollarSign size={18} /> View examination fee</button></form>}
             {(["AWAITING_PAYMENT", "AWAITING_EXAMINATION"] as ApplicationStatus[]).includes(application.status) || hasCharges ? <Link className="button" href="/apply/payment"><DollarSign size={18} /> Fees, payments and receipts</Link> : null}
             {(["AWAITING_EXAMINATION", "UNDER_REVIEW"] as ApplicationStatus[]).includes(application.status) && <Link className="button button-secondary" href="/apply/exam"><GraduationCap size={18} /> Entrance examination</Link>}
           </article>

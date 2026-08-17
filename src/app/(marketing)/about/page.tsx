@@ -10,12 +10,10 @@ import {
   GraduationCap,
   HeartHandshake,
   Lightbulb,
-  Quote,
   School,
   ShieldCheck,
   Sparkles,
   Target,
-  UsersRound,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -111,33 +109,88 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <section className="marketing-section section-tint petra-students-section">
+        <div className="marketing-shell petra-students-grid">
+          <figure className="petra-editorial-photo">
+            <Image
+              src="/images/petra-students-group.webp"
+              alt="Petra Academy students in their burgundy school uniforms"
+              width={1535}
+              height={1024}
+              sizes="(max-width: 720px) 100vw, 58vw"
+            />
+          </figure>
+          <div>
+            <span className="section-kicker">Our Students</span>
+            <h2>Confident learners. Responsible leaders. Prepared for the future.</h2>
+            <p>
+              Petra learners are encouraged to ask thoughtful questions, work well with others and take responsibility
+              for their growth. Academic confidence, good character and practical ability develop side by side.
+            </p>
+            <Link className="inline-cta" href="/programs">Explore the Petra learning journey <ArrowRight size={17} /></Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="marketing-section">
+        <div className="marketing-shell">
+          <div className="section-heading">
+            <span className="section-kicker">Our School Community</span>
+            <h2>Learning, growing and celebrating together.</h2>
+            <p>
+              Petra Academy brings learners and educators together in a caring community where every child is known,
+              supported and encouraged to become confident, responsible and future-ready.
+            </p>
+          </div>
+          <figure className="overflow-hidden rounded-[2rem] border border-[#e7e3e3] bg-[#f7f3f1] shadow-[0_24px_70px_rgba(51,24,24,0.1)]">
+            <Image
+              className="block h-auto w-full"
+              src="/images/petra-school-community.webp"
+              alt="Petra Academy students and educators gathered together at the school"
+              width={1536}
+              height={1024}
+              sizes="(max-width: 720px) 100vw, 1180px"
+            />
+            <figcaption className="border-t border-[#e7e3e3] bg-white px-6 py-5 text-center sm:px-8 sm:py-6">
+              <strong className="block font-[var(--font-merriweather)] text-2xl text-[#211f20]">One Petra community</strong>
+              <small className="mt-2 block font-semibold tracking-wide text-[#666b73]">Learners · Educators · Leaders</small>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
       <section className="marketing-section section-tint">
         <div className="marketing-shell">
           <article className="overflow-hidden rounded-[2rem] bg-[#78080b] text-white shadow-[0_30px_80px_rgba(90,8,11,0.18)]">
-            <div className="grid items-stretch lg:grid-cols-[0.72fr_1.28fr]">
-              <div className="relative grid min-h-72 place-items-center overflow-hidden border-b border-white/10 p-10 lg:border-b-0 lg:border-r">
-                <div className="absolute size-72 rounded-full border-[44px] border-white/5" />
-                <div className="relative text-center">
-                  <span className="mx-auto grid size-20 place-items-center rounded-3xl bg-white/10"><Quote size={38} /></span>
-                  <span className="section-kicker section-kicker-light mt-7">Principal&apos;s Word</span>
-                  <h2 className="mt-3 font-[var(--font-merriweather)] text-3xl leading-tight">Welcome to Petra Academy</h2>
+            <div className="grid items-stretch lg:grid-cols-[0.8fr_1.2fr]">
+              <figure className="relative min-h-[430px] overflow-hidden border-b border-white/10 bg-[radial-gradient(circle_at_50%_28%,rgba(255,255,255,0.18),transparent_42%),linear-gradient(145deg,#a01931,#4f0715)] sm:min-h-[500px] lg:min-h-[520px] lg:border-b-0 lg:border-r">
+                <Image
+                  src="/images/petra-principal-portrait.webp"
+                  alt="Principal of Petra Academy"
+                  fill
+                  sizes="(max-width: 960px) 88vw, 40vw"
+                  className="object-contain object-bottom"
+                />
+              </figure>
+              <div className="flex flex-col justify-center p-7 text-[1rem] leading-7 text-[#f7e7e7] sm:p-10 lg:p-[clamp(2.5rem,4vw,3.75rem)]">
+                <span className="section-kicker section-kicker-light">Principal&apos;s Word</span>
+                <h2 className="mb-4 mt-3 font-[var(--font-merriweather)] text-4xl leading-tight text-white sm:text-5xl">Welcome to Petra Academy</h2>
+                <div className="space-y-4">
+                  <p>
+                    Petra Academy is a leading co-educational school serving learners from Daycare and Playgroup through
+                    Nursery, Primary and College across our Awka and Nnewi campuses in Anambra State.
+                  </p>
+                  <p>
+                    We operate inclusive classrooms with differentiated learning, modern teaching methods and innovative
+                    classroom technologies. Our learners build strong early reading skills from the age of four while
+                    gaining practical exposure to Coding, Robotics and STEM education.
+                  </p>
+                  <p>
+                    We groom confident young leaders who communicate fluently, think critically and excel academically.
+                    Every learner is welcomed into a warm classroom atmosphere guided by caring, dedicated and highly
+                    professional teachers.
+                  </p>
                 </div>
-              </div>
-              <div className="space-y-5 p-8 text-[1rem] leading-8 text-[#f7e7e7] sm:p-12">
-                <p>
-                  Petra Academy is a leading co-educational school serving learners from Daycare and Playgroup through
-                  Nursery, Primary and College across our Awka and Nnewi campuses in Anambra State.
-                </p>
-                <p>
-                  We operate inclusive classrooms with differentiated learning, modern teaching methods and innovative
-                  classroom technologies. Our learners build strong early reading skills from the age of four while
-                  gaining practical exposure to Coding, Robotics and STEM education.
-                </p>
-                <p>
-                  We groom confident young leaders who communicate fluently, think critically and excel academically.
-                  Every learner is welcomed into a warm classroom atmosphere guided by caring, dedicated and highly
-                  professional teachers.
-                </p>
               </div>
             </div>
           </article>
@@ -213,16 +266,31 @@ export default function AboutPage() {
 
       <section className="marketing-section section-tint">
         <div className="marketing-shell grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="relative grid min-h-80 place-items-center overflow-hidden rounded-[2rem] border border-[#e7e3e3] bg-white shadow-[0_20px_60px_rgba(51,24,24,0.08)]">
-            <div className="absolute size-64 rounded-full border-[42px] border-[#a50e12]/5" />
-            <div className="relative text-center">
-              <span className="mx-auto grid size-24 place-items-center rounded-[2rem] bg-[#fff4f4] text-[#a50e12]"><UsersRound size={43} /></span>
-              <strong className="mt-6 block font-[var(--font-merriweather)] text-2xl">The Petra teaching team</strong>
-              <small className="mt-2 block text-[#666b73]">Caring · Dedicated · Professional</small>
+          <div className="overflow-hidden rounded-[2rem] border border-[#e7e3e3] bg-white shadow-[0_20px_60px_rgba(51,24,24,0.08)]">
+            <div className="relative min-h-[18rem] overflow-hidden bg-[#241b1b] lg:min-h-[27rem]">
+              <Image
+                className="absolute inset-0 size-full scale-110 object-cover opacity-45 blur-2xl"
+                src="/images/petra-staff-team.webp"
+                alt=""
+                fill
+                sizes="(max-width: 1024px) 100vw, 46vw"
+                aria-hidden="true"
+              />
+              <Image
+                className="object-contain"
+                src="/images/petra-staff-team.webp"
+                alt="Petra Academy staff members gathered together outside the school building"
+                fill
+                sizes="(max-width: 1024px) 100vw, 46vw"
+              />
+            </div>
+            <div className="px-6 py-5 text-center sm:px-8 sm:py-6">
+              <strong className="block font-[var(--font-merriweather)] text-2xl text-[#211f20]">The Petra Nursery and Elementary teaching team</strong>
+              <small className="mt-2 block font-semibold tracking-wide text-[#666b73]">Caring · Dedicated · Professional</small>
             </div>
           </div>
           <div>
-            <span className="section-kicker">Our Teachers</span>
+            <span className="section-kicker">Nursery &amp; Elementary Teachers</span>
             <h2 className="mt-3 font-[var(--font-merriweather)] text-[clamp(2.3rem,5vw,3.8rem)] leading-[1.08] tracking-[-0.035em]">Teachers who know, support and inspire every learner.</h2>
             <p className="mt-6 text-[1.05rem] leading-8 text-[#666b73]">
               Our teachers combine professional competence with patience, care and high expectations. They create warm,
@@ -239,19 +307,32 @@ export default function AboutPage() {
       </section>
 
       <section className="marketing-section">
-        <div className="marketing-shell visit-banner">
-          <div>
-            <span className="section-kicker">Two campuses, one Petra standard</span>
-            <h2>Experience Petra Academy in Awka or Nnewi.</h2>
-            <p>
-              Visit our learning environment, meet the team and discover the right pathway from Daycare and Playgroup
-              through Nursery, Primary and College.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link className="button button-lg" href="/book-visit">Book a school visit <ArrowRight size={18} /></Link>
-            <Link className="button button-secondary button-lg" href="/contact"><School size={18} /> Contact us</Link>
-          </div>
+        <div className="marketing-shell">
+          <article className="petra-campus-showcase">
+            <Image
+              className="petra-campus-showcase-image"
+              src="/images/petra-campus-full.webp"
+              alt="Petra Academy campus building and school vehicles"
+              fill
+              sizes="(max-width: 720px) 100vw, 1180px"
+            />
+            <div className="petra-campus-showcase-overlay">
+              <span className="section-kicker section-kicker-light">Two Campuses. One Petra Standard.</span>
+              <h2>Experience Petra Academy in Awka or Nnewi.</h2>
+              <p>
+                Visit our learning environment, meet the team and discover the right pathway from Daycare and
+                Playgroup through Nursery, Primary and College.
+              </p>
+              <div className="petra-campus-showcase-actions">
+                <Link className="button button-lg button-light" href="/book-visit">
+                  Book a school visit <ArrowRight size={18} />
+                </Link>
+                <Link className="button button-lg button-ghost-light" href="/contact">
+                  <School size={18} /> Contact us
+                </Link>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
     </>

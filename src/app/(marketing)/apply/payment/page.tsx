@@ -24,6 +24,7 @@ type ApplicationRow = {
   campusName: string | null;
   className: string | null;
   examMode: string | null;
+  submittedAt: Date | null;
 };
 
 type ChargeRow = {
@@ -57,7 +58,7 @@ export default async function ApplicantPaymentPage({ searchParams }: PaymentPage
   const [[application], charges, payments] = await Promise.all([
     db.$queryRaw<ApplicationRow[]>`
       SELECT a."status"::text AS "status", c."name" AS "campusName",
-        l."name" AS "className", a."examMode"::text AS "examMode"
+        l."name" AS "className", a."examMode"::text AS "examMode", a."submittedAt"
       FROM "admission_applications" a
       LEFT JOIN "campuses" c ON c."id"=a."campusId"
       LEFT JOIN "class_levels" l ON l."id"=a."classLevelId"
@@ -167,10 +168,27 @@ export default async function ApplicantPaymentPage({ searchParams }: PaymentPage
           })}
         </div>
 
-        {formSettled && !visibleCharges.some((charge) => charge.kind === "EXAM") && (
+        {formSettled && !application.submittedAt && (
+          <article className="marketing-card status-guidance">
+            <CheckCircle2 size={22} />
+            <div>
+              <strong>Application form unlocked</strong>
+              <p>Your application-form fee is verified. You can now complete and submit the full application.</p>
+              <Link className="button" href="/apply/application">Continue application</Link>
+            </div>
+          </article>
+        )}
+
+        {formSettled && application.submittedAt && !visibleCharges.some((charge) => charge.kind === "EXAM") && (
           <article className="marketing-card status-guidance">
             <Clock3 size={22} />
-            <div><strong>Entrance examination fee is being prepared</strong><p>The form fee is verified. The examination charge will appear when the school has configured it for your class.</p></div>
+            <div>
+              <strong>Generate the entrance-examination fee</strong>
+              <p>Your application has been submitted. Continue to create the examination charge configured for your campus and class.</p>
+              <form action={startEntrancePayment}>
+                <button className="button" type="submit">View examination fee</button>
+              </form>
+            </div>
           </article>
         )}
 

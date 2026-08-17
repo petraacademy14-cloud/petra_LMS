@@ -9,8 +9,8 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "vercel-build": "prisma migrate deploy && node scripts/seed-if-enabled.mjs && node scripts/ensure-storage-buckets.mjs && next build",
+    "build": "npm run verify:site-assets && next build",
+    "vercel-build": "prisma migrate deploy && node scripts/seed-if-enabled.mjs && node scripts/ensure-storage-buckets.mjs && npm run verify:site-assets && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
@@ -24,6 +24,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:create-preview-teacher": "tsx scripts/create-preview-test-teacher.ts",
     "storage:ensure": "node scripts/ensure-storage-buckets.mjs",
+    "verify:site-assets": "node scripts/verify-site-assets.mjs",
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
     "check:production": "node scripts/verify-production.mjs"
   },

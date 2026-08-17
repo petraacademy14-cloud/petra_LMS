@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -22,8 +23,8 @@ export const metadata: Metadata = {
 
 const steps = [
   [
-    "Pay the application form fee",
-    "Complete the approved payment step to unlock the online application form and begin the admissions process.",
+    "Create an account and pay the application-form fee",
+    "Select a campus and class, then pay the required fee. The complete application unlocks only after payment is verified.",
     CreditCard,
   ],
   [
@@ -32,8 +33,8 @@ const steps = [
     ClipboardList,
   ],
   [
-    "Take the entrance examination",
-    "Eligible applicants are scheduled for an approved online or onsite entrance examination.",
+    "Pay for and take the entrance examination",
+    "Eligible applicants pay the examination fee before online or onsite examination details are released.",
     MonitorCheck,
   ],
   [
@@ -90,21 +91,32 @@ const requiredDocuments = [
 export default function AdmissionsPage() {
   return (
     <>
-      <section className="page-hero simple-page-hero">
-        <div className="marketing-shell">
-          <span className="section-kicker">Admissions</span>
-          <h1>A clear application journey for every family.</h1>
-          <p>
-            Pay the application form fee, complete the application, take the entrance examination, pay school fees and
-            submit the remaining documents through one guided admissions process.
-          </p>
-          <div className="hero-actions">
-            <Link className="button button-lg" href="/apply">
-              Apply now <ArrowRight size={18} />
-            </Link>
-            <Link className="button button-secondary button-lg" href="/book-visit">
-              Book a visit
-            </Link>
+      <section className="page-hero simple-page-hero application-hero">
+        <Image
+          className="application-hero-image"
+          src="/images/petra-admissions-transformation-transparent.webp"
+          alt="A girl in everyday clothes meeting her future self as a Petra Academy student"
+          fill
+          priority
+          sizes="100vw"
+        />
+        <div className="application-hero-shade" aria-hidden="true" />
+        <div className="marketing-shell application-hero-shell">
+          <div className="application-hero-content">
+            <span className="section-kicker">Admissions</span>
+            <h1>A clear application journey for every family.</h1>
+            <p>
+              Pay the application form fee, complete the application, take the entrance examination, pay school fees and
+              submit the remaining documents through one guided admissions process.
+            </p>
+            <div className="hero-actions">
+              <Link className="button button-lg" href="/apply">
+                Apply now <ArrowRight size={18} />
+              </Link>
+              <Link className="button button-secondary button-lg" href="/book-visit">
+                Book a visit
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -131,22 +143,32 @@ export default function AdmissionsPage() {
       </section>
 
       <section className="marketing-section section-tint">
-        <div className="marketing-shell split-section">
-          <div>
+        <div className="marketing-shell entrance-exam-section">
+          <header className="entrance-exam-heading">
             <span className="section-kicker">Entrance examination</span>
             <h2>Online and onsite options.</h2>
-          </div>
-          <div>
-            <p>
-              Petra Academy can assign an applicant to either an online or onsite entrance examination. The approved
-              mode, date, time, venue and instructions will appear in the applicant portal after the entrance payment is
-              confirmed.
-            </p>
-            <ul className="check-list">
-              <li>Online examinations include a timer and automatic submission.</li>
-              <li>Onsite candidates receive a printable examination slip.</li>
-              <li>Results and admission decisions are released through the portal.</li>
-            </ul>
+          </header>
+          <div className="entrance-exam-grid">
+            <figure className="entrance-exam-photo">
+              <Image
+                src="/images/petra-entrance-exam-student.webp"
+                alt="Petra Academy student completing written classwork at his desk"
+                fill
+                sizes="(max-width: 720px) 100vw, 46vw"
+              />
+            </figure>
+            <div className="entrance-exam-copy">
+              <p>
+                Petra Academy can assign an applicant to either an online or onsite entrance examination. The approved
+                mode, date, time, venue and instructions will appear in the applicant portal after the entrance payment is
+                confirmed.
+              </p>
+              <ul className="check-list">
+                <li>Online examinations include a timer and automatic submission.</li>
+                <li>Onsite candidates receive a printable examination slip.</li>
+                <li>Results and admission decisions are released through the portal.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
