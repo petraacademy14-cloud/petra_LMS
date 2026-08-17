@@ -23,6 +23,22 @@ const requiredPlacements = [
     page: "src/app/(marketing)/admissions/page.tsx",
     reference: "/images/petra-admissions-transformation-transparent.webp",
   },
+  {
+    page: "src/components/marketing/petra-life-slider.tsx",
+    reference: "/images/petra-attentive-classroom.webp",
+  },
+  {
+    page: "src/components/marketing/petra-life-slider.tsx",
+    reference: "/images/petra-teacher-writing.webp",
+  },
+  {
+    page: "src/components/marketing/petra-teaching-team-carousel.tsx",
+    reference: "/images/petra-staff-team.webp",
+  },
+  {
+    page: "src/components/marketing/petra-teaching-team-carousel.tsx",
+    reference: "/images/petra-staff-courtyard.webp",
+  },
 ];
 
 async function collectSourceFiles(directory) {
@@ -36,6 +52,24 @@ async function collectSourceFiles(directory) {
   }
 
   return files;
+}
+
+function hasValidImageSignature(buffer, asset) {
+  if (buffer.length < 32) return false;
+  if (asset.endsWith(".webp")) {
+    return buffer.subarray(0, 4).toString("ascii") === "RIFF"
+      && buffer.subarray(8, 12).toString("ascii") === "WEBP";
+  }
+  if (asset.endsWith(".png")) {
+    return buffer.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
+  }
+  if (/\.jpe?g$/i.test(asset)) {
+    return buffer[0] === 0xff && buffer[1] === 0xd8 && buffer.at(-2) === 0xff && buffer.at(-1) === 0xd9;
+  }
+  if (asset.endsWith(".svg")) {
+    return buffer.toString("utf8", 0, Math.min(buffer.length, 512)).includes("<svg");
+  }
+  return true;
 }
 
 let failed = false;
@@ -85,9 +119,13 @@ for (const [reference, pages] of imageReferences) {
   const asset = join("public", reference);
   try {
     await access(asset);
+    const image = await readFile(asset);
+    if (!hasValidImageSignature(image, asset)) {
+      throw new Error("the file does not contain a valid image signature");
+    }
   } catch {
     console.error(
-      `Website image ${reference} is referenced by ${pages.join(", ")} but ${asset} is missing.`,
+      `Website image ${reference} is referenced by ${pages.join(", ")} but ${asset} is missing or unreadable.`,
     );
     failed = true;
   }
