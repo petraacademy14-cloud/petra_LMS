@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 type MobileMenuProps = {
@@ -8,6 +9,9 @@ type MobileMenuProps = {
 };
 
 export function MobileMenu({ links }: MobileMenuProps) {
+  const pathname = usePathname();
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
   const menuRef = useRef<HTMLDetailsElement>(null);
 
   useEffect(() => {
@@ -48,7 +52,7 @@ export function MobileMenu({ links }: MobileMenuProps) {
       <summary aria-label="Open navigation menu">Menu</summary>
       <nav aria-label="Mobile navigation">
         {links.map(([label, href]) => (
-          <Link key={href} href={href} onClick={closeMenu}>{label}</Link>
+          <Link className={isActive(href) ? "is-active" : undefined} aria-current={isActive(href) ? "page" : undefined} key={href} href={href} onClick={closeMenu}>{label}</Link>
         ))}
         <Link href="/book-visit" onClick={closeMenu}>Book a visit</Link>
         <Link href="/login" onClick={closeMenu}>Login</Link>

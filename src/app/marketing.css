@@ -108,6 +108,7 @@
 }
 
 .desktop-nav a:hover,
+.desktop-nav a.is-active,
 .footer-grid a:hover,
 .inline-cta:hover,
 .contact-card a:hover {
@@ -169,6 +170,11 @@
   border-bottom: 1px solid #f0eded;
   font-size: 0.91rem;
   font-weight: 730;
+}
+
+.mobile-menu nav a.is-active {
+  background: #fff1f2;
+  color: var(--petra-red);
 }
 
 .mobile-menu nav a:last-child {
