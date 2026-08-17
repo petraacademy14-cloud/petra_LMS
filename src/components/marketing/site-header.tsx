@@ -1,8 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { MobileMenu } from "./mobile-menu";
 
 const links = [
+  ["Home", "/"],
   ["About", "/about"],
   ["Programs", "/programs"],
   ["Admissions", "/admissions"],
@@ -11,6 +15,10 @@ const links = [
 ] as const;
 
 export function SiteHeader() {
+  const pathname = usePathname();
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+
   return (
     <header className="site-header">
       <div className="marketing-shell header-inner">
@@ -35,7 +43,7 @@ export function SiteHeader() {
 
         <nav className="desktop-nav" aria-label="Primary navigation">
           {links.map(([label, href]) => (
-            <Link key={href} href={href}>{label}</Link>
+            <Link className={isActive(href) ? "is-active" : undefined} aria-current={isActive(href) ? "page" : undefined} key={href} href={href}>{label}</Link>
           ))}
         </nav>
 

@@ -108,7 +108,7 @@ export async function registerApplicant(formData: FormData) {
   });
 
   await createApplicantSession(accountId);
-  redirect("/apply/application?created=1");
+  redirect("/apply/setup?created=1");
 }
 
 export async function loginApplicant(formData: FormData) {
@@ -131,7 +131,7 @@ export async function loginApplicant(formData: FormData) {
   }
 
   await createApplicantSession(account.id);
-  redirect("/apply/application");
+  redirect("/apply/status");
 }
 
 export async function logoutApplicant() {
@@ -140,8 +140,13 @@ export async function logoutApplicant() {
 }
 
 async function editableApplication(applicationId: string, accountId: string) {
-  const rows = await db.$queryRaw<Array<{ id: string; status: ApplicationStatus }>>`
-    SELECT "id", "status"::text AS "status"
+  const rows = await db.$queryRaw<Array<{
+    id: string;
+    status: ApplicationStatus;
+    campusId: string | null;
+    classLevelId: string | null;
+  }>>`
+    SELECT "id", "status"::text AS "status", "campusId", "classLevelId"
     FROM "admission_applications"
     WHERE "id" = ${applicationId} AND "accountId" = ${accountId}
     LIMIT 1
@@ -149,12 +154,24 @@ async function editableApplication(applicationId: string, accountId: string) {
   const application = rows[0];
   if (!application) throw new Error("NOT_FOUND:APPLICATION");
   if (application.status !== "DRAFT") throw new Error("LOCKED:APPLICATION");
+  const [formPayment] = await db.$queryRaw<Array<{ amount: unknown; verified: unknown }>>`
+    SELECT c."amount",
+      COALESCE(SUM(CASE WHEN p."status"='VERIFIED' THEN p."amount" ELSE 0 END), 0) AS "verified"
+    FROM "applicant_charges" c
+    LEFT JOIN "applicant_payments" p ON p."chargeId"=c."id"
+    WHERE c."applicationId"=${applicationId} AND c."kind"='FORM'
+    GROUP BY c."id"
+    LIMIT 1
+  `;
+  if (!formPayment || Number(formPayment.amount) - Number(formPayment.verified) > 0) {
+    throw new Error("LOCKED:FORM_PAYMENT_REQUIRED");
+  }
   return application;
 }
 
 export async function saveApplication(formData: FormData) {
   const viewer = await requireApplicant();
-  await editableApplication(viewer.applicationId, viewer.id);
+  const application = await editableApplication(viewer.applicationId, viewer.id);
 
   const input = z
     .object({
@@ -187,6 +204,10 @@ export async function saveApplication(formData: FormData) {
       examMode: formData.get("examMode"),
       termsAccepted: formData.get("termsAccepted") === "on",
     });
+
+  if (input.campusId !== application.campusId || input.classLevelId !== application.classLevelId) {
+    throw new Error("LOCKED:PAID_APPLICATION_PLACEMENT");
+  }
 
   const placement = await db.classArm.findFirst({
     where: {

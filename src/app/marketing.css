@@ -108,6 +108,7 @@
 }
 
 .desktop-nav a:hover,
+.desktop-nav a.is-active,
 .footer-grid a:hover,
 .inline-cta:hover,
 .contact-card a:hover {
@@ -169,6 +170,11 @@
   border-bottom: 1px solid #f0eded;
   font-size: 0.91rem;
   font-weight: 730;
+}
+
+.mobile-menu nav a.is-active {
+  background: #fff1f2;
+  color: var(--petra-red);
 }
 
 .mobile-menu nav a:last-child {
@@ -938,4 +944,34 @@
   .footer-grid > div:last-child { grid-column: auto; }
   .footer-bottom { align-items: flex-start; flex-direction: column; }
   .role-login-card { padding: 26px 22px; }
+}
+
+
+/* Clear, polished section motion as visitors move through public pages. */
+.scroll-reveal {
+  opacity: 0;
+  filter: blur(6px);
+  transform: translateY(72px) scale(0.985);
+  transition:
+    opacity 320ms ease-out,
+    filter 420ms ease-out,
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, filter, transform;
+}
+
+.scroll-reveal.scroll-reveal-visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  .scroll-reveal {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    transition: none;
+  }
 }

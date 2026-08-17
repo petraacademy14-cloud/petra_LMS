@@ -4,6 +4,7 @@ const isProduction = process.env.VERCEL_ENV === "production";
 const isPreview = process.env.VERCEL_ENV === "preview";
 const runFullSeed = process.env.RUN_SEED_ON_DEPLOY === "true";
 const isWebsitePreview = process.env.VERCEL_GIT_COMMIT_REF?.startsWith("website/");
+const hasPreviewStaffPassword = Boolean(process.env.SEED_OWNER_PASSWORD);
 
 if (isProduction && runFullSeed) {
   throw new Error(
@@ -34,11 +35,14 @@ if (runFullSeed && !isWebsitePreview) {
   console.info("Full Preview seed skipped for this deployment.");
 }
 
-// Keep verified test access available on LMS Preview deployments. Marketing
-// website previews do not need database seed credentials or test accounts.
-if (isPreview && !isWebsitePreview) {
+// Verify preview staff only where credentials have been explicitly configured.
+// Feature previews must remain deployable without inheriting test credentials
+// from another branch or environment.
+if (isPreview && !isWebsitePreview && hasPreviewStaffPassword) {
   runScript("db:create-preview-teacher");
   console.info("Preview Owner and Teacher logins verified successfully.");
 } else if (isWebsitePreview) {
   console.info("Preview account verification skipped for website branch.");
+} else if (isPreview) {
+  console.info("Preview account verification skipped because credentials are not configured.");
 }

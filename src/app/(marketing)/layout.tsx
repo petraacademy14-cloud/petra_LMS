@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
+import { ScrollMotion } from "@/components/marketing/scroll-motion";
 
 export const metadata: Metadata = {
   title: {
@@ -15,6 +16,7 @@ export default function MarketingLayout({ children }: Readonly<{ children: React
   return (
     <div className="marketing-site">
       <SiteHeader />
+      <ScrollMotion />
       <main>{children}</main>
       <SiteFooter />
     </div>

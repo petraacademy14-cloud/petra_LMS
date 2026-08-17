@@ -36,6 +36,7 @@ type ApplicationFinanceRow = {
   classLevelId: string | null;
   status: string;
   applicationNumber: string;
+  submittedAt: Date | null;
 };
 
 type ChargeBalanceRow = {
@@ -48,7 +49,7 @@ type ChargeBalanceRow = {
 
 async function applicationFinance(applicationId: string) {
   const [row] = await db.$queryRaw<ApplicationFinanceRow[]>`
-    SELECT "id", "schoolId", "campusId", "classLevelId", "status"::text AS "status", "applicationNumber"
+    SELECT "id", "schoolId", "campusId", "classLevelId", "status"::text AS "status", "applicationNumber", "submittedAt"
     FROM "admission_applications"
     WHERE "id"=${applicationId}
     LIMIT 1
@@ -126,20 +127,28 @@ async function reconcileApplication(applicationId: string, actorUserId: string |
   const form = rows.find((row) => row.kind === "FORM");
   const formSettled = Boolean(form && Number(form.amount) - Number(form.verified) <= 0);
 
-  if (formSettled && !rows.some((row) => row.kind === "EXAM")) {
+  if (formSettled && application.submittedAt && !rows.some((row) => row.kind === "EXAM")) {
     await addChargeFromSchedule(application, "EXAM", actorUserId);
     rows = await balances(applicationId);
   }
 
   const currentForm = rows.find((row) => row.kind === "FORM");
   const exam = rows.find((row) => row.kind === "EXAM");
-  const nextStatus =
-    currentForm && Number(currentForm.amount) - Number(currentForm.verified) <= 0 &&
-    exam && Number(exam.amount) - Number(exam.verified) <= 0
-      ? "AWAITING_EXAMINATION"
-      : "AWAITING_PAYMENT";
+  const currentFormSettled = Boolean(
+    currentForm && Number(currentForm.amount) - Number(currentForm.verified) <= 0,
+  );
+  const examSettled = Boolean(
+    exam && Number(exam.amount) - Number(exam.verified) <= 0,
+  );
+  const nextStatus = !currentFormSettled
+    ? "AWAITING_PAYMENT"
+    : !application.submittedAt
+      ? "DRAFT"
+      : examSettled
+        ? "AWAITING_EXAMINATION"
+        : "AWAITING_PAYMENT";
 
-  if (["SUBMITTED", "AWAITING_PAYMENT", "AWAITING_EXAMINATION"].includes(application.status)) {
+  if (["DRAFT", "SUBMITTED", "AWAITING_PAYMENT", "AWAITING_EXAMINATION"].includes(application.status)) {
     await db.$executeRaw`
       UPDATE "admission_applications"
       SET "status"=${nextStatus}::"ApplicationStatus", "updatedAt"=CURRENT_TIMESTAMP
@@ -228,13 +237,91 @@ async function verifyPaymentRecord(paymentId: string, actorUserId: string) {
   return receipt;
 }
 
+export async function prepareApplicationFee(formData: FormData) {
+  const viewer = await requireApplicant();
+  const input = z.object({
+    campusId: z.string().trim().min(1),
+    classLevelId: z.string().trim().min(1),
+    studentFirstName: z.string().trim().min(2).max(80),
+    studentLastName: z.string().trim().min(2).max(80),
+    examMode: z.enum(["ONLINE", "ONSITE"]),
+  }).parse({
+    campusId: formData.get("campusId"),
+    classLevelId: formData.get("classLevelId"),
+    studentFirstName: formData.get("studentFirstName"),
+    studentLastName: formData.get("studentLastName"),
+    examMode: formData.get("examMode"),
+  });
+
+  const application = await applicationFinance(viewer.applicationId);
+  if (application.status !== "DRAFT" || application.submittedAt) {
+    redirect("/apply/status");
+  }
+
+  const placement = await db.classArm.findFirst({
+    where: {
+      campusId: input.campusId,
+      classLevelId: input.classLevelId,
+      isActive: true,
+      campus: { schoolId: viewer.schoolId, isActive: true },
+      classLevel: { schoolId: viewer.schoolId, isActive: true },
+    },
+    select: { id: true },
+  });
+  if (!placement) redirect("/apply/setup?error=invalid-placement");
+
+  await db.$executeRaw`
+    UPDATE "admission_applications"
+    SET "campusId"=${input.campusId}, "classLevelId"=${input.classLevelId},
+        "studentFirstName"=${input.studentFirstName}, "studentLastName"=${input.studentLastName},
+        "examMode"=${input.examMode}::"EntranceExamMode", "updatedAt"=CURRENT_TIMESTAMP
+    WHERE "id"=${application.id} AND "accountId"=${viewer.id} AND "status"='DRAFT'
+  `;
+
+  const updated = await applicationFinance(application.id);
+  const charge = await addChargeFromSchedule(updated, "FORM", null);
+  if (!charge) redirect("/apply/setup?error=fee-not-configured");
+
+  await db.$executeRaw`
+    UPDATE "admission_applications"
+    SET "status"='AWAITING_PAYMENT', "updatedAt"=CURRENT_TIMESTAMP
+    WHERE "id"=${application.id} AND "status"='DRAFT'
+  `;
+  await db.auditLog.create({
+    data: {
+      schoolId: application.schoolId,
+      campusId: input.campusId,
+      actorUserId: null,
+      action: "application.payment_stage_started",
+      entityType: "AdmissionApplication",
+      entityId: application.id,
+      after: {
+        applicationNumber: application.applicationNumber,
+        classLevelId: input.classLevelId,
+        examMode: input.examMode,
+        feeKind: "FORM",
+      },
+    },
+  });
+
+  revalidatePath("/apply/status");
+  revalidatePath("/apply/payment");
+  redirect("/apply/payment");
+}
+
 export async function startEntrancePayment() {
   const viewer = await requireApplicant();
   const application = await applicationFinance(viewer.applicationId);
   if (!["SUBMITTED", "AWAITING_PAYMENT"].includes(application.status)) {
     redirect("/apply/status");
   }
-  const charge = await addChargeFromSchedule(application, "FORM", null);
+  const currentBalances = await balances(application.id);
+  const form = currentBalances.find((row) => row.kind === "FORM");
+  const formSettled = Boolean(
+    form && Number(form.amount) - Number(form.verified) <= 0,
+  );
+  const kind: EntranceFeeKind = application.submittedAt && formSettled ? "EXAM" : "FORM";
+  const charge = await addChargeFromSchedule(application, kind, null);
   if (!charge) redirect("/apply/status?error=fee-not-configured");
   await reconcileApplication(application.id, null);
   await db.auditLog.create({
@@ -245,10 +332,11 @@ export async function startEntrancePayment() {
       action: "applicant_charge.created",
       entityType: "AdmissionApplication",
       entityId: application.id,
-      after: { kind: "FORM", applicationNumber: application.applicationNumber },
+      after: { kind, applicationNumber: application.applicationNumber },
     },
   });
   revalidatePath("/apply/status");
+  revalidatePath("/apply/payment");
   redirect("/apply/payment");
 }
 
@@ -436,7 +524,7 @@ export async function reverseApplicantPayment(paymentId: string, formData: FormD
   assertCampusAccess(viewer, payment.campusId);
   if (payment.status !== "VERIFIED") throw new Error("INVALID:PAYMENT_STATUS");
   const application = await applicationFinance(payment.applicationId);
-  if (!["AWAITING_PAYMENT", "AWAITING_EXAMINATION"].includes(application.status)) {
+  if (!["DRAFT", "AWAITING_PAYMENT", "AWAITING_EXAMINATION"].includes(application.status)) {
     throw new Error("LOCKED:APPLICATION_FINANCE");
   }
 

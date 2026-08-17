@@ -23,8 +23,8 @@ export const metadata: Metadata = {
 
 const steps = [
   [
-    "Pay the application form fee",
-    "Complete the approved payment step to unlock the online application form and begin the admissions process.",
+    "Create an account and pay the application-form fee",
+    "Select a campus and class, then pay the required fee. The complete application unlocks only after payment is verified.",
     CreditCard,
   ],
   [
@@ -33,8 +33,8 @@ const steps = [
     ClipboardList,
   ],
   [
-    "Take the entrance examination",
-    "Eligible applicants are scheduled for an approved online or onsite entrance examination.",
+    "Pay for and take the entrance examination",
+    "Eligible applicants pay the examination fee before online or onsite examination details are released.",
     MonitorCheck,
   ],
   [

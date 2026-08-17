@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { CheckCircle2, FileUp, LogOut, Save } from "lucide-react";
 import { logoutApplicant, submitApplication } from "@/app/actions/admissions";
 import { saveApplicationDraft } from "@/app/actions/applicant-application";
@@ -43,6 +44,25 @@ export default async function ApplicationPage({ searchParams }: ApplicationPageP
     LIMIT 1
   `;
   if (!application) throw new Error("NOT_FOUND:APPLICATION");
+
+  if (!application.campusId || !application.classLevelId) {
+    redirect("/apply/setup");
+  }
+  const [formPayment] = await db.$queryRaw<Array<{ amount: unknown; verified: unknown }>>`
+    SELECT c."amount",
+      COALESCE(SUM(CASE WHEN p."status"='VERIFIED' THEN p."amount" ELSE 0 END), 0) AS "verified"
+    FROM "applicant_charges" c
+    LEFT JOIN "applicant_payments" p ON p."chargeId"=c."id"
+    WHERE c."applicationId"=${viewer.applicationId} AND c."kind"='FORM'
+    GROUP BY c."id"
+    LIMIT 1
+  `;
+  const formSettled = Boolean(
+    formPayment && Number(formPayment.amount) - Number(formPayment.verified) <= 0,
+  );
+  if (!formSettled) {
+    redirect("/apply/payment");
+  }
 
   const [campuses, classLevels, documentCountRows] = await Promise.all([
     db.campus.findMany({
@@ -108,8 +128,8 @@ export default async function ApplicationPage({ searchParams }: ApplicationPageP
                 <label><span>Preferred name</span><input defaultValue={application.preferredName ?? ""} name="preferredName" /></label>
                 <label><span>Gender *</span><select defaultValue={application.gender ?? ""} name="gender"><option value="">Select gender</option><option value="MALE">Male</option><option value="FEMALE">Female</option></select></label>
                 <label><span>Date of birth *</span><input defaultValue={application.dateOfBirth?.toISOString().slice(0, 10) ?? ""} name="dateOfBirth" type="date" /></label>
-                <label><span>Preferred campus *</span><select defaultValue={application.campusId ?? ""} name="campusId"><option value="">Select campus</option>{campuses.map((campus) => <option key={campus.id} value={campus.id}>{campus.name} — {campus.city}</option>)}</select></label>
-                <label><span>Class applying for *</span><select defaultValue={application.classLevelId ?? ""} name="classLevelId"><option value="">Select class</option>{classLevels.map((level) => <option key={level.id} value={level.id}>{level.name}</option>)}</select></label>
+                <label><span>Preferred campus *</span><input readOnly value={campuses.find((campus) => campus.id === application.campusId)?.name ?? "Selected campus"} /><input name="campusId" type="hidden" value={application.campusId ?? ""} /></label>
+                <label><span>Class applying for *</span><input readOnly value={classLevels.find((level) => level.id === application.classLevelId)?.name ?? "Selected class"} /><input name="classLevelId" type="hidden" value={application.classLevelId ?? ""} /></label>
                 <label className="field-full"><span>Home address *</span><textarea defaultValue={application.address ?? ""} name="address" rows={4} /></label>
                 <label><span>Previous school</span><input defaultValue={application.previousSchool ?? ""} name="previousSchool" /></label>
                 <label><span>Entrance examination mode *</span><select defaultValue={application.examMode ?? ""} name="examMode"><option value="">Select mode</option><option value="ONLINE">Online examination</option><option value="ONSITE">Onsite examination</option></select></label>

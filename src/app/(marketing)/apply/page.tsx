@@ -36,10 +36,11 @@ export default function ApplyPage() {
             <span className="card-icon"><FileText size={27} /></span>
             <span className="section-kicker">New applicant</span>
             <h2>Start a new application</h2>
-            <p>Create an applicant account and provide the student, guardian, placement and document details.</p>
+            <p>Create an applicant account, select the preferred campus and class, and pay the application-form fee before completing the full form.</p>
             <ul className="check-list">
-              <li>Save and continue later</li>
-              <li>See entrance fee details</li>
+              <li>Select the campus and class</li>
+              <li>Pay the application-form fee securely</li>
+              <li>Unlock the complete form after verification</li>
               <li>Choose the approved online or onsite exam</li>
               <li>Track the admission decision</li>
             </ul>
