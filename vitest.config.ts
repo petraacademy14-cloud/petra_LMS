@@ -19,6 +19,7 @@ export default defineConfig({
         "src/lib/launch-readiness.ts",
         "src/lib/permissions.ts",
         "src/lib/scope.ts",
+        "src/lib/supabase-storage.ts",
       ],
     },
   },
