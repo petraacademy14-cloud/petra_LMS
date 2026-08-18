@@ -6,6 +6,7 @@ import type { ContentStatus } from "@/generated/prisma/enums";
 import { canTransitionContent, renderCommunicationTemplate, slugifyContent, validateAudience } from "@/lib/communications";
 import { requireCampusAccess, requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
+import { supabaseStorageAdminHeaders } from "@/lib/supabase-storage";
 
 const text = (min: number, max: number) => z.string().trim().min(min).max(max);
 const nullable = (value: FormDataEntryValue | null) => {
@@ -166,7 +167,17 @@ export async function uploadCommunicationMedia(publicationId: string, formData: 
   if (!supabaseUrl || !secret) throw new Error("CONFIG:COMMUNICATION_MEDIA_STORAGE");
   const safeName = file.name.replace(/[^A-Za-z0-9._-]/g, "-").slice(-100);
   const storageKey = `${viewer.membership.schoolId}/${publication.id}/${crypto.randomUUID()}-${safeName}`;
-  const response = await fetch(`${supabaseUrl}/storage/v1/object/communication-media/${storageKey}`, { method: "POST", headers: { Authorization: `Bearer ${secret}`, apikey: secret, "Content-Type": file.type, "x-upsert": "false" }, body: file });
+  const response = await fetch(
+    `${supabaseUrl}/storage/v1/object/communication-media/${storageKey}`,
+    {
+      method: "POST",
+      headers: supabaseStorageAdminHeaders(secret, {
+        "Content-Type": file.type,
+        "x-upsert": "false",
+      }),
+      body: file,
+    },
+  );
   if (!response.ok) throw new Error("STORAGE:MEDIA_UPLOAD_FAILED");
   await db.communicationMedia.create({ data: { schoolId: publication.schoolId, campusId: publication.campusId, publicationId, name: String(formData.get("name") ?? safeName).slice(0, 120), storageKey, fileName: safeName, contentType: file.type, sizeBytes: file.size, uploadedById: viewer.user.id } });
   revalidatePath("/communications");
