@@ -2,12 +2,18 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, GraduationCap, School, Users } from "lucide-react";
+import { ArrowLeft, GraduationCap, School, ShieldCheck, Users } from "lucide-react";
 import { LoginForm } from "@/components/login-form";
 import { PortalLoginForm } from "@/components/portal-login-form";
 import type { PortalAccountRole } from "@/lib/portal-account";
 
 const portals = {
+  owner: {
+    title: "Owner login",
+    detail: "Use the Petra Academy Owner email address and password.",
+    icon: ShieldCheck,
+    portalRole: null,
+  },
   student: {
     title: "Student login",
     detail: "Use the student username and temporary password issued by Petra Academy.",
