@@ -20,6 +20,7 @@ import {
 } from "@/lib/admissions-rules";
 import { requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
+import { supabaseStorageAdminHeaders } from "@/lib/supabase-storage";
 
 const shortText = (min: number, max: number) => z.string().trim().min(min).max(max);
 const optionalText = (value: FormDataEntryValue | null) => {
@@ -349,12 +350,10 @@ export async function uploadApplicationDocument(formData: FormData) {
     `${supabaseUrl}/storage/v1/object/admission-documents/${storageKey}`,
     {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${secret}`,
-        apikey: secret,
+      headers: supabaseStorageAdminHeaders(secret, {
         "Content-Type": file.type,
         "x-upsert": "false",
-      },
+      }),
       body: file,
     },
   );
