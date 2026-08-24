@@ -120,8 +120,12 @@ export async function loginApplicant(formData: FormData) {
     })
     .parse({ email: formData.get("email"), password: formData.get("password") });
   const school = await publicSchool();
-  const rows = await db.$queryRaw<Array<{ id: string; passwordHash: string }>>`
-    SELECT "id", "passwordHash"
+  const rows = await db.$queryRaw<Array<{
+    id: string;
+    passwordHash: string;
+    mustChangePassword: boolean;
+  }>>`
+    SELECT "id", "passwordHash", "mustChangePassword"
     FROM "applicant_accounts"
     WHERE "schoolId" = ${school.id} AND "email" = ${input.email}
     LIMIT 1
@@ -132,6 +136,7 @@ export async function loginApplicant(formData: FormData) {
   }
 
   await createApplicantSession(account.id);
+  if (account.mustChangePassword) redirect("/apply/change-password");
   redirect("/apply/status");
 }
 

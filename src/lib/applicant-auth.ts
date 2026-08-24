@@ -16,6 +16,7 @@ type ApplicantViewerRow = {
   email: string;
   phone: string;
   relationship: string;
+  mustChangePassword: boolean;
   applicationId: string;
   applicationNumber: string;
   applicationStatus: string;
@@ -73,6 +74,12 @@ export async function destroyApplicantSession() {
   cookieStore.delete(APPLICANT_COOKIE);
 }
 
+export async function destroyAllApplicantSessions(accountId: string) {
+  await db.$executeRaw`
+    DELETE FROM "applicant_sessions" WHERE "accountId" = ${accountId}
+  `;
+}
+
 export async function getApplicantViewer() {
   const cookieStore = await cookies();
   const token = cookieStore.get(APPLICANT_COOKIE)?.value;
@@ -87,6 +94,7 @@ export async function getApplicantViewer() {
       a."email",
       a."phone",
       a."relationship",
+      a."mustChangePassword",
       p."id" AS "applicationId",
       p."applicationNumber",
       p."status"::text AS "applicationStatus"
@@ -110,8 +118,11 @@ export async function getApplicantViewer() {
   return viewer;
 }
 
-export async function requireApplicant() {
+export async function requireApplicant(options?: { allowPasswordChange?: boolean }) {
   const viewer = await getApplicantViewer();
   if (!viewer) redirect("/apply/login");
+  if (viewer.mustChangePassword && !options?.allowPasswordChange) {
+    redirect("/apply/change-password");
+  }
   return viewer;
 }

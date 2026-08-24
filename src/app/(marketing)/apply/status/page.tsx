@@ -73,12 +73,13 @@ type StatusPageProps = {
     submitted?: string;
     error?: string;
     offer?: string;
+    "password-changed"?: string;
   }>;
 };
 
 export default async function ApplicationStatusPage({ searchParams }: StatusPageProps) {
   const viewer = await requireApplicant();
-  const { submitted, error, offer } = await searchParams;
+  const { submitted, error, offer, "password-changed": passwordChanged } = await searchParams;
   const [[application], [finance], [decision]] = await Promise.all([
     db.$queryRaw<StatusRow[]>`
       SELECT p."status"::text AS "status", p."studentFirstName", p."studentLastName",
@@ -134,6 +135,7 @@ export default async function ApplicationStatusPage({ searchParams }: StatusPage
           <form action={logoutApplicant}><button className="button button-secondary" type="submit"><LogOut size={17} /> Sign out</button></form>
         </div>
         {submitted && <div className="success-banner"><CheckCircle2 size={20} />Your application has been submitted successfully.</div>}
+        {passwordChanged && <div className="success-banner"><ShieldCheck size={20} />Your password has been changed securely.</div>}
         {offer === "accepted" && <div className="success-banner"><CheckCircle2 size={20} />Your admission offer has been accepted. The school can now create the student record.</div>}
         {offer === "declined" && <div className="form-alert"><XCircle size={20} />You declined the admission offer. Contact admissions promptly if this was a mistake.</div>}
         {offer === "expired" && <div className="form-alert"><Clock3 size={20} />The admission offer deadline has passed. Contact the admissions office for assistance.</div>}
