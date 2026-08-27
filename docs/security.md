@@ -5,6 +5,8 @@
 Better Auth provides email/password authentication and database-backed sessions.
 Public registration is disabled unless `ALLOW_SELF_SIGN_UP=true`. Production
 must provide a high-entropy `BETTER_AUTH_SECRET`, HTTPS and secure cookies.
+Applicant and school-issued parent/student sessions remain separate from staff
+sessions and must not be treated as interchangeable identities.
 
 ## Roles
 
@@ -24,6 +26,8 @@ must provide a high-entropy `BETTER_AUTH_SECRET`, HTTPS and secure cookies.
 | Approve/publish/lock results | All campuses | Assigned campus | No |
 | Draft announcements and public updates | All campuses | Assigned campus | Assigned campus |
 | Review/publish communications | All campuses | Assigned campus | No |
+| Record pilot evidence, corrections and issues | All campuses | Assigned campus | No |
+| Approve production launch | Yes | No | No |
 | View audit history | School-wide | Assigned campus | No |
 | Manage system settings | Yes | No | No |
 
@@ -46,9 +50,16 @@ table above must update that file and its tests in the same pull request.
 - Teaching assignments bind teachers to a campus, term, class and subject.
 - Locked attendance registers and result sheets reject entry/score updates at
   the database layer. Corrections before locking require an audit reason.
-
-- Communication publishing is state-controlled; public routes expose only PUBLISHED records.
-- Delivery generation stores drafts and recipient counts but does not send externally.
+- Communication publishing is state-controlled; public routes expose only
+  published records.
+- Delivery generation stores drafts and recipient counts but does not send
+  externally.
+- Parent and student downloads revalidate the signed-in portal account against
+  the requested learner or guardian relationship.
+- The public health endpoint exposes only service, version and database
+  reachability; it never returns environment values or secrets.
+- Pilot evidence and website-correction notes must not contain passwords,
+  database URLs, secret keys or student documents.
 
 ## Secrets and personal data
 
@@ -57,4 +68,6 @@ table above must update that file and its tests in the same pull request.
 - Avoid logging passwords, session tokens, access tokens, student health data or
   full request bodies.
 - Store only the minimum data required in audit and error contexts.
+- Keep `student-documents`, `communication-media` and `admission-documents`
+  Supabase Storage buckets private.
 - Rotate secrets after any suspected disclosure.

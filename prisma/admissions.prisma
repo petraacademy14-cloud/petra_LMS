@@ -1,0 +1,118 @@
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  AWAITING_PAYMENT
+  AWAITING_EXAMINATION
+  UNDER_REVIEW
+  ACCEPTED
+  WAITLISTED
+  REJECTED
+}
+
+enum EntranceExamMode {
+  ONLINE
+  ONSITE
+}
+
+enum VisitBookingStatus {
+  REQUESTED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+/// Applicant authentication is deliberately separate from staff Better Auth accounts.
+/// These externally-declared models are created and evolved through reviewed SQL migrations.
+model ApplicantAccount {
+  id            String   @id
+  schoolId      String
+  firstName     String
+  lastName      String
+  email         String
+  phone         String
+  relationship  String
+  passwordHash  String
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+
+  @@unique([schoolId, email])
+  @@index([schoolId, createdAt(sort: Desc)])
+  @@map("applicant_accounts")
+}
+
+model ApplicantSession {
+  id         String   @id
+  accountId  String
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  lastSeenAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([accountId, expiresAt])
+  @@map("applicant_sessions")
+}
+
+model AdmissionApplication {
+  id                   String             @id
+  schoolId             String
+  accountId            String             @unique
+  applicationNumber    String
+  status               ApplicationStatus  @default(DRAFT)
+  campusId             String?
+  classLevelId         String?
+  studentFirstName     String?
+  studentMiddleName    String?
+  studentLastName      String?
+  preferredName        String?
+  gender               Gender?
+  dateOfBirth          DateTime?          @db.Date
+  address              String?
+  previousSchool       String?
+  medicalNotes         String?
+  examMode             EntranceExamMode?
+  termsAccepted        Boolean            @default(false)
+  submittedAt          DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @default(now())
+
+  @@unique([schoolId, applicationNumber])
+  @@index([schoolId, status, createdAt(sort: Desc)])
+  @@index([campusId, status, createdAt(sort: Desc)])
+  @@map("admission_applications")
+}
+
+model ApplicationDocument {
+  id            String   @id
+  applicationId String
+  name          String
+  storageKey    String   @unique
+  fileName      String
+  contentType   String
+  sizeBytes     Int
+  createdAt     DateTime @default(now())
+
+  @@index([applicationId, createdAt(sort: Desc)])
+  @@map("application_documents")
+}
+
+model VisitBooking {
+  id             String             @id
+  schoolId       String
+  campusId       String?
+  guardianName   String
+  studentName    String
+  phone          String
+  email          String?
+  classInterest  String
+  preferredDate  DateTime           @db.Date
+  preferredTime  String
+  notes           String?
+  status          VisitBookingStatus @default(REQUESTED)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @default(now())
+
+  @@index([schoolId, status, preferredDate])
+  @@index([campusId, status, preferredDate])
+  @@map("visit_bookings")
+}

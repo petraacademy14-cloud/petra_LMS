@@ -1,0 +1,127 @@
+enum EntranceExamPaperStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
+enum ApplicantExamStatus {
+  SCHEDULED
+  IN_PROGRESS
+  SCORED
+  ABSENT
+  CANCELLED
+}
+
+enum ExamAttendanceStatus {
+  NOT_MARKED
+  PRESENT
+  ABSENT
+}
+
+enum ExamAnswerOption {
+  A
+  B
+  C
+  D
+}
+
+/// Entrance-examination models are maintained through reviewed SQL migrations.
+model EntranceExamPaper {
+  id              String                  @id
+  schoolId        String
+  campusId        String
+  classLevelId    String
+  title           String
+  mode            EntranceExamMode
+  instructions    String
+  durationMinutes Int
+  questionCount   Int
+  passMark        Decimal                 @db.Decimal(5, 2)
+  opensAt         DateTime?
+  closesAt        DateTime?
+  scheduledAt     DateTime?
+  venue           String?
+  status          EntranceExamPaperStatus @default(DRAFT)
+  createdById     String
+  publishedAt     DateTime?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @default(now())
+
+  @@index([schoolId, status, mode])
+  @@index([campusId, classLevelId, status])
+  @@map("entrance_exam_papers")
+}
+
+model EntranceExamQuestion {
+  id            String           @id
+  schoolId      String
+  paperId       String
+  prompt        String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctOption ExamAnswerOption
+  marks         Decimal          @db.Decimal(8, 2)
+  sortOrder     Int
+  isActive      Boolean          @default(true)
+  createdById   String
+  createdAt     DateTime         @default(now())
+
+  @@unique([paperId, sortOrder])
+  @@index([schoolId, paperId, isActive])
+  @@map("entrance_exam_questions")
+}
+
+model ExamCandidateSequence {
+  id            String   @id
+  schoolId      String
+  year          Int
+  currentNumber Int      @default(0)
+  updatedAt     DateTime @default(now())
+
+  @@unique([schoolId, year])
+  @@map("exam_candidate_sequences")
+}
+
+model ApplicantExamRegistration {
+  id                      String               @id
+  applicationId           String               @unique
+  paperId                 String
+  candidateNumber         String               @unique
+  seatNumber              String?
+  status                  ApplicantExamStatus  @default(SCHEDULED)
+  startedAt               DateTime?
+  expiresAt               DateTime?
+  submittedAt             DateTime?
+  scoredAt                DateTime?
+  score                   Decimal?             @db.Decimal(10, 2)
+  maximumScore            Decimal?             @db.Decimal(10, 2)
+  percentage              Decimal?             @db.Decimal(5, 2)
+  passed                   Boolean?
+  attendanceStatus        ExamAttendanceStatus @default(NOT_MARKED)
+  attendanceMarkedById    String?
+  attendanceMarkedAt      DateTime?
+  manualScoreRecordedById String?
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @default(now())
+
+  @@index([paperId, status, candidateNumber])
+  @@index([applicationId, status])
+  @@map("applicant_exam_registrations")
+}
+
+model ApplicantExamAnswer {
+  id             String           @id
+  registrationId String
+  questionId     String
+  selectedOption ExamAnswerOption?
+  isCorrect      Boolean          @default(false)
+  marksAwarded   Decimal          @default(0) @db.Decimal(8, 2)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @default(now())
+
+  @@unique([registrationId, questionId])
+  @@index([registrationId, createdAt])
+  @@map("applicant_exam_answers")
+}

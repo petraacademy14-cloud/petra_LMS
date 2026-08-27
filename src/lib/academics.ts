@@ -1,5 +1,44 @@
 export type MoneyLike = number | string | { toString(): string };
 
+export const PETRA_RESULT_COMPONENTS = [
+  {
+    name: "First CAT",
+    kind: "CONTINUOUS_ASSESSMENT" as const,
+    maxScore: 20,
+    weight: 20,
+    sortOrder: 1,
+  },
+  {
+    name: "Second CAT",
+    kind: "CONTINUOUS_ASSESSMENT" as const,
+    maxScore: 20,
+    weight: 20,
+    sortOrder: 2,
+  },
+  {
+    name: "Examination",
+    kind: "EXAM" as const,
+    maxScore: 60,
+    weight: 60,
+    sortOrder: 3,
+  },
+] as const;
+
+export function resultComponentLabel(input: {
+  name: string;
+  kind: "CONTINUOUS_ASSESSMENT" | "EXAM";
+  sortOrder: number;
+}) {
+  if (input.kind === "CONTINUOUS_ASSESSMENT" && input.sortOrder === 1) {
+    return "First CAT";
+  }
+  if (input.kind === "CONTINUOUS_ASSESSMENT" && input.sortOrder === 2) {
+    return "Second CAT";
+  }
+  if (input.kind === "EXAM" && input.sortOrder === 3) return "Examination";
+  return input.name;
+}
+
 function number(value: MoneyLike) {
   const parsed = Number(value.toString());
   if (!Number.isFinite(parsed)) throw new Error("INVALID_NUMBER");

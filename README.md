@@ -59,6 +59,25 @@ reconciliation are proven reliable.
 
 Private chat and automatic external delivery remain outside the V1 boundary.
 
+## Phase 6 website, admissions and role portals
+
+- Public Petra Academy website with About, Programs, Admissions, Apply, Book a Visit, Contact and News pages
+- Applicant accounts, saved applications and private admission-document uploads
+- Entrance-form and examination-fee controls, online/onsite examinations and admission decisions
+- Accepted-offer conversion into official student, guardian, enrolment and fee records
+- School-issued parent and student accounts with private academic and finance views
+- Assignment-scoped teacher attendance, result and class-communication workspaces
+- A dedicated website-corrections gate before owner acceptance and production merge
+
+## Phase 6 pilot and launch readiness
+
+- Automated environment and core-data readiness indicators
+- End-to-end pilot checklist with recorded evidence across the website, admissions, portals and school operations
+- Scoped defect and website-correction reporting, severity and resolution tracking
+- Database-backed final launch gate reserved for the owner
+- Public database health endpoint for deployment monitoring
+- Backup, restore, rollback, staff training and release runbooks
+
 ## Stack
 
 - Next.js 16, React 19 and TypeScript
@@ -115,5 +134,6 @@ This runs linting, TypeScript, unit tests and the production build.
 - [Phase 3 fees and payments](docs/phase-3-fees-payments.md)
 - [Phase 4 attendance and results](docs/phase-4-attendance-results.md)
 - [Phase 5 communication and digital presence](docs/phase-5-communications.md)
+- [Phase 6 pilot and launch plan](docs/phase-6-pilot-launch.md)
 
 Read `AGENTS.md` before starting any task.

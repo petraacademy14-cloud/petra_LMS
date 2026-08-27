@@ -1,0 +1,107 @@
+enum PilotStatus {
+  PLANNED
+  ACTIVE
+  BLOCKED
+  COMPLETED
+}
+
+enum PilotChecklistStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  PASSED
+  FAILED
+  BLOCKED
+}
+
+enum PilotIssueSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum PilotIssueStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  ACCEPTED_RISK
+}
+
+enum LaunchApprovalStatus {
+  DRAFT
+  APPROVED
+  REVOKED
+}
+
+/// Launch-readiness records are maintained by reviewed SQL migrations.
+/// Core school, campus and user foreign keys remain database-enforced.
+model PilotRun {
+  id          String      @id @default(cuid())
+  schoolId    String
+  name        String
+  status      PilotStatus @default(PLANNED)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  notes       String?
+  createdById String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([schoolId, status, createdAt(sort: Desc)])
+  @@map("pilot_runs")
+}
+
+model PilotChecklistItem {
+  id           String               @id @default(cuid())
+  pilotRunId   String
+  key          String
+  area         String
+  label        String
+  status       PilotChecklistStatus @default(NOT_STARTED)
+  evidence     String?
+  verifiedById String?
+  verifiedAt   DateTime?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@unique([pilotRunId, key])
+  @@index([pilotRunId, area, status])
+  @@map("pilot_checklist_items")
+}
+
+model PilotIssue {
+  id           String             @id @default(cuid())
+  schoolId     String
+  campusId     String?
+  pilotRunId   String
+  title        String
+  description  String
+  route        String?
+  severity     PilotIssueSeverity
+  status       PilotIssueStatus   @default(OPEN)
+  resolution   String?
+  reportedById String
+  resolvedById String?
+  resolvedAt   DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([schoolId, status, severity])
+  @@index([pilotRunId, createdAt(sort: Desc)])
+  @@index([campusId, status])
+  @@map("pilot_issues")
+}
+
+model LaunchApproval {
+  id           String               @id @default(cuid())
+  pilotRunId   String               @unique
+  status       LaunchApprovalStatus @default(DRAFT)
+  summary      String?
+  approvedById String?
+  approvedAt   DateTime?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([status, approvedAt(sort: Desc)])
+  @@map("launch_approvals")
+}

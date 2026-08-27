@@ -7,7 +7,11 @@ import {
 } from "@/app/actions/results";
 import { AcademicsNav } from "@/components/academics-nav";
 import { PageHeading } from "@/components/page-heading";
-import { resolveGrade, totalWeightedScore } from "@/lib/academics";
+import {
+  resolveGrade,
+  resultComponentLabel,
+  totalWeightedScore,
+} from "@/lib/academics";
 import { requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { hasPermission } from "@/lib/permissions";
@@ -74,7 +78,7 @@ export default async function ResultSheetPage({
       <section className="card mt-6 overflow-hidden">
         <form action={saveResultSheetScores}>
           <input name="sheetId" type="hidden" value={sheet.id} />
-          <div className="table-wrap"><table className="data-table"><thead><tr><th>Student</th>{sheet.components.map((component) => <th key={component.id}>{component.name}<br /><span className="text-xs font-normal">Max {Number(component.maxScore)} · Weight {Number(component.weight)}%</span></th>)}<th>Total</th><th>Grade</th><th>Teacher comment</th></tr></thead>
+          <div className="table-wrap"><table className="data-table"><thead><tr><th>Student</th>{sheet.components.map((component) => <th key={component.id}>{resultComponentLabel(component)}<br /><span className="text-xs font-normal">Max {Number(component.maxScore)} · Weight {Number(component.weight)}%</span></th>)}<th>Total</th><th>Grade</th><th>Teacher comment</th></tr></thead>
             <tbody>{students.map((student) => {
               const scored = sheet.components.map((component) => ({ component, score: scoreMap.get(`${component.id}:${student.id}`) }));
               const completed = scored.every((item) => item.score);
@@ -94,7 +98,7 @@ export default async function ResultSheetPage({
           <summary className="cursor-pointer font-black">Correct a submitted score</summary>
           <div className="mt-4 grid gap-3">{sheet.components.flatMap((component) => component.scores.map((score) => {
             const student = students.find((item) => item.id === score.studentId);
-            return <form action={correctStudentScore} className="grid gap-2 rounded-xl border p-3 md:grid-cols-[2fr_1fr_1fr_2fr_auto]" key={score.id}><input name="scoreId" type="hidden" value={score.id} /><strong>{student?.lastName}, {student?.firstName}</strong><span>{component.name}</span><input className="h-10 rounded-lg border px-2" defaultValue={Number(score.score)} max={Number(component.maxScore)} min="0" name="score" step="0.01" type="number" /><input className="h-10 rounded-lg border px-2" name="reason" placeholder="Required reason" required /><button className="button button-secondary" type="submit">Correct</button></form>;
+            return <form action={correctStudentScore} className="grid gap-2 rounded-xl border p-3 md:grid-cols-[2fr_1fr_1fr_2fr_auto]" key={score.id}><input name="scoreId" type="hidden" value={score.id} /><strong>{student?.lastName}, {student?.firstName}</strong><span>{resultComponentLabel(component)}</span><input className="h-10 rounded-lg border px-2" defaultValue={Number(score.score)} max={Number(component.maxScore)} min="0" name="score" step="0.01" type="number" /><input className="h-10 rounded-lg border px-2" name="reason" placeholder="Required reason" required /><button className="button button-secondary" type="submit">Correct</button></form>;
           }))}</div>
         </details>
       )}

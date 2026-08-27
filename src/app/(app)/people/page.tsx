@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { Shield, UserRoundCheck } from "lucide-react";
+import Link from "next/link";
+import { KeyRound, Shield, UserPlus, UserRoundCheck } from "lucide-react";
 import type { Role } from "@/generated/prisma/enums";
 import { PageHeading } from "@/components/page-heading";
+import { StaffAccountCreateForm } from "@/components/staff-account-form";
 import { requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { permissionsFor } from "@/lib/permissions";
@@ -18,38 +20,55 @@ const roleDescriptions: Record<Role, string> = {
 
 export default async function PeoplePage() {
   const viewer = await requirePermission("people.read");
-  const memberships = await db.schoolMembership.findMany({
-    where: {
-      schoolId: viewer.membership.schoolId,
-      ...(viewer.membership.role === "OWNER"
-        ? {}
-        : { campusId: viewer.membership.campusId }),
-    },
-    orderBy: [{ role: "asc" }, { user: { name: "asc" } }],
-    select: {
-      id: true,
-      role: true,
-      status: true,
-      createdAt: true,
-      user: {
-        select: {
-          name: true,
-          email: true,
-          emailVerified: true,
+  const [memberships, campuses] = await Promise.all([
+    db.schoolMembership.findMany({
+      where: {
+        schoolId: viewer.membership.schoolId,
+        ...(viewer.membership.role === "OWNER"
+          ? {}
+          : { campusId: viewer.membership.campusId }),
+      },
+      orderBy: [{ role: "asc" }, { user: { name: "asc" } }],
+      select: {
+        id: true,
+        role: true,
+        status: true,
+        createdAt: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+            emailVerified: true,
+          },
+        },
+        campus: {
+          select: {
+            name: true,
+          },
         },
       },
-      campus: {
-        select: {
-          name: true,
-        },
+    }),
+    db.campus.findMany({
+      where: {
+        schoolId: viewer.membership.schoolId,
+        isActive: true,
       },
-    },
-  });
+      orderBy: { name: "asc" },
+      select: { id: true, name: true },
+    }),
+  ]);
 
   return (
     <div>
       <PageHeading
-        description="Every person receives a school membership, a role and—except school-wide owners—a campus scope. Accounts are issued by authorized staff; public sign-up is disabled."
+        action={
+          viewer.membership.role === "TEACHER" ? null : (
+            <Link className="button" href="/people/portal-accounts">
+              <KeyRound size={17} /> Parent and student accounts
+            </Link>
+          )
+        }
+        description="Every staff member receives a school membership, a role and—except school-wide owners—a campus scope. Parent and student accounts are issued separately by authorized staff."
         eyebrow="Identity & access"
         title="People, roles & permissions"
       />
@@ -84,6 +103,26 @@ export default async function PeoplePage() {
           </article>
         ))}
       </section>
+
+      {viewer.membership.role === "OWNER" && (
+        <details className="card mt-5 p-5" open>
+          <summary className="flex cursor-pointer items-center gap-3 font-black">
+            <UserPlus className="text-[#d71920]" size={20} />
+            Add an administrator or teacher
+          </summary>
+          <p className="mt-2 text-sm leading-6 text-[#68707d]">
+            Create a campus-scoped staff account and copy the one-time login credentials immediately.
+          </p>
+          <div className="mt-5">
+            <StaffAccountCreateForm
+              campuses={campuses.map((campus) => ({
+                value: campus.id,
+                label: campus.name,
+              }))}
+            />
+          </div>
+        </details>
+      )}
 
       <section className="card mt-5 overflow-hidden">
         <div className="flex items-center gap-3 border-b border-[#e8eaed] p-5">

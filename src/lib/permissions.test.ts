@@ -20,12 +20,21 @@ describe("role permissions", () => {
   });
 
   it("limits teachers to assigned teaching workflows", () => {
+    expect(hasPermission("TEACHER", "people.read")).toBe(false);
     expect(hasPermission("TEACHER", "people.manage")).toBe(false);
+    expect(hasPermission("TEACHER", "academic.read")).toBe(false);
+    expect(hasPermission("TEACHER", "admissions.read")).toBe(false);
     expect(hasPermission("TEACHER", "finance.read")).toBe(false);
     expect(hasPermission("TEACHER", "attendance.manage")).toBe(true);
     expect(hasPermission("TEACHER", "attendance.correct")).toBe(false);
     expect(hasPermission("TEACHER", "results.manage")).toBe(true);
     expect(hasPermission("TEACHER", "results.approve")).toBe(false);
+  });
+
+  it("allows owners and campus admins to manage admissions", () => {
+    expect(hasPermission("OWNER", "admissions.manage")).toBe(true);
+    expect(hasPermission("ADMIN", "admissions.read")).toBe(true);
+    expect(hasPermission("ADMIN", "admissions.manage")).toBe(true);
   });
 
   it("allows campus admins to correct attendance and approve results", () => {
@@ -39,10 +48,20 @@ describe("role permissions", () => {
     expect(hasPermission("ADMIN", "finance.manage")).toBe(true);
     expect(hasPermission("ADMIN", "finance.reconcile")).toBe(true);
   });
-  it("separates communication drafting from publication", () => {
-    expect(hasPermission("TEACHER", "communications.manage")).toBe(true);
+
+  it("separates teacher class drafting from publication tools", () => {
+    expect(hasPermission("TEACHER", "communications.read")).toBe(true);
+    expect(hasPermission("TEACHER", "communications.manage")).toBe(false);
     expect(hasPermission("TEACHER", "communications.publish")).toBe(false);
     expect(hasPermission("ADMIN", "communications.review")).toBe(true);
     expect(hasPermission("ADMIN", "communications.publish")).toBe(true);
+  });
+
+  it("reserves final launch approval for the owner", () => {
+    expect(hasPermission("OWNER", "launch.approve")).toBe(true);
+    expect(hasPermission("ADMIN", "launch.read")).toBe(true);
+    expect(hasPermission("ADMIN", "launch.manage")).toBe(true);
+    expect(hasPermission("ADMIN", "launch.approve")).toBe(false);
+    expect(hasPermission("TEACHER", "launch.read")).toBe(false);
   });
 });

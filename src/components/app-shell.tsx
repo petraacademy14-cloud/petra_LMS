@@ -9,10 +9,12 @@ import {
   ChevronDown,
   ClipboardClock,
   ClipboardCheck,
+  ClipboardList,
   FileText,
   LayoutDashboard,
   Menu,
   Megaphone,
+  Rocket,
   Settings,
   ShieldCheck,
   Users,
@@ -50,6 +52,12 @@ const navigation: Array<{
     permission: "people.read",
   },
   {
+    href: "/admissions-admin",
+    label: "Admissions",
+    icon: ClipboardList,
+    permission: "admissions.read",
+  },
+  {
     href: "/people",
     label: "People & roles",
     icon: Users,
@@ -80,6 +88,12 @@ const navigation: Array<{
     permission: "communications.read",
   },
   {
+    href: "/launch-readiness",
+    label: "Launch readiness",
+    icon: Rocket,
+    permission: "launch.read",
+  },
+  {
     href: "/audit",
     label: "Audit history",
     icon: ClipboardClock,
@@ -92,6 +106,16 @@ const navigation: Array<{
     permission: "system.manage",
   },
 ];
+
+const teacherRoutes: Record<string, { href: string; label: string }> = {
+  "/dashboard": { href: "/teacher", label: "Teacher overview" },
+  "/attendance": { href: "/teacher/attendance", label: "Attendance" },
+  "/results": { href: "/teacher/results", label: "Results" },
+  "/communications": {
+    href: "/teacher/communications",
+    label: "Class communications",
+  },
+};
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -109,7 +133,14 @@ export function AppShell({ children, viewer, permissions }: AppShellProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const permissionSet = new Set(permissions);
-  const links = navigation.filter(
+  const roleNavigation =
+    viewer.role === "TEACHER"
+      ? navigation.map((item) => {
+          const teacherRoute = teacherRoutes[item.href];
+          return teacherRoute ? { ...item, ...teacherRoute } : item;
+        })
+      : navigation;
+  const links = roleNavigation.filter(
     (item) => !item.permission || permissionSet.has(item.permission),
   );
 
@@ -146,7 +177,9 @@ export function AppShell({ children, viewer, permissions }: AppShellProps) {
           <div className="space-y-1">
             {links.map((item) => {
               const active =
-                pathname === item.href || pathname.startsWith(`${item.href}/`);
+                pathname === item.href ||
+                (item.href !== "/teacher" &&
+                  pathname.startsWith(`${item.href}/`));
               const Icon = item.icon;
 
               return (
