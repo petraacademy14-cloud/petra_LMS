@@ -1,5 +1,97 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
+
+const socialIconStyle = {
+  display: "inline-flex",
+  width: 38,
+  height: 38,
+  alignItems: "center",
+  justifyContent: "center",
+  border: "1px solid #343436",
+  borderRadius: 10,
+  background: "#202022",
+  color: "#f5f2f2",
+  textDecoration: "none",
+} as const;
+
+function SocialIcon({
+  label,
+  href,
+  children,
+}: {
+  label: string;
+  href?: string;
+  children: ReactNode;
+}) {
+  if (href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Visit Petra Academy on ${label}`}
+        title={label}
+        style={socialIconStyle}
+      >
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <span
+      aria-label={`${label} link coming soon`}
+      aria-disabled="true"
+      title={`${label} — coming soon`}
+      style={{ ...socialIconStyle, opacity: 0.45, cursor: "not-allowed" }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function FacebookIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M13.6 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5H17V3.9c-.3 0-1.4-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V10H7.5v3h2.8v8h3.3Z" />
+    </svg>
+  );
+}
+
+function InstagramIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.7" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function YouTubeIcon() {
+  return (
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M21.6 7.1a3 3 0 0 0-2.1-2.1C17.7 4.5 12 4.5 12 4.5s-5.7 0-7.5.5a3 3 0 0 0-2.1 2.1C2 9 2 12 2 12s0 3 .4 4.9A3 3 0 0 0 4.5 19c1.8.5 7.5.5 7.5.5s5.7 0 7.5-.5a3 3 0 0 0 2.1-2.1C22 15 22 12 22 12s0-3-.4-4.9ZM10 15.3V8.7l5.6 3.3-5.6 3.3Z" />
+    </svg>
+  );
+}
+
+function TikTokIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M14.2 3h3a4.7 4.7 0 0 0 3.8 3.8v3a7.7 7.7 0 0 1-3.8-1v6.1A6.1 6.1 0 1 1 12 8.9v3.2a3 3 0 1 0 2.2 2.8V3Z" />
+    </svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M18.2 3H21l-6.1 7 7.2 11h-5.6l-4.4-6.8L6.1 21H3.3l7.5-8.6L3.9 3h5.8l4 6.2L18.2 3Zm-1 16h1.5L8.9 4.9H7.3L17.2 19Z" />
+    </svg>
+  );
+}
 
 function CiscoNetworkingLogo() {
   return (
@@ -93,6 +185,26 @@ export function SiteFooter() {
             After-school Mathematics: Sat 9:00 AM–12 noon<br />
             After-school Coding: Sat 12 noon–4:00 PM
           </p>
+          <div style={{ marginTop: 22 }}>
+            <h2 style={{ marginBottom: 12 }}>Follow Petra Academy</h2>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 9 }}>
+              <SocialIcon label="Facebook" href="https://www.facebook.com/share/1DL8NrSvyz/">
+                <FacebookIcon />
+              </SocialIcon>
+              <SocialIcon label="Instagram" href="https://www.instagram.com/petraacademyawka?igsi=cWI3MmwwNXA2ZXR5">
+                <InstagramIcon />
+              </SocialIcon>
+              <SocialIcon label="YouTube">
+                <YouTubeIcon />
+              </SocialIcon>
+              <SocialIcon label="TikTok">
+                <TikTokIcon />
+              </SocialIcon>
+              <SocialIcon label="X">
+                <XIcon />
+              </SocialIcon>
+            </div>
+          </div>
         </div>
         <div>
           <h2>Explore</h2>
