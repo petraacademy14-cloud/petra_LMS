@@ -37,57 +37,48 @@ export async function sendContactEnquiry(formData: FormData) {
     redirect("/contact?status=invalid#enquiry");
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.CONTACT_EMAIL_FROM ?? "Petra Academy Website <enquiries@petraacademy.co>";
-
-  if (!apiKey) {
-    console.error("Contact enquiry delivery is not configured: RESEND_API_KEY is missing.");
-    redirect("/contact?status=unavailable#enquiry");
-  }
-
   const enquiry = result.data;
   const campusName = enquiry.campus === "awka" ? "Awka" : "Nnewi";
   const recipient = campusRecipients[enquiry.campus];
   const phone = enquiry.phone || "Not provided";
 
   try {
-    const response = await fetch("https://api.resend.com/emails", {
+    const response = await fetch(`https://formsubmit.co/ajax/${recipient}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Accept: "application/json",
         "Content-Type": "application/json",
+        Referer: "https://www.petraacademy.co/contact",
       },
       body: JSON.stringify({
-        from,
-        to: [recipient],
-        reply_to: enquiry.email,
-        subject: `Website enquiry — ${campusName}: ${plainTextLine(enquiry.subject)}`,
-        text: [
-          "A new enquiry was submitted through the Petra Academy website.",
-          "",
-          `Campus: ${campusName}`,
-          `Name: ${plainTextLine(enquiry.name)}`,
-          `Email: ${plainTextLine(enquiry.email)}`,
-          `Phone: ${plainTextLine(phone)}`,
-          `Subject: ${plainTextLine(enquiry.subject)}`,
-          "",
-          "Message:",
-          enquiry.message,
-        ].join("\n"),
+        name: plainTextLine(enquiry.name),
+        email: plainTextLine(enquiry.email),
+        phone: plainTextLine(phone),
+        campus: `${campusName} Campus`,
+        subject: plainTextLine(enquiry.subject),
+        message: enquiry.message,
+        _replyto: plainTextLine(enquiry.email),
+        _subject: `Website enquiry — ${campusName}: ${plainTextLine(enquiry.subject)}`,
+        _template: "table",
+        _url: "https://www.petraacademy.co/contact",
       }),
       cache: "no-store",
     });
 
-    if (!response.ok) {
-      const providerMessage = await response.text();
+    const providerResult = await response.json().catch(() => null) as
+      | { success?: boolean | string; message?: string }
+      | null;
+    const providerRejected = providerResult?.success === false || providerResult?.success === "false";
+
+    if (!response.ok || providerRejected) {
       console.error("Contact enquiry delivery failed.", {
         status: response.status,
-        providerMessage: providerMessage.slice(0, 500),
+        providerMessage: providerResult?.message?.slice(0, 500),
       });
       redirect("/contact?status=failed#enquiry");
     }
   } catch (error) {
-    console.error("Contact enquiry delivery could not reach the email provider.", error);
+    console.error("Contact enquiry delivery could not reach FormSubmit.", error);
     redirect("/contact?status=failed#enquiry");
   }
 
