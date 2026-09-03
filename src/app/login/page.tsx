@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, GraduationCap, School, Users } from "lucide-react";
+import { ArrowLeft, GraduationCap, School, ShieldCheck, Users } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Login",
-  description: "Choose the Petra Academy student, parent or teacher portal.",
+  description: "Choose the Petra Academy owner, student, parent or teacher portal.",
 };
 
 const portals = [
+  { role: "owner", title: "Owner", detail: "Manage the school, campuses, admissions, students, fees and reports.", icon: ShieldCheck },
   { role: "student", title: "Student", detail: "Access results, assignments, timetables and school updates.", icon: GraduationCap },
   { role: "parent", title: "Parent", detail: "View your children, fees, receipts, attendance and academic reports.", icon: Users },
   { role: "teacher", title: "Teacher", detail: "Manage classes, attendance, assignments, results and communication.", icon: School },

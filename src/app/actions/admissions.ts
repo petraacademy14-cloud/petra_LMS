@@ -20,6 +20,7 @@ import {
 } from "@/lib/admissions-rules";
 import { requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
+import { supabaseStorageAdminHeaders } from "@/lib/supabase-storage";
 
 const shortText = (min: number, max: number) => z.string().trim().min(min).max(max);
 const optionalText = (value: FormDataEntryValue | null) => {
@@ -119,8 +120,12 @@ export async function loginApplicant(formData: FormData) {
     })
     .parse({ email: formData.get("email"), password: formData.get("password") });
   const school = await publicSchool();
-  const rows = await db.$queryRaw<Array<{ id: string; passwordHash: string }>>`
-    SELECT "id", "passwordHash"
+  const rows = await db.$queryRaw<Array<{
+    id: string;
+    passwordHash: string;
+    mustChangePassword: boolean;
+  }>>`
+    SELECT "id", "passwordHash", "mustChangePassword"
     FROM "applicant_accounts"
     WHERE "schoolId" = ${school.id} AND "email" = ${input.email}
     LIMIT 1
@@ -131,6 +136,7 @@ export async function loginApplicant(formData: FormData) {
   }
 
   await createApplicantSession(account.id);
+  if (account.mustChangePassword) redirect("/apply/change-password");
   redirect("/apply/status");
 }
 
@@ -349,12 +355,10 @@ export async function uploadApplicationDocument(formData: FormData) {
     `${supabaseUrl}/storage/v1/object/admission-documents/${storageKey}`,
     {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${secret}`,
-        apikey: secret,
+      headers: supabaseStorageAdminHeaders(secret, {
         "Content-Type": file.type,
         "x-upsert": "false",
-      },
+      }),
       body: file,
     },
   );

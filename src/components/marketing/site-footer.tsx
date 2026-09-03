@@ -109,7 +109,7 @@ export function SiteFooter() {
             <a href="tel:+2348033130456">08033130456</a>
             <a href="tel:+2348121997970">08121997970</a>
             <a href="mailto:awkaadmin@petraacademy.co">awkaadmin@petraacademy.co</a>
-            <span>@PetraAcademyAwka</span>
+            <a href="https://www.instagram.com/petraacademyawka?igsi=cWI3MmwwNXA2ZXR5" target="_blank" rel="noreferrer">@PetraAcademyAwka</a>
           </address>
         </div>
         <div>
@@ -119,7 +119,7 @@ export function SiteFooter() {
             <a href="tel:+2348033130456">08033130456</a>
             <a href="tel:+2348121997970">08121997970</a>
             <a href="mailto:nnewiadmin@petraacademy.co">nnewiadmin@petraacademy.co</a>
-            <span>@PetraAcademyAwka</span>
+            <a href="https://www.instagram.com/petraacademyawka?igsi=cWI3MmwwNXA2ZXR5" target="_blank" rel="noreferrer">@PetraAcademyAwka</a>
           </address>
         </div>
       </div>

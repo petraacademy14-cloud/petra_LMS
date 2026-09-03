@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { CalendarDays, ClipboardList, UsersRound } from "lucide-react";
+import { CalendarDays, ClipboardList, KeyRound, UsersRound } from "lucide-react";
 import { updateApplicationStatus, updateVisitStatus } from "@/app/actions/admissions";
+import { ApplicantAccountResetForm } from "@/components/applicant-account-reset-form";
 import {
   applicationNextStatuses,
   applicationStatusLabel,
@@ -23,6 +24,7 @@ type ApplicationRow = {
   guardianLastName: string;
   email: string;
   phone: string;
+  mustChangePassword: boolean;
   campusName: string | null;
   className: string | null;
   examMode: string | null;
@@ -54,7 +56,7 @@ export default async function AdmissionsAdminPage() {
     db.$queryRaw<ApplicationRow[]>`
       SELECT p."id", p."applicationNumber", p."status"::text AS "status",
         p."studentFirstName", p."studentLastName", a."firstName" AS "guardianFirstName",
-        a."lastName" AS "guardianLastName", a."email", a."phone",
+        a."lastName" AS "guardianLastName", a."email", a."phone", a."mustChangePassword",
         c."name" AS "campusName", l."name" AS "className",
         p."examMode"::text AS "examMode", p."submittedAt", p."createdAt",
         COUNT(d."id")::bigint AS "documentCount"
@@ -103,18 +105,31 @@ export default async function AdmissionsAdminPage() {
         <div className="border-b border-[#e5e7eb] p-5"><h2 className="text-xl font-black">Admission applications</h2><p className="mt-1 text-sm text-[#6f7782]">Drafts are visible for support, but only applicants can submit their form.</p></div>
         <div className="table-wrap">
           <table className="data-table">
-            <thead><tr><th>Applicant</th><th>Placement</th><th>Status</th><th>Documents</th><th>Submitted</th><th>Next action</th></tr></thead>
+            <thead><tr><th>Applicant</th><th>Placement</th><th>Status</th><th>Documents</th><th>Submitted</th><th>Actions</th></tr></thead>
             <tbody>
               {applications.map((application) => {
                 const nextStatuses = applicationNextStatuses(application.status);
                 return (
                   <tr key={application.id}>
-                    <td><strong>{application.studentFirstName || "Draft"} {application.studentLastName || "application"}</strong><small className="block text-[#747c87]">{application.applicationNumber}</small><small className="block text-[#747c87]">{application.guardianFirstName} {application.guardianLastName} · {application.phone}</small></td>
+                    <td><strong>{application.studentFirstName || "Draft"} {application.studentLastName || "application"}</strong><small className="block text-[#747c87]">{application.applicationNumber}</small><small className="block text-[#747c87]">{application.guardianFirstName} {application.guardianLastName} · {application.phone}</small><small className="block break-all text-[#747c87]">{application.email}</small></td>
                     <td>{application.campusName ?? "Not selected"}<small className="block text-[#747c87]">{application.className ?? "Class pending"} · {application.examMode ?? "Exam mode pending"}</small></td>
-                    <td><span className="pill" data-tone={application.status === "ACCEPTED" ? "success" : "brand"}>{applicationStatusLabel(application.status)}</span></td>
+                    <td><span className="pill" data-tone={application.status === "ACCEPTED" ? "success" : "brand"}>{applicationStatusLabel(application.status)}</span>{application.mustChangePassword && <small className="mt-2 block font-bold text-[#a86b00]">Temporary password active</small>}</td>
                     <td>{Number(application.documentCount)}</td>
                     <td>{application.submittedAt ? application.submittedAt.toLocaleDateString("en-NG") : "Not submitted"}</td>
-                    <td>{nextStatuses.length ? <form action={updateApplicationStatus.bind(null, application.id)} className="flex min-w-52 gap-2"><select name="status" required defaultValue=""><option value="" disabled>Select status</option>{nextStatuses.map((status) => <option key={status} value={status}>{applicationStatusLabel(status)}</option>)}</select><button className="button" type="submit">Update</button></form> : <span className="text-sm text-[#747c87]">No further action</span>}</td>
+                    <td>
+                      <div className="min-w-64 space-y-3">
+                        {nextStatuses.length ? <form action={updateApplicationStatus.bind(null, application.id)} className="flex gap-2"><select name="status" required defaultValue=""><option value="" disabled>Select status</option>{nextStatuses.map((status) => <option key={status} value={status}>{applicationStatusLabel(status)}</option>)}</select><button className="button" type="submit">Update</button></form> : <span className="text-sm text-[#747c87]">No further workflow action</span>}
+                        {isOwner && (
+                          <details>
+                            <summary className="button button-secondary cursor-pointer list-none"><KeyRound size={16} /> Reset applicant password</summary>
+                            <div className="mt-3 min-w-[19rem] rounded-xl border border-[#e5e7eb] bg-white p-3 shadow-lg">
+                              <p className="mb-3 text-sm text-[#616a76]">This signs the applicant out everywhere and creates a one-time temporary password.</p>
+                              <ApplicantAccountResetForm applicationId={application.id} />
+                            </div>
+                          </details>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 );
               })}

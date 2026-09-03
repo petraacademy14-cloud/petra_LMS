@@ -4,6 +4,7 @@ import { getApplicantViewer } from "@/lib/applicant-auth";
 import { db } from "@/lib/db";
 import { hasPermission } from "@/lib/permissions";
 import { canAccessCampus } from "@/lib/scope";
+import { supabaseStorageAdminHeaders } from "@/lib/supabase-storage";
 
 type DocumentRow = {
   id: string;
@@ -77,10 +78,7 @@ export async function GET(
   const response = await fetch(
     `${supabaseUrl}/storage/v1/object/admission-documents/${encodedKey}`,
     {
-      headers: {
-        Authorization: `Bearer ${secret}`,
-        apikey: secret,
-      },
+      headers: supabaseStorageAdminHeaders(secret),
       cache: "no-store",
     },
   );

@@ -14,6 +14,7 @@ import { requireCampusAccess, requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { parseStudentImportFile } from "@/lib/student-import";
 import { syncStudentFeeAccount } from "@/lib/student-finance-sync";
+import { supabaseStorageAdminHeaders } from "@/lib/supabase-storage";
 
 function studentDisplayName(input: {
   firstName: string;
@@ -950,12 +951,10 @@ export async function uploadStudentDocument(
       `${supabaseUrl}/storage/v1/object/student-documents/${storageKey}`,
       {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${supabaseSecret}`,
-          apikey: supabaseSecret,
+        headers: supabaseStorageAdminHeaders(supabaseSecret, {
           "Content-Type": file.type,
           "x-upsert": "false",
-        },
+        }),
         body: await file.arrayBuffer(),
       },
     );

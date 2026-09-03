@@ -255,11 +255,17 @@ export default async function StudentsPage({
                   <tr key={student.id}>
                     <td>
                       <Link
-                        className="font-extrabold text-[#b91118] hover:underline"
+                        aria-label={`Open profile for ${student.firstName} ${student.lastName}`}
+                        className="inline-flex min-h-11 min-w-44 flex-col justify-center rounded-xl border border-[#efc5c7] bg-[#fff7f7] px-3 py-2 text-[#9f1117] transition hover:border-[#d71920] hover:bg-[#fff0f1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d71920]"
                         href={`/students/${student.id}`}
                       >
-                        {student.lastName}, {student.firstName}{" "}
-                        {student.middleName ?? ""}
+                        <span className="font-extrabold">
+                          {student.lastName}, {student.firstName}{" "}
+                          {student.middleName ?? ""}
+                        </span>
+                        <span className="mt-0.5 text-xs font-bold">
+                          Open profile →
+                        </span>
                       </Link>
                     </td>
                     <td className="font-mono text-xs font-bold">
