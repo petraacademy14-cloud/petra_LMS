@@ -22,7 +22,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
-    "db:create-preview-teacher": "tsx scripts/create-preview-test-teacher.ts",
+    "db:ensure-preview-accounts": "tsx scripts/ensure-preview-test-accounts.ts",
     "storage:ensure": "node scripts/ensure-storage-buckets.mjs",
     "verify:site-assets": "node scripts/verify-site-assets.mjs",
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
