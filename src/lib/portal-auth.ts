@@ -1,10 +1,11 @@
 import "server-only";
 
-import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { portalHome, type PortalAccountRole } from "@/lib/portal-account";
+export { hashPortalPassword, verifyPortalPassword } from "@/lib/portal-password";
 
 const PORTAL_COOKIE = "petra_portal_session";
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 7;
@@ -22,21 +23,6 @@ export type PortalViewer = {
 
 function tokenDigest(token: string) {
   return createHash("sha256").update(token).digest("hex");
-}
-
-export function hashPortalPassword(password: string) {
-  const salt = randomBytes(16).toString("hex");
-  const digest = scryptSync(password, salt, 64).toString("hex");
-  return `scrypt$${salt}$${digest}`;
-}
-
-export function verifyPortalPassword(password: string, encoded: string) {
-  const [algorithm, salt, expectedHex] = encoded.split("$");
-  if (algorithm !== "scrypt" || !salt || !expectedHex) return false;
-
-  const expected = Buffer.from(expectedHex, "hex");
-  const actual = scryptSync(password, salt, expected.length);
-  return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
 
 export async function createPortalSession(accountId: string) {

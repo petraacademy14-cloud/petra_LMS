@@ -4,14 +4,11 @@ import { betterAuth } from "better-auth/minimal";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { db } from "@/lib/db";
-
-const vercelDeploymentUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : undefined;
+import { betterAuthBaseURL } from "@/lib/auth-url";
 
 export const auth = betterAuth({
   appName: "Petra LMS",
-  baseURL: process.env.BETTER_AUTH_URL ?? vercelDeploymentUrl,
+  baseURL: betterAuthBaseURL(process.env),
   secret:
     process.env.BETTER_AUTH_SECRET ??
     "development-only-secret-replace-before-deploying",
