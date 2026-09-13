@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { CalendarDays, Mail, MapPin, MessageCircle } from "lucide-react";
 import { ContactEnquiryForm } from "@/components/marketing/contact-enquiry-form";
@@ -11,8 +12,17 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
-      <section className="page-hero simple-page-hero">
-        <div className="marketing-shell">
+      <section className="page-hero simple-page-hero book-visit-hero">
+        <Image
+          className="book-visit-hero-image"
+          src="/images/petra-campus-full.png"
+          alt="Petra Academy campus building"
+          fill
+          priority
+          sizes="100vw"
+        />
+        <div className="book-visit-hero-shade" aria-hidden="true" />
+        <div className="marketing-shell book-visit-hero-content">
           <span className="section-kicker">Enquiry / Admissions</span>
           <h1>We would be glad to hear from you.</h1>
           <p>Ask about admissions, school programs, portal access or arranging a visit at our Awka or Nnewi campus.</p>
