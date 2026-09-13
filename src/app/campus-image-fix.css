@@ -1,0 +1,32 @@
+.book-visit-hero {
+  background-image: linear-gradient(90deg, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.78) 46%, rgba(255,255,255,0.18) 100%), url('/images/petra-campus-full.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.book-visit-hero-image {
+  opacity: 0 !important;
+}
+
+.programs-visual-core {
+  background-image: linear-gradient(180deg, rgba(90,8,11,0.08), rgba(90,8,11,0.35)), url('/images/petra-campus-one-education.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.programs-visual-core-image {
+  opacity: 0 !important;
+}
+
+.petra-campus-showcase {
+  background-image: url('/images/petra-campus-full.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.petra-campus-showcase-image {
+  opacity: 0 !important;
+}
