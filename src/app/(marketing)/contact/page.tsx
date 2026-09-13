@@ -15,7 +15,7 @@ export default function ContactPage() {
       <section className="page-hero simple-page-hero book-visit-hero">
         <Image
           className="book-visit-hero-image"
-          src="/images/petra-campus-full.png"
+          src="/images/petra-campus-full.webp"
           alt="Petra Academy campus building"
           fill
           priority
