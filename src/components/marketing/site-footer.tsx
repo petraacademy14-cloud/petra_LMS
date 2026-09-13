@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Instagram } from "lucide-react";
 
 function CiscoNetworkingLogo() {
   return (
@@ -65,6 +66,23 @@ function GoogleVerifiedLogo() {
   );
 }
 
+const instagramUrl = "https://www.instagram.com/petraacademyawka?igsi=cWI3MmwwNXA2ZXR5";
+
+function InstagramLink() {
+  return (
+    <a
+      href={instagramUrl}
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Petra Academy on Instagram"
+      style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem" }}
+    >
+      <Instagram size={18} aria-hidden="true" />
+      <span>@PetraAcademyAwka</span>
+    </a>
+  );
+}
+
 export function SiteFooter() {
   return (
     <footer className="site-footer">
@@ -87,6 +105,9 @@ export function SiteFooter() {
             An inclusive, skill-based and technology-driven learning environment preparing excellent,
             confident and future-ready leaders.
           </p>
+          <div aria-label="Petra Academy social media" style={{ marginTop: "0.85rem" }}>
+            <InstagramLink />
+          </div>
           <p className="footer-hours">
             Mon–Fri: 7:30 AM–5:30 PM<br />
             After-school Coding: Fri 3:00 PM–5:00 PM<br />
@@ -109,7 +130,7 @@ export function SiteFooter() {
             <a href="tel:+2348033130456">08033130456</a>
             <a href="tel:+2348121997970">08121997970</a>
             <a href="mailto:awkaadmin@petraacademy.co">awkaadmin@petraacademy.co</a>
-            <a href="https://www.instagram.com/petraacademyawka?igsi=cWI3MmwwNXA2ZXR5" target="_blank" rel="noreferrer">@PetraAcademyAwka</a>
+            <InstagramLink />
           </address>
         </div>
         <div>
@@ -119,7 +140,7 @@ export function SiteFooter() {
             <a href="tel:+2348033130456">08033130456</a>
             <a href="tel:+2348121997970">08121997970</a>
             <a href="mailto:nnewiadmin@petraacademy.co">nnewiadmin@petraacademy.co</a>
-            <a href="https://www.instagram.com/petraacademyawka?igsi=cWI3MmwwNXA2ZXR5" target="_blank" rel="noreferrer">@PetraAcademyAwka</a>
+            <InstagramLink />
           </address>
         </div>
       </div>
