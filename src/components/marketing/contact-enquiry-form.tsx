@@ -3,12 +3,8 @@
 import { FormEvent, useState } from "react";
 import { CheckCircle2, TriangleAlert } from "lucide-react";
 
-const campusRecipients = {
-  awka: "awkaadmin@petraacademy.co",
-  nnewi: "nnewiadmin@petraacademy.co",
-} as const;
-
-type Campus = keyof typeof campusRecipients;
+const validCampuses = new Set(["awka", "nnewi"] as const);
+type Campus = "awka" | "nnewi";
 
 type Notice =
   | { kind: "success"; message: string }
@@ -33,7 +29,7 @@ export function ContactEnquiryForm() {
       return;
     }
 
-    if (!(campus in campusRecipients)) {
+    if (!validCampuses.has(campus)) {
       setNotice({ kind: "error", message: "Please select Awka or Nnewi campus and try again." });
       return;
     }
@@ -43,12 +39,11 @@ export function ContactEnquiryForm() {
     const phone = String(formData.get("phone") ?? "").trim();
     const subject = String(formData.get("subject") ?? "").trim();
     const message = String(formData.get("message") ?? "").trim();
-    const campusName = campus === "awka" ? "Awka" : "Nnewi";
 
     setSubmitting(true);
 
     try {
-      const response = await fetch(`https://formsubmit.co/ajax/${campusRecipients[campus]}`, {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -57,26 +52,20 @@ export function ContactEnquiryForm() {
         body: JSON.stringify({
           name,
           email,
-          phone: phone || "Not provided",
-          campus: `${campusName} Campus`,
+          phone,
+          campus,
           subject,
           message,
-          _replyto: email,
-          _subject: `Website enquiry — ${campusName}: ${subject}`,
-          _template: "table",
-          _url: window.location.href.split("?")[0],
-          _honey: website,
+          website,
         }),
       });
 
       const result = (await response.json().catch(() => null)) as
-        | { success?: boolean | string; message?: string }
+        | { success?: boolean; message?: string }
         | null;
 
-      const rejected = result?.success === false || result?.success === "false";
-
-      if (!response.ok || rejected) {
-        throw new Error(result?.message || `FormSubmit returned ${response.status}`);
+      if (!response.ok || result?.success === false) {
+        throw new Error(result?.message || `Contact API returned ${response.status}`);
       }
 
       form.reset();
