@@ -2,24 +2,24 @@
   position: relative !important;
   isolation: isolate !important;
   overflow: hidden !important;
+  background-color: #fff9f7 !important;
+  background-image: url('/images/petra-campus-full.webp?v=20260913b') !important;
+  background-size: 52% 100% !important;
+  background-position: right center !important;
+  background-repeat: no-repeat !important;
 }
 
+/* Do not depend on Next/Image for the campus hero. The direct background above is the source of truth. */
 .book-visit-hero-image {
-  opacity: 1 !important;
-  z-index: 0 !important;
-  right: 0 !important;
-  left: auto !important;
-  width: 48% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center !important;
-  filter: none !important;
+  display: none !important;
 }
 
 .book-visit-hero-shade {
+  position: absolute !important;
+  inset: 0 !important;
   z-index: 1 !important;
   pointer-events: none !important;
-  background: linear-gradient(90deg, #fff9f7 0%, #fff9f7 47%, rgba(255,249,247,.98) 51%, rgba(255,249,247,.68) 57%, rgba(255,249,247,.10) 68%, transparent 76%) !important;
+  background: linear-gradient(90deg, #fff9f7 0%, #fff9f7 46%, rgba(255,249,247,.98) 50%, rgba(255,249,247,.72) 57%, rgba(255,249,247,.18) 68%, transparent 78%) !important;
 }
 
 .book-visit-hero-content {
@@ -31,45 +31,48 @@
   position: relative !important;
   isolation: isolate !important;
   overflow: hidden !important;
-  background: #fff !important;
+  background-color: #681017 !important;
+  background-image: url('/images/petra-campus-one-education.webp?v=20260913b') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
 }
 
 .programs-visual-core-image {
-  opacity: 1 !important;
-  z-index: 0 !important;
-  object-fit: cover !important;
-  object-position: center !important;
-  filter: none !important;
+  display: none !important;
 }
 
 .programs-visual-core-copy {
   position: relative !important;
   z-index: 2 !important;
-  background: linear-gradient(180deg, rgba(74,5,10,.08), rgba(74,5,10,.62)) !important;
+  background: linear-gradient(180deg, rgba(74,5,10,.08), rgba(74,5,10,.64)) !important;
 }
 
 .petra-campus-showcase {
   position: relative !important;
   isolation: isolate !important;
   overflow: hidden !important;
+  background-color: #5b0d12 !important;
+  background-image: url('/images/petra-campus-full.webp?v=20260913b') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
 }
 
 .petra-campus-showcase-image {
-  opacity: 1 !important;
-  z-index: 0 !important;
-  object-fit: cover !important;
-  object-position: center !important;
-  filter: none !important;
+  display: none !important;
+}
+
+.petra-campus-showcase-overlay {
+  position: relative !important;
+  z-index: 2 !important;
 }
 
 @media (max-width: 820px) {
-  .book-visit-hero-image {
-    top: auto !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    height: 350px !important;
+  .book-visit-hero {
+    background-size: 100% 350px !important;
+    background-position: center bottom !important;
+    background-repeat: no-repeat !important;
   }
 
   .book-visit-hero-shade {
