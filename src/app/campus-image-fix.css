@@ -3,13 +3,12 @@
   isolation: isolate !important;
   overflow: hidden !important;
   background-color: #fff9f7 !important;
-  background-image: url('/images/petra-campus-full.webp?v=20260913b') !important;
+  background-image: url('/images/petra-campus-approved-v2.webp') !important;
   background-size: 52% 100% !important;
   background-position: right center !important;
   background-repeat: no-repeat !important;
 }
 
-/* Do not depend on Next/Image for the campus hero. The direct background above is the source of truth. */
 .book-visit-hero-image {
   display: none !important;
 }
@@ -32,7 +31,7 @@
   isolation: isolate !important;
   overflow: hidden !important;
   background-color: #681017 !important;
-  background-image: url('/images/petra-campus-one-education.webp?v=20260913b') !important;
+  background-image: url('/images/petra-campus-approved-v2.webp') !important;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
@@ -53,7 +52,7 @@
   isolation: isolate !important;
   overflow: hidden !important;
   background-color: #5b0d12 !important;
-  background-image: url('/images/petra-campus-full.webp?v=20260913b') !important;
+  background-image: url('/images/petra-campus-approved-v2.webp') !important;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
