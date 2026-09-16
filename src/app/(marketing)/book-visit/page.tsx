@@ -23,7 +23,7 @@ export default async function BookVisitPage({ searchParams }: BookVisitPageProps
       <section className="page-hero simple-page-hero book-visit-hero">
         <Image
           className="book-visit-hero-image"
-          src="/images/petra-campus-approved-v2.webp"
+          src="/images/petra-campus-full.webp"
           alt="Petra Academy campus building and school vehicles"
           fill
           priority
