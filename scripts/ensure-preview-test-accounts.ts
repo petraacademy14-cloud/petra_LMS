@@ -280,6 +280,15 @@ async function main() {
     },
     select: { id: true },
   });
+  const nnewi = await db.campus.findUniqueOrThrow({
+    where: {
+      schoolId_code: {
+        schoolId: school.id,
+        code: "NNE",
+      },
+    },
+    select: { id: true },
+  });
 
   await ensureVerifiedPreviewStaff({
     name: config.owner.name,
@@ -288,6 +297,22 @@ async function main() {
     schoolId: school.id,
     campusId: null,
     campusLabel: "All campuses",
+  });
+  await ensureVerifiedPreviewStaff({
+    name: config.awkaAdmin.name,
+    email: config.awkaAdmin.email,
+    role: "ADMIN",
+    schoolId: school.id,
+    campusId: awka.id,
+    campusLabel: "Awka Campus",
+  });
+  await ensureVerifiedPreviewStaff({
+    name: config.nnewiAdmin.name,
+    email: config.nnewiAdmin.email,
+    role: "ADMIN",
+    schoolId: school.id,
+    campusId: nnewi.id,
+    campusLabel: "Nnewi Campus",
   });
   await ensureVerifiedPreviewStaff({
     name: config.teacher.name,
@@ -314,7 +339,7 @@ async function main() {
     guardianId: guardian.id,
   });
 
-  console.info("All four Preview portal logins verified successfully.");
+  console.info("All six Preview role logins verified successfully.");
 }
 
 main()

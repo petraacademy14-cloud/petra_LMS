@@ -33,6 +33,38 @@ describe("previewAccountConfig", () => {
     expect(config.parent.username).toBe("petra-preview-parent");
   });
 
+  it("provides stable campus administrator emails", () => {
+    const config = previewAccountConfig({
+      SEED_OWNER_PASSWORD: "a-long-preview-password",
+    });
+
+    expect(config.awkaAdmin.email).toBe(
+      "admin.awka.preview@petraacademy.test",
+    );
+    expect(config.nnewiAdmin.email).toBe(
+      "admin.nnewi.preview@petraacademy.test",
+    );
+  });
+
+  it("allows campus administrator identity overrides", () => {
+    const config = previewAccountConfig({
+      SEED_OWNER_PASSWORD: "a-long-preview-password",
+      SEED_PREVIEW_AWKA_ADMIN_NAME: " Awka Test Admin ",
+      SEED_PREVIEW_AWKA_ADMIN_EMAIL: " AWKA.ADMIN@PETRAACADEMY.TEST ",
+      SEED_PREVIEW_NNEWI_ADMIN_NAME: " Nnewi Test Admin ",
+      SEED_PREVIEW_NNEWI_ADMIN_EMAIL: " NNEWI.ADMIN@PETRAACADEMY.TEST ",
+    });
+
+    expect(config.awkaAdmin).toEqual({
+      name: "Awka Test Admin",
+      email: "awka.admin@petraacademy.test",
+    });
+    expect(config.nnewiAdmin).toEqual({
+      name: "Nnewi Test Admin",
+      email: "nnewi.admin@petraacademy.test",
+    });
+  });
+
   it("rejects a missing or short preview password", () => {
     expect(() => previewAccountConfig({})).toThrow(/at least 10 characters/);
     expect(() =>

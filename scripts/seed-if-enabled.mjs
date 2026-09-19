@@ -37,11 +37,13 @@ if (runFullSeed && !isWebsitePreview) {
   console.info("Full Preview seed skipped for this deployment.");
 }
 
-// Keep the four fixed test portals usable on every Preview deployment that has
+// Keep the six fixed test logins usable on every Preview deployment that has
 // explicitly configured credentials, including the public-website branches.
 if (isPreview && hasPreviewAccessPassword) {
   runScript("db:ensure-preview-accounts");
-  console.info("Preview Owner, Teacher, Student and Parent logins verified successfully.");
+  console.info(
+    "Preview Owner, Awka Admin, Nnewi Admin, Teacher, Student and Parent logins verified successfully.",
+  );
 } else if (isPreview) {
   console.info("Preview account verification skipped because credentials are not configured.");
 }

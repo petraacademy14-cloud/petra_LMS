@@ -11,6 +11,27 @@
 Preview must never connect to production. Vercel environment variables must be
 configured separately for Preview and Production.
 
+### Stable Preview test accounts
+
+Every Preview deployment with `SEED_PREVIEW_ACCESS_PASSWORD` configured runs
+`npm run db:ensure-preview-accounts`. The command creates or repairs six fixed
+acceptance-test logins in the dedicated Preview database and verifies their
+passwords before the build continues.
+
+| Role | Login | Scope |
+| --- | --- | --- |
+| Owner | `owner.preview@petraacademy.test` | All campuses |
+| Administrator | `admin.awka.preview@petraacademy.test` | Awka |
+| Administrator | `admin.nnewi.preview@petraacademy.test` | Nnewi |
+| Teacher | `teacher.preview@petraacademy.test` | Awka |
+| Parent | `petra-preview-parent` | Linked Preview family |
+| Student | `petra-preview-student` | Awka Preview student |
+
+All six use the shared Preview-only password stored in Vercel. Email, name,
+username and admission-number defaults can be overridden with the
+`SEED_PREVIEW_*` variables documented in `.env.example`. The account-maintenance
+command refuses to run when either `VERCEL_ENV` or `APP_ENV` is `production`.
+
 ## Deployment sequence
 
 1. CI runs lint, types, unit tests, migration deployment and production build.

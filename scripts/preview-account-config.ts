@@ -28,6 +28,24 @@ export function previewAccountConfig(environment: PreviewAccountEnvironment) {
         "owner.preview@petraacademy.test"
       ).toLowerCase(),
     },
+    awkaAdmin: {
+      name:
+        value(environment, "SEED_PREVIEW_AWKA_ADMIN_NAME") ??
+        "Preview Awka Administrator",
+      email: (
+        value(environment, "SEED_PREVIEW_AWKA_ADMIN_EMAIL") ??
+        "admin.awka.preview@petraacademy.test"
+      ).toLowerCase(),
+    },
+    nnewiAdmin: {
+      name:
+        value(environment, "SEED_PREVIEW_NNEWI_ADMIN_NAME") ??
+        "Preview Nnewi Administrator",
+      email: (
+        value(environment, "SEED_PREVIEW_NNEWI_ADMIN_EMAIL") ??
+        "admin.nnewi.preview@petraacademy.test"
+      ).toLowerCase(),
+    },
     teacher: {
       name:
         value(environment, "SEED_PREVIEW_TEACHER_NAME") ??
