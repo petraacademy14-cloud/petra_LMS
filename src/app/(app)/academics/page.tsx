@@ -158,7 +158,7 @@ export default async function AcademicsPage() {
       select: {
         id: true,
         campusId: true,
-        user: { select: { name: true } },
+        user: { select: { name: true, email: true } },
       },
     }),
     classTeacherAssignmentsPromise,
@@ -193,6 +193,7 @@ export default async function AcademicsPage() {
             id: teacher.id,
             campusId: teacher.campusId,
             name: teacher.user.name,
+            email: teacher.user.email,
           },
         ]
       : [],

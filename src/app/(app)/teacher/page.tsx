@@ -163,6 +163,61 @@ export default async function TeacherWorkspacePage() {
         title={`Welcome, ${viewer.user.name}`}
       />
 
+      <section className="card mt-5 overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e8eaed] p-5">
+          <div>
+            <h2 className="font-black">My classes</h2>
+            <p className="text-xs text-[#747c87]">
+              {teachingClasses.length} class
+              {teachingClasses.length === 1 ? "" : "es"} assigned to your account
+            </p>
+          </div>
+          <span className="pill" data-tone="brand">
+            {currentAssignments.length ? "Current term" : "Latest assignments"}
+          </span>
+        </div>
+        <div className="grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-3">
+          {teachingClasses.map((assignment) => (
+            <article
+              className="rounded-xl border border-[#e5e7eb] p-4"
+              key={teachingClassKey(assignment)}
+            >
+              <p className="text-xs font-black uppercase tracking-wide text-[#7b838e]">
+                {assignment.term.academicSession.name} · {assignment.term.name}
+              </p>
+              <h3 className="mt-2 text-lg font-black">
+                {assignment.classArm.classLevel.name} {assignment.classArm.name}
+              </h3>
+              <p className="mt-1 font-bold text-[#b91118]">
+                {visibleAssignments.filter((item) => teachingClassKey(item) === teachingClassKey(assignment)).map((item) => item.subject.name).join(", ")}
+              </p>
+              <p className="mt-3 text-xs text-[#68707d]">
+                {assignment.classArm.enrollments.length} active learner
+                {assignment.classArm.enrollments.length === 1 ? "" : "s"}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link
+                  className="button button-secondary"
+                  href={`/teacher/attendance?assignment=${encodeURIComponent(
+                    teachingClassKey(assignment),
+                  )}&date=${today}`}
+                >
+                  Attendance
+                </Link>
+                <Link className="button button-secondary" href="/teacher/results">
+                  Results
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+        {!visibleAssignments.length && (
+          <div className="empty-state">
+            No classes are linked to {viewer.user.email}. Ask your campus administrator to select this exact teacher account when assigning classes.
+          </div>
+        )}
+      </section>
+
       <section className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <article className="card p-5">
           <BookOpenCheck className="text-[#d71920]" size={22} />
@@ -230,62 +285,6 @@ export default async function TeacherWorkspacePage() {
             Open communications <ArrowRight size={16} />
           </span>
         </Link>
-      </section>
-
-      <section className="card mt-5 overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e8eaed] p-5">
-          <div>
-            <h2 className="font-black">Assigned teaching load</h2>
-            <p className="text-xs text-[#747c87]">
-              {visibleAssignments.length} assignment
-              {visibleAssignments.length === 1 ? "" : "s"} in the active view
-            </p>
-          </div>
-          <span className="pill" data-tone="brand">
-            {currentAssignments.length ? "Current term" : "Latest assignments"}
-          </span>
-        </div>
-        <div className="grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-3">
-          {visibleAssignments.map((assignment) => (
-            <article
-              className="rounded-xl border border-[#e5e7eb] p-4"
-              key={assignment.id}
-            >
-              <p className="text-xs font-black uppercase tracking-wide text-[#7b838e]">
-                {assignment.term.academicSession.name} · {assignment.term.name}
-              </p>
-              <h3 className="mt-2 text-lg font-black">
-                {assignment.classArm.classLevel.name} {assignment.classArm.name}
-              </h3>
-              <p className="mt-1 font-bold text-[#b91118]">
-                {assignment.subject.name}
-              </p>
-              <p className="mt-3 text-xs text-[#68707d]">
-                {assignment.classArm.enrollments.length} active learner
-                {assignment.classArm.enrollments.length === 1 ? "" : "s"}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Link
-                  className="button button-secondary"
-                  href={`/teacher/attendance?assignment=${encodeURIComponent(
-                    teachingClassKey(assignment),
-                  )}&date=${today}`}
-                >
-                  Attendance
-                </Link>
-                <Link className="button button-secondary" href="/teacher/results">
-                  Results
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-        {!visibleAssignments.length && (
-          <div className="empty-state">
-            No teaching assignment is linked to this account. Ask a campus
-            administrator to assign a term, class and subject.
-          </div>
-        )}
       </section>
 
       <section className="mt-5 grid gap-5 xl:grid-cols-2">

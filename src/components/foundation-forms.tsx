@@ -37,6 +37,7 @@ type TeacherOption = {
   id: string;
   campusId: string;
   name: string;
+  email: string;
 };
 
 function SubmitButton({ label }: { label: string }) {
@@ -234,7 +235,7 @@ function ClassTeacherForm({
             </option>
             {availableTeachers.map((teacher) => (
               <option key={teacher.id} value={teacher.id}>
-                {teacher.name}
+                {teacher.name} ({teacher.email})
               </option>
             ))}
           </select>
