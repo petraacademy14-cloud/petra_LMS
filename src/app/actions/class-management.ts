@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import type { Prisma } from "@/generated/prisma/client";
-import type { ActionState } from "@/app/actions/foundation";
+import type { ActionState } from "@/lib/action-state";
 import { DEFAULT_CLASS_ARMS, makeAcademicCode } from "@/lib/academic-setup";
 import { requireCampusAccess, requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";

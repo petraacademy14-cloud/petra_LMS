@@ -7,14 +7,14 @@ import {
   createAcademicSession,
   createCampus,
   createTerm,
-  initialActionState,
-  type ActionState,
 } from "@/app/actions/foundation";
 import {
   assignClassTeacher,
   createClassWithDefaultArms,
   createSubjectForCampus,
 } from "@/app/actions/class-management";
+
+import { initialActionState, type ActionState } from "@/lib/action-state";
 
 type ServerAction = (
   state: ActionState,
@@ -437,7 +437,7 @@ export function AcademicSetupForms({
                     <Field
                       label="Class code (optional)"
                       name="code"
-                      placeholder="Auto: PRI-1"
+                      placeholder="Leave blank to generate"
                       required={false}
                     />
                     <Field
@@ -445,7 +445,7 @@ export function AcademicSetupForms({
                       max={1000}
                       min={1}
                       name="capacity"
-                      placeholder="30"
+                      placeholder="Leave blank for no limit"
                       required={false}
                       type="number"
                     />

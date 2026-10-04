@@ -11,16 +11,7 @@ import {
   requirePermission,
 } from "@/lib/dal";
 
-export type ActionState = {
-  status: "idle" | "success" | "error";
-  message: string;
-  fieldErrors?: Record<string, string[] | undefined>;
-};
-
-export const initialActionState: ActionState = {
-  status: "idle",
-  message: "",
-};
+import type { ActionState } from "@/lib/action-state";
 
 const shortText = z.string().trim().min(2).max(80);
 const code = z
