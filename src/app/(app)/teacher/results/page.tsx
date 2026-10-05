@@ -9,7 +9,7 @@ import {
   FileText,
   Send,
 } from "lucide-react";
-import { createResultSheet } from "@/app/actions/results";
+import { openTeacherScores } from "@/app/actions/results";
 import { PageHeading } from "@/components/page-heading";
 import { getViewer } from "@/lib/dal";
 import { db } from "@/lib/db";
@@ -117,17 +117,6 @@ export default async function TeacherResultsPage() {
   const visibleAssignments = currentAssignments.length
     ? currentAssignments
     : assignments;
-  const sheetKey = (input: {
-    termId: string;
-    classArmId: string;
-    subjectId: string;
-  }) => `${input.termId}:${input.classArmId}:${input.subjectId}`;
-  const sheetByAssignment = new Map(
-    sheets.map((sheet) => [sheetKey(sheet), sheet]),
-  );
-  const missingAssignments = visibleAssignments.filter(
-    (assignment) => !sheetByAssignment.has(sheetKey(assignment)),
-  );
 
   const drafts = sheets.filter((sheet) => sheet.status === "DRAFT").length;
   const submitted = sheets.filter(
@@ -162,7 +151,7 @@ export default async function TeacherResultsPage() {
         <article className="card p-5">
           <CircleDashed className="text-[#d71920]" size={22} />
           <strong className="mt-3 block text-3xl">{drafts}</strong>
-          <p className="text-sm text-[#68707d]">Draft sheets</p>
+          <p className="text-sm text-[#68707d]">Draft subjects</p>
         </article>
         <article className="card p-5">
           <Send className="text-[#d71920]" size={22} />
@@ -176,90 +165,31 @@ export default async function TeacherResultsPage() {
         </article>
       </section>
 
-      {missingAssignments.length > 0 && (
-        <section className="card mt-5 overflow-hidden">
-          <div className="border-b border-[#e8eaed] p-5">
-            <h2 className="font-black">Assignments without a result sheet</h2>
-            <p className="text-sm text-[#68707d]">
-              Create a First CAT (20), Second CAT (20) and Examination (60)
-              sheet for an assigned subject.
-            </p>
-          </div>
-          <div className="grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-3">
-            {missingAssignments.map((assignment) => (
-              <article
-                className="rounded-xl border border-[#e5e7eb] p-4"
-                key={assignment.id}
-              >
-                <p className="text-xs font-black uppercase tracking-wide text-[#7b838e]">
-                  {assignment.term.academicSession.name} · {assignment.term.name}
-                </p>
-                <h3 className="mt-2 text-lg font-black">
-                  {assignment.classArm.classLevel.name}{" "}
-                  {assignment.classArm.name}
-                </h3>
-                <p className="mt-1 font-bold text-[#b91118]">
-                  {assignment.subject.name}
-                </p>
-                <p className="mt-3 text-xs text-[#68707d]">
-                  {assignment.classArm.enrollments.length} active learner
-                  {assignment.classArm.enrollments.length === 1 ? "" : "s"}
-                </p>
-                {defaultScheme ? (
-                  <form action={createResultSheet} className="mt-4">
-                    <input
-                      name="campusId"
-                      type="hidden"
-                      value={assignment.campusId}
-                    />
-                    <input
-                      name="termId"
-                      type="hidden"
-                      value={assignment.termId}
-                    />
-                    <input
-                      name="classArmId"
-                      type="hidden"
-                      value={assignment.classArmId}
-                    />
-                    <input
-                      name="subjectId"
-                      type="hidden"
-                      value={assignment.subjectId}
-                    />
-                    <input
-                      name="teacherMembershipId"
-                      type="hidden"
-                      value={viewer.membership.id}
-                    />
-                    <input
-                      name="gradingSchemeId"
-                      type="hidden"
-                      value={defaultScheme.id}
-                    />
-                    <button className="button" type="submit">
-                      Create result sheet
-                    </button>
-                    <p className="mt-2 text-xs text-[#747c87]">
-                      Uses {defaultScheme.name}.
-                    </p>
-                  </form>
-                ) : (
-                  <p className="mt-4 rounded-xl bg-[#fff6e8] p-3 text-sm font-bold text-[#8a5207]">
-                    An administrator must configure a default grading scheme.
-                  </p>
-                )}
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
+      <section className="card mt-5 p-5">
+        <h2 className="font-black">Enter student scores</h2>
+        <p className="mt-2 text-sm text-[#68707d]">Choose your class, term and subject. Enter CAT 1, CAT 2 and exam scores beside each student. Existing scores open automatically.</p>
+        {visibleAssignments.length > 0 && defaultScheme ? (
+          <form action={openTeacherScores} className="mt-4 flex flex-col gap-3 md:flex-row">
+            <label className="flex-1 text-sm font-bold">Class, term and subject
+              <select name="assignmentId" required className="mt-2 block min-h-12 w-full rounded-lg border p-3" defaultValue="">
+                <option value="" disabled>Select an assigned subject</option>
+                {visibleAssignments.map((assignment) => (
+                  <option key={assignment.id} value={assignment.id}>
+                    {assignment.classArm.classLevel.name} {assignment.classArm.name} · {assignment.subject.name} · {assignment.term.name} {assignment.term.academicSession.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button className="button md:self-end" type="submit">Open scores</button>
+          </form>
+        ) : <p className="mt-4 text-sm">{!visibleAssignments.length ? "An administrator must assign your class and subjects first." : "An administrator must configure the default grading scheme."}</p>}
+      </section>
 
       <section className="card mt-5 overflow-hidden">
         <div className="border-b border-[#e8eaed] p-5">
-          <h2 className="font-black">Your result sheets</h2>
+          <h2 className="font-black">Student results</h2>
           <p className="text-sm text-[#68707d]">
-            Draft sheets remain editable. Submitted sheets wait for an
+            Draft subjects remain editable. Submitted sheets wait for an
             administrator.
           </p>
         </div>
@@ -320,7 +250,7 @@ export default async function TeacherResultsPage() {
                 </p>
                 <Link className="button mt-4" href={`/results/${sheet.id}`}>
                   <FileText size={17} />
-                  {sheet.status === "DRAFT" ? "Enter scores" : "View sheet"}
+                  {sheet.status === "DRAFT" ? "Enter scores" : "View scores"}
                 </Link>
               </article>
             );
@@ -328,7 +258,7 @@ export default async function TeacherResultsPage() {
         </div>
         {!sheets.length && (
           <div className="empty-state">
-            No result sheet has been created for your account.
+            Choose an assigned subject above to start entering scores.
           </div>
         )}
       </section>

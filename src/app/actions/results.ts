@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { z } from "zod";
 import type { Prisma } from "@/generated/prisma/client";
@@ -8,6 +9,7 @@ import { canTransitionResult, PETRA_RESULT_COMPONENTS } from "@/lib/academics";
 import { requireCampusAccess, requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { gradingSchemeId } from "@/lib/grading-scheme-id";
+import { parseResultScore, resultScoreLimit, resultEntryError } from "@/lib/result-score-entry";
 
 async function audit(
   tx: Prisma.TransactionClient,
@@ -145,34 +147,71 @@ export async function createResultSheet(formData: FormData) {
   ) {
     throw new Error("FORBIDDEN:TEACHING_ASSIGNMENT");
   }
-  await db.$transaction(async (tx) => {
+  const sheetId = await db.$transaction(async (tx) => {
+    // Serialize automatic creation for the same term/class/subject.
+    const key = `${input.termId}:${input.classArmId}:${input.subjectId}`;
+    await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${key}))::text`;
+    const existing = await tx.resultSheet.findUnique({
+      where: { termId_classArmId_subjectId: {
+        termId: input.termId, classArmId: input.classArmId, subjectId: input.subjectId,
+      } },
+    });
+    if (existing) {
+      if (existing.schoolId !== viewer.membership.schoolId ||
+          existing.campusId !== input.campusId ||
+          existing.teacherMembershipId !== input.teacherMembershipId) {
+        throw new Error("FORBIDDEN:RESULT_SHEET");
+      }
+      return existing.id;
+    }
     const sheet = await tx.resultSheet.create({
       data: { schoolId: viewer.membership.schoolId, ...input },
     });
     await tx.assessmentComponent.createMany({
-      data: PETRA_RESULT_COMPONENTS.map((component) => ({
-        sheetId: sheet.id,
-        ...component,
-      })),
+      data: PETRA_RESULT_COMPONENTS.map((component) => ({ sheetId: sheet.id, ...component })),
     });
     await audit(tx, {
-      schoolId: viewer.membership.schoolId,
-      campusId: input.campusId,
-      actorUserId: viewer.user.id,
-      action: "results.sheet_created",
-      entityType: "ResultSheet",
-      entityId: sheet.id,
-      after: input,
+      schoolId: viewer.membership.schoolId, campusId: input.campusId,
+      actorUserId: viewer.user.id, action: "results.sheet_created",
+      entityType: "ResultSheet", entityId: sheet.id, after: input,
     });
+    return sheet.id;
   });
   revalidatePath("/results");
   revalidatePath("/teacher/results");
+  if (viewer.membership.role === "TEACHER") redirect(`/results/${sheetId}`);
+}
+
+export async function openTeacherScores(formData: FormData) {
+  const viewer = await requirePermission("results.manage");
+  const assignmentId = z.string().cuid().parse(formData.get("assignmentId"));
+  const assignment = await db.teachingAssignment.findFirst({
+    where: {
+      id: assignmentId, schoolId: viewer.membership.schoolId,
+      campusId: viewer.membership.campusId ?? "__none__",
+      teacherMembershipId: viewer.membership.id,
+    },
+  });
+  if (!assignment) throw new Error("FORBIDDEN:TEACHING_ASSIGNMENT");
+  await requireCampusAccess(assignment.campusId);
+  const scheme = await db.gradingScheme.findFirst({
+    where: { schoolId: viewer.membership.schoolId, isDefault: true },
+    orderBy: { createdAt: "asc" }, select: { id: true },
+  });
+  if (!scheme) throw new Error("INVALID:NO_DEFAULT_GRADING_SCHEME");
+  const input = new FormData();
+  for (const name of ["campusId", "termId", "classArmId", "subjectId", "teacherMembershipId"] as const) {
+    input.set(name, assignment[name]);
+  }
+  input.set("gradingSchemeId", scheme.id);
+  await createResultSheet(input);
 }
 
 async function resultSheetForEditor(sheetId: string, membershipId: string, role: string) {
   const sheet = await db.resultSheet.findUnique({
     where: { id: sheetId },
     include: {
+      term: { select: { academicSessionId: true } },
       components: { orderBy: { sortOrder: "asc" } },
       classArm: {
         select: {
@@ -191,6 +230,46 @@ async function resultSheetForEditor(sheetId: string, membershipId: string, role:
   return sheet;
 }
 
+async function activeResultStudents(tx: Prisma.TransactionClient, sheet: {
+  campusId: string; schoolId: string; classArmId: string; term: { academicSessionId: string };
+}) {
+  const enrollments = await tx.enrollment.findMany({
+    where: {
+      campusId: sheet.campusId, classArmId: sheet.classArmId,
+      academicSessionId: sheet.term.academicSessionId, status: "CURRENT",
+      student: { schoolId: sheet.schoolId, campusId: sheet.campusId, status: "ACTIVE" },
+    }, select: { studentId: true },
+  });
+  return enrollments.map((entry) => entry.studentId);
+}
+
+async function verifyCompleteResultScores(tx: Prisma.TransactionClient, sheet: {
+  id: string; components: { id: string; kind: string; maxScore: { toString(): string } }[];
+}, studentIds: string[]) {
+  const recorded = await tx.studentScore.findMany({
+    where: { component: { sheetId: sheet.id }, studentId: { in: studentIds } },
+    select: { componentId: true, score: true },
+  });
+  if (!studentIds.length || !sheet.components.length || recorded.length !== studentIds.length * sheet.components.length) {
+    throw new Error("INVALID:INCOMPLETE_RESULT_SHEET");
+  }
+  for (const score of recorded) {
+    const component = sheet.components.find((item) => item.id === score.componentId)!;
+    parseResultScore(score.score.toString(), resultScoreLimit(component));
+  }
+}
+
+async function verifyCurrentResultTeacher(tx: Prisma.TransactionClient, sheet: {
+  schoolId: string; campusId: string; termId: string; classArmId: string; subjectId: string; teacherMembershipId: string;
+}, role: string, membershipId: string) {
+  if (role !== "TEACHER") return;
+  if (sheet.teacherMembershipId !== membershipId || !await tx.teachingAssignment.findFirst({
+    where: { schoolId: sheet.schoolId, campusId: sheet.campusId, termId: sheet.termId,
+      classArmId: sheet.classArmId, subjectId: sheet.subjectId, teacherMembershipId: membershipId },
+    select: { id: true },
+  })) throw new Error("FORBIDDEN:TEACHING_ASSIGNMENT");
+}
+
 export async function saveResultSheetScores(formData: FormData) {
   const viewer = await requirePermission("results.manage");
   const sheetId = z.string().cuid().parse(formData.get("sheetId"));
@@ -204,14 +283,23 @@ export async function saveResultSheetScores(formData: FormData) {
   }
   await requireCampusAccess(sheet.campusId);
   if (sheet.status !== "DRAFT") throw new Error("INVALID:RESULT_SHEET_STATE");
-  const studentIds = sheet.classArm.enrollments.map((item) => item.studentId);
+  const expectedVersion = z.string().datetime().parse(formData.get("version"));
+  const intent = z.enum(["save", "submit"]).parse(formData.get("intent") ?? "save");
 
   await db.$transaction(async (tx) => {
+    // A row lock coordinates saves with submission, approval and corrections.
+    await tx.$queryRaw`SELECT "id" FROM "result_sheets" WHERE "id" = ${sheet.id} FOR UPDATE`;
+    const current = await tx.resultSheet.findUniqueOrThrow({ where: { id: sheet.id } });
+    await verifyCurrentResultTeacher(tx, current, viewer.membership.role, viewer.membership.id);
+    const studentIds = await activeResultStudents(tx, sheet);
+    if (current.status !== "DRAFT") throw new Error("INVALID:RESULT_SHEET_STATE");
+    if (current.updatedAt.toISOString() !== expectedVersion) throw new Error("CONFLICT:RESULT_SHEET_CHANGED");
     for (const studentId of studentIds) {
       for (const component of sheet.components) {
         const raw = formData.get(`score:${component.id}:${studentId}`);
-        if (raw === null || raw === "") continue;
-        const score = z.coerce.number().min(0).max(Number(component.maxScore)).parse(raw);
+        const score = parseResultScore(raw, resultScoreLimit(component));
+        // Blank fields preserve recorded scores; zero is an explicit score.
+        if (score === null) continue;
         await tx.studentScore.upsert({
           where: {
             componentId_studentId: { componentId: component.id, studentId },
@@ -225,6 +313,7 @@ export async function saveResultSheetScores(formData: FormData) {
           update: { score, markedById: viewer.user.id },
         });
       }
+      if (!formData.has(`comment:${studentId}`)) continue;
       const teacherComment = z
         .string()
         .trim()
@@ -240,6 +329,16 @@ export async function saveResultSheetScores(formData: FormData) {
         update: { teacherComment: teacherComment || null },
       });
     }
+    if (intent === "submit") await verifyCompleteResultScores(tx, sheet, studentIds);
+    await tx.resultSheet.update({ where: { id: sheet.id }, data: {
+      updatedAt: new Date(Math.max(Date.now(), current.updatedAt.getTime() + 1)),
+      ...(intent === "submit" ? { status: "SUBMITTED", submittedById: viewer.user.id, submittedAt: new Date() } : {}),
+    } });
+    if (intent === "submit") await audit(tx, {
+      schoolId: sheet.schoolId, campusId: sheet.campusId, actorUserId: viewer.user.id,
+      action: "results.status_changed", entityType: "ResultSheet", entityId: sheet.id,
+      before: { status: "DRAFT" }, after: { status: "SUBMITTED" },
+    });
     await audit(tx, {
       schoolId: sheet.schoolId,
       campusId: sheet.campusId,
@@ -249,8 +348,20 @@ export async function saveResultSheetScores(formData: FormData) {
       entityId: sheet.id,
       after: { studentCount: studentIds.length, componentCount: sheet.components.length },
     });
-  });
+  }, { timeout: 30_000 });
   revalidatePath(`/results/${sheet.id}`);
+  revalidatePath("/teacher/results");
+}
+
+export async function saveTeacherScoreEntry(
+  _previous: { error: string; success: string }, formData: FormData,
+) {
+  try {
+    await saveResultSheetScores(formData);
+    return { error: "", success: formData.get("intent") === "submit" ? "Scores saved and submitted for approval." : "Draft saved. You can return to complete the remaining scores." };
+  } catch (error) {
+    return { error: resultEntryError(error), success: "" };
+  }
 }
 
 export async function transitionResultSheet(formData: FormData) {
@@ -275,14 +386,7 @@ export async function transitionResultSheet(formData: FormData) {
   }
   if (input.nextStatus === "SUBMITTED") {
     await requirePermission("results.manage");
-    const expected = sheet.classArm.enrollments.length * sheet.components.length;
-    const recorded = await db.studentScore.count({
-      where: {
-        component: { sheetId: sheet.id },
-        studentId: { in: sheet.classArm.enrollments.map((item) => item.studentId) },
-      },
-    });
-    if (recorded !== expected) throw new Error("INVALID:INCOMPLETE_RESULT_SHEET");
+
   } else if (input.nextStatus === "APPROVED" || input.nextStatus === "DRAFT") {
     await requirePermission("results.approve");
   } else {
@@ -306,6 +410,16 @@ export async function transitionResultSheet(formData: FormData) {
                 approvedAt: null,
               };
   await db.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT "id" FROM "result_sheets" WHERE "id" = ${sheet.id} FOR UPDATE`;
+    const current = await tx.resultSheet.findUniqueOrThrow({ where: { id: sheet.id } });
+    await verifyCurrentResultTeacher(tx, current, viewer.membership.role, viewer.membership.id);
+    if (current.status !== sheet.status || !canTransitionResult(current.status, input.nextStatus)) {
+      throw new Error("CONFLICT:RESULT_SHEET_CHANGED");
+    }
+    if (input.nextStatus === "SUBMITTED") {
+      const studentIds = await activeResultStudents(tx, sheet);
+      await verifyCompleteResultScores(tx, sheet, studentIds);
+    }
     await tx.resultSheet.update({
       where: { id: sheet.id },
       data: { status: input.nextStatus, ...stateData },
@@ -342,6 +456,8 @@ export async function correctStudentScore(formData: FormData) {
       component: {
         select: {
           maxScore: true,
+          kind: true,
+          sortOrder: true,
           sheet: {
             select: { id: true, schoolId: true, campusId: true, status: true },
           },
@@ -355,15 +471,19 @@ export async function correctStudentScore(formData: FormData) {
   await requireCampusAccess(score.component.sheet.campusId);
   if (
     score.component.sheet.status === "LOCKED" ||
-    input.score > Number(score.component.maxScore)
+    input.score > resultScoreLimit(score.component)
   ) {
     throw new Error("INVALID:SCORE_CORRECTION");
   }
   await db.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT "id" FROM "result_sheets" WHERE "id" = ${score.component.sheet.id} FOR UPDATE`;
+    const current = await tx.resultSheet.findUniqueOrThrow({ where: { id: score.component.sheet.id } });
+    if (current.status === "LOCKED") throw new Error("INVALID:SCORE_CORRECTION");
+    const previous = await tx.studentScore.findUniqueOrThrow({ where: { id: score.id } });
     await tx.scoreCorrection.create({
       data: {
         scoreId: score.id,
-        beforeScore: score.score,
+        beforeScore: previous.score,
         afterScore: input.score,
         reason: input.reason,
         correctedById: viewer.user.id,
@@ -373,6 +493,7 @@ export async function correctStudentScore(formData: FormData) {
       where: { id: score.id },
       data: { score: input.score, markedById: viewer.user.id },
     });
+    await tx.resultSheet.update({ where: { id: current.id }, data: { updatedAt: new Date() } });
     await audit(tx, {
       schoolId: score.component.sheet.schoolId,
       campusId: score.component.sheet.campusId,
@@ -380,7 +501,7 @@ export async function correctStudentScore(formData: FormData) {
       action: "results.score_corrected",
       entityType: "StudentScore",
       entityId: score.id,
-      before: { score: Number(score.score) },
+      before: { score: Number(previous.score) },
       after: { score: input.score, reason: input.reason },
     });
   });
