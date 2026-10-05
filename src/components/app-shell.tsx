@@ -1,5 +1,6 @@
 "use client";
 
+import { roleLabel } from "@/lib/role-label";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -205,7 +206,7 @@ export function AppShell({ children, viewer, permissions }: AppShellProps) {
           <div className="rounded-xl bg-[#f6f7f8] p-3">
             <div className="mb-2 flex items-center gap-2 text-xs font-extrabold text-[#4e5662]">
               <ShieldCheck size={16} className="text-[#d71920]" />
-              {viewer.role}
+              {roleLabel(viewer.role)}
             </div>
             <p className="truncate text-sm font-extrabold">{viewer.school}</p>
             <p className="mt-0.5 truncate text-xs text-[#777f8b]">

@@ -42,8 +42,8 @@ export default async function SettingsPage() {
   return (
     <div>
       <PageHeading
-        description="Owner-only controls and operational safeguards. Secrets, database credentials and deployment variables are managed outside the application."
-        eyebrow="Owner controls"
+        description="School-wide admin controls and operational safeguards. Secrets, database credentials and deployment variables are managed outside the application."
+        eyebrow="Admin controls"
         title="System readiness"
       />
 

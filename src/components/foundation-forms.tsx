@@ -263,7 +263,7 @@ function ClassTeacherForm({
 
 export function CampusCreateForm() {
   return (
-    <FormPanel description="Owner-only school expansion" title="Add a campus">
+    <FormPanel description="School-wide admin controls" title="Add a campus">
       <ActionForm action={createCampus} label="Create campus">
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Campus name" name="name" placeholder="Nnewi Campus" />
