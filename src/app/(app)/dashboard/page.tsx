@@ -120,7 +120,7 @@ export default async function DashboardPage() {
     {
       label: "Active staff",
       value: staffCount,
-      note: "Owner, admins & teachers",
+      note: "Admins & teachers",
       icon: Users,
       tone: "bg-[#eef4ff] text-[#2f65b0]",
     },
@@ -289,7 +289,7 @@ export default async function DashboardPage() {
           </div>
           <div className="grid gap-3 p-5 text-sm">
             {[
-              "Owners can view the entire school",
+              "School-wide admins can view the entire school",
               "Admins are restricted to their campus",
               "Teachers receive only teaching-level access",
             ].map((item) => (

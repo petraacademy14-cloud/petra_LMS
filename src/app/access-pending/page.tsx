@@ -12,7 +12,7 @@ export default function AccessPendingPage() {
           <h1 className="mt-5 text-2xl font-black">Access is not active yet</h1>
           <p className="mt-3 leading-7 text-[#68707d]">
             Your account exists, but it has not been assigned an active Petra
-            Academy role. Ask the school owner or administrator to activate it.
+            Academy role. Ask the school administrator to activate it.
           </p>
           <Link className="button button-secondary mt-6" href="/login">
             Return to sign in

@@ -1,3 +1,4 @@
+import { roleLabel } from "@/lib/role-label";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { KeyRound, Shield, UserPlus, UserRoundCheck } from "lucide-react";
@@ -68,7 +69,7 @@ export default async function PeoplePage() {
             </Link>
           )
         }
-        description="Every staff member receives a school membership, a role and—except school-wide owners—a campus scope. Parent and student accounts are issued separately by authorized staff."
+        description="Every staff member receives a school membership, a role and—except school-wide admins—a campus scope. Parent and student accounts are issued separately by authorized staff."
         eyebrow="Identity & access"
         title="People, roles & permissions"
       />
@@ -84,7 +85,7 @@ export default async function PeoplePage() {
                 {permissionsFor(role).length} permissions
               </span>
             </div>
-            <h2 className="mt-5 text-lg font-black">{role}</h2>
+            <h2 className="mt-5 text-lg font-black">{roleLabel(role)}</h2>
             <p className="mt-1 text-sm leading-6 text-[#68707d]">
               {roleDescriptions[role]}
             </p>
@@ -156,7 +157,7 @@ export default async function PeoplePage() {
                   </td>
                   <td>
                     <span className="pill" data-tone="brand">
-                      {membership.role}
+                      {roleLabel(membership.role)}
                     </span>
                   </td>
                   <td className="font-bold text-[#616a76]">

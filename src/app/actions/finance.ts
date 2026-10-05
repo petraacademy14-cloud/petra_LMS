@@ -9,7 +9,7 @@ import type {
   ReminderChannel,
   StudentChargeType,
 } from "@/generated/prisma/enums";
-import type { ActionState } from "@/app/actions/foundation";
+import type { ActionState } from "@/lib/action-state";
 import { db } from "@/lib/db";
 import {
   requireCampusAccess,

@@ -25,7 +25,7 @@ export default function GlobalError({
             </h1>
             <p className="mt-3 leading-7 text-[#68707d]">
               The error has been recorded. Try again, and contact the system
-              owner if the problem continues.
+              administrator if the problem continues.
             </p>
             <button className="button mt-6" onClick={() => unstable_retry()}>
               Try again

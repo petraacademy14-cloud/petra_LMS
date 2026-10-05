@@ -7,14 +7,14 @@ import {
   createAcademicSession,
   createCampus,
   createTerm,
-  initialActionState,
-  type ActionState,
 } from "@/app/actions/foundation";
 import {
   assignClassTeacher,
   createClassWithDefaultArms,
   createSubjectForCampus,
 } from "@/app/actions/class-management";
+
+import { initialActionState, type ActionState } from "@/lib/action-state";
 
 type ServerAction = (
   state: ActionState,
@@ -37,6 +37,7 @@ type TeacherOption = {
   id: string;
   campusId: string;
   name: string;
+  email: string;
 };
 
 function SubmitButton({ label }: { label: string }) {
@@ -229,16 +230,16 @@ function ClassTeacherForm({
             name="teacherMembershipId"
             required
           >
-            <option disabled value="">
+            <option value="">
               Select class teacher…
             </option>
             {availableTeachers.map((teacher) => (
               <option key={teacher.id} value={teacher.id}>
-                {teacher.name}
+                {teacher.name} ({teacher.email})
               </option>
             ))}
           </select>
-          <button className="button" disabled={pending} type="submit">
+          <button className="button" disabled={pending || !availableTeachers.length || !currentSessionId} type="submit">
             {pending
               ? "Saving…"
               : classArm.currentTeacherMembershipId
@@ -262,7 +263,7 @@ function ClassTeacherForm({
 
 export function CampusCreateForm() {
   return (
-    <FormPanel description="Owner-only school expansion" title="Add a campus">
+    <FormPanel description="School-wide admin controls" title="Add a campus">
       <ActionForm action={createCampus} label="Create campus">
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Campus name" name="name" placeholder="Nnewi Campus" />
@@ -437,7 +438,7 @@ export function AcademicSetupForms({
                     <Field
                       label="Class code (optional)"
                       name="code"
-                      placeholder="Auto: PRI-1"
+                      placeholder="Leave blank to generate"
                       required={false}
                     />
                     <Field
@@ -445,7 +446,7 @@ export function AcademicSetupForms({
                       max={1000}
                       min={1}
                       name="capacity"
-                      placeholder="30"
+                      placeholder="Leave blank for no limit"
                       required={false}
                       type="number"
                     />

@@ -7,6 +7,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { canTransitionResult, PETRA_RESULT_COMPONENTS } from "@/lib/academics";
 import { requireCampusAccess, requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
+import { gradingSchemeId } from "@/lib/grading-scheme-id";
 
 async function audit(
   tx: Prisma.TransactionClient,
@@ -117,7 +118,7 @@ export async function createResultSheet(formData: FormData) {
       termId: z.string().cuid(),
       classArmId: z.string().cuid(),
       subjectId: z.string().cuid(),
-      gradingSchemeId: z.string().cuid(),
+      gradingSchemeId,
       teacherMembershipId: z.string().cuid(),
     })
     .parse(Object.fromEntries(formData));
@@ -165,6 +166,7 @@ export async function createResultSheet(formData: FormData) {
     });
   });
   revalidatePath("/results");
+  revalidatePath("/teacher/results");
 }
 
 async function resultSheetForEditor(sheetId: string, membershipId: string, role: string) {
@@ -389,7 +391,7 @@ export async function updateDefaultGradingScheme(formData: FormData) {
   const viewer = await requirePermission("academic.manage");
   const input = z
     .object({
-      schemeId: z.string().cuid(),
+      schemeId: gradingSchemeId,
       caWeight: z.coerce.number().positive().max(99),
       examWeight: z.coerce.number().positive().max(99),
       aMin: z.coerce.number().min(0).max(100),

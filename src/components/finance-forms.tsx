@@ -17,7 +17,7 @@ import {
 import {
   initialActionState,
   type ActionState,
-} from "@/app/actions/foundation";
+} from "@/lib/action-state";
 
 type ServerAction = (
   state: ActionState,
