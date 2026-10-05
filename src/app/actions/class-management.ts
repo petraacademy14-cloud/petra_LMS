@@ -134,7 +134,7 @@ export async function createClassWithDefaultArms(
     await requirePermission("academic.manage");
     const input = z
       .object({
-        campusId: z.string().cuid(),
+        campusId: z.string().cuid("Refresh the page and select the campus again."),
         name: shortText,
         code: optionalCode,
         capacity: optionalCapacity,
@@ -237,7 +237,7 @@ export async function createSubjectForCampus(
     await requirePermission("academic.manage");
     const input = z
       .object({
-        campusId: z.string().cuid(),
+        campusId: z.string().cuid("Refresh the page and select the campus again."),
         name: shortText,
         code: optionalCode,
       })
@@ -318,10 +318,10 @@ export async function assignClassTeacher(
     await requirePermission("academic.manage");
     const input = z
       .object({
-        campusId: z.string().cuid(),
-        academicSessionId: z.string().cuid(),
-        classArmId: z.string().cuid(),
-        teacherMembershipId: z.string().cuid(),
+        campusId: z.string().cuid("Refresh the page and select the campus again."),
+        academicSessionId: z.string().cuid("Select an active academic session, then try again."),
+        classArmId: z.string().cuid("Refresh the page and select the class again."),
+        teacherMembershipId: z.string().cuid("Select a teacher before assigning this class."),
       })
       .parse(Object.fromEntries(formData));
     const viewer = await requireCampusAccess(input.campusId);

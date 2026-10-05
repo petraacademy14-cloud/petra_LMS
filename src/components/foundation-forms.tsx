@@ -230,7 +230,7 @@ function ClassTeacherForm({
             name="teacherMembershipId"
             required
           >
-            <option disabled value="">
+            <option value="">
               Select class teacher…
             </option>
             {availableTeachers.map((teacher) => (
@@ -239,7 +239,7 @@ function ClassTeacherForm({
               </option>
             ))}
           </select>
-          <button className="button" disabled={pending} type="submit">
+          <button className="button" disabled={pending || !availableTeachers.length || !currentSessionId} type="submit">
             {pending
               ? "Saving…"
               : classArm.currentTeacherMembershipId
