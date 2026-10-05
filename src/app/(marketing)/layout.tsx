@@ -22,8 +22,8 @@ export default function MarketingLayout({ children }: Readonly<{ children: React
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <span className="font-black uppercase tracking-[0.14em] text-[#b91118]">Important notices</span>
-            <span><strong>Resumption:</strong> Monday, 14 September 2026 — Awka &amp; Nnewi campuses.</span>
-            <span><strong>School fees:</strong> Parents and guardians are kindly reminded to settle required fees promptly.</span>
+            <span><strong>CAT 1:</strong> 12–16 October 2026 — Awka campus.</span>
+            <span><strong>School fees:</strong> Parents and guardians are kindly reminded to settle outstanding fees promptly.</span>
           </div>
           <Link className="shrink-0 font-black text-[#b91118] hover:underline" href="/news">
             Read notices →
