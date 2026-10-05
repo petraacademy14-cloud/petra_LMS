@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AcademicsNav } from "@/components/academics-nav";
 import { PageHeading } from "@/components/page-heading";
 import { requirePermission } from "@/lib/dal";
@@ -67,7 +66,7 @@ export default async function ReportCardsPage({
       </form>
       <section className="card mt-5 overflow-hidden">
         <div className="border-b p-5"><h2 className="font-black">Published learner reports</h2><p className="text-sm text-[#727b87]">{students.length} available</p></div>
-        <div className="table-wrap"><table className="data-table"><thead><tr><th>Student</th><th>Admission number</th><th>Action</th></tr></thead><tbody>{students.map((student) => <tr key={student.id}><td><strong>{student.lastName}, {student.firstName}</strong></td><td>{student.admissionNumber}</td><td><Link className="font-bold text-[#b91118] hover:underline" href={`/results/report-cards/${student.id}?termId=${termId}`}>Open report card</Link></td></tr>)}</tbody></table></div>
+        <div className="table-wrap"><table className="data-table"><thead><tr><th>Student</th><th>Admission number</th><th>Action</th></tr></thead><tbody>{students.map((student) => <tr key={student.id}><td><a className="font-bold text-[#b91118] underline underline-offset-4" href={`/results/report-cards/${student.id}?termId=${termId}`}>{student.lastName}, {student.firstName}</a></td><td><a className="underline underline-offset-4" href={`/results/report-cards/${student.id}?termId=${termId}`}>{student.admissionNumber}</a></td><td><a className="button button-secondary" href={`/results/report-cards/${student.id}?termId=${termId}`}>Open report card</a></td></tr>)}</tbody></table></div>
         {!students.length && <div className="empty-state">Choose a term and class with published results.</div>}
       </section>
     </div>

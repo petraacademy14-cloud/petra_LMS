@@ -288,6 +288,8 @@ model School {
   newsletterSubscribers NewsletterSubscriber[]
 
   @@map("schools")
+  reportCardDetails ReportCardDetails[]
+
 }
 
 model Campus {
@@ -331,6 +333,8 @@ model Campus {
   @@unique([schoolId, name])
   @@index([schoolId, isActive])
   @@map("campuses")
+  reportCardDetails ReportCardDetails[]
+
 }
 
 model SchoolMembership {
@@ -400,6 +404,8 @@ model Term {
   @@unique([academicSessionId, campusId, kind])
   @@index([campusId, isCurrent])
   @@map("terms")
+  reportCardDetails ReportCardDetails[]
+
 }
 
 model ClassLevel {
@@ -525,6 +531,8 @@ model Student {
   @@index([campusId, status, lastName, firstName])
   @@index([schoolId, lastName, firstName])
   @@map("students")
+  reportCardDetails ReportCardDetails[]
+
 }
 
 model Guardian {
@@ -1311,4 +1319,22 @@ model ErrorLog {
   @@index([schoolId, occurredAt(sort: Desc)])
   @@index([fingerprint])
   @@map("error_logs")
+}
+
+model ReportCardDetails {
+  id String @id @default(cuid())
+  schoolId String
+  school School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  campusId String
+  campus Campus @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  studentId String
+  student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  termId String
+  term Term @relation(fields: [termId], references: [id], onDelete: Restrict)
+  details Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([studentId, termId])
+  @@index([schoolId, campusId, termId])
+  @@map("report_card_details")
 }
