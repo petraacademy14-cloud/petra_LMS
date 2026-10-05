@@ -9,8 +9,8 @@ import type { PortalAccountRole } from "@/lib/portal-account";
 
 const portals = {
   owner: {
-    title: "Owner login",
-    detail: "Use the Petra Academy Owner email address and password.",
+    title: "Admin login",
+    detail: "Use your Petra Academy administrator email address and password.",
     icon: ShieldCheck,
     portalRole: null,
   },
