@@ -6,14 +6,14 @@ export const dynamic = "force-dynamic";
 
 const importantNotices = [
   {
-    title: "Resumption Notice — 14 September 2026",
+    title: "First Continuous Assessment (CAT 1) — 12–16 October 2026",
     body:
-      "Petra Academy resumes for the new academic session on Monday, 14 September 2026. We look forward to welcoming our learners back for another productive term of learning, growth and excellence across our Awka and Nnewi campuses. Parents and guardians are encouraged to ensure that students are fully prepared for resumption and arrive promptly.",
+      "The First Continuous Assessment (CAT 1) for Petra Academy Awka will take place from Monday, 12 October to Friday, 16 October 2026, for the first term of the 2026/2027 session. Learners are encouraged to revise their class notes and prepare for the assessments. Parents and guardians are kindly asked to support revision at home and ensure that learners attend school punctually throughout the assessment week.",
   },
   {
     title: "School Fees Reminder",
     body:
-      "Parents and guardians are kindly reminded to ensure that all required school fees and related payments are settled promptly as the new term begins. Timely payment helps the school maintain smooth academic and administrative operations and ensures that learners can resume without avoidable delays. For clarification on fees or payment arrangements, please contact the appropriate Awka or Nnewi campus administration.",
+      "Parents and guardians are kindly reminded to settle any outstanding school fees and related payments promptly. For clarification on fees or payment arrangements, please contact the appropriate Awka or Nnewi campus administration.",
   },
 ] as const;
 
@@ -51,9 +51,9 @@ export default async function UpdatesPage() {
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="eyebrow">Important notices</p>
-              <h2 className="text-2xl font-black">Resumption and school fees</h2>
+              <h2 className="text-2xl font-black">CAT 1 and school fees</h2>
             </div>
-            <span className="pill">September 2026</span>
+            <span className="pill">October 2026</span>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             {importantNotices.map((notice) => (
