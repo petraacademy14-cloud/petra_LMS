@@ -12,7 +12,7 @@ export function ReportCardActions({
 }) {
   return (
     <div className="receipt-actions flex flex-wrap gap-2">
-      <button className="button" onClick={() => window.print()} type="button"><Printer size={17} /> Print report card</button>
+      <a className="button" href={`/api/report-cards/${studentId}/download?termId=${termId}&inline=true`} target="_blank" rel="noopener noreferrer"><Printer size={17} /> Open PDF to print</a>
       <Link className="button button-secondary" href={`/api/report-cards/${studentId}/download?termId=${termId}`}><Download size={17} /> Download PDF</Link>
     </div>
   );

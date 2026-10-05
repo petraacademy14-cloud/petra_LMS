@@ -1,8 +1,10 @@
+import { ReportCardBuilder } from "@/components/report-card-builder";
+import { loadReportCard } from "@/lib/report-card-data";
+import { hasPermission } from "@/lib/permissions";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AcademicsNav } from "@/components/academics-nav";
 import { ReportCardActions } from "@/components/report-card-actions";
-import { attendanceSummary, resolveGrade, totalWeightedScore } from "@/lib/academics";
 import { requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
 
@@ -52,19 +54,11 @@ export default async function StudentReportCardPage({
   });
   if (!student || !student.resultEntries.length) notFound();
   const term = student.resultEntries[0]!.sheet.term;
-  const currentEnrollment = student.enrollments.find((item) => item.status === "CURRENT") ?? student.enrollments[0];
-  const attendance = attendanceSummary(student.attendanceEntries.map((item) => item.status));
-  const rows = student.resultEntries.map((entry) => {
-    const sheet = entry.sheet;
-    const complete = sheet.components.every((component) => component.scores[0]);
-    const total = complete
-      ? totalWeightedScore(sheet.components.map((component) => ({ score: component.scores[0]!.score, maxScore: component.maxScore, weight: component.weight })))
-      : 0;
-    const grade = resolveGrade(total, sheet.gradingScheme.bands);
-    return { subject: sheet.subject.name, total, grade, comment: entry.teacherComment };
-  }).sort((a, b) => a.subject.localeCompare(b.subject));
-  const average = rows.length ? Math.round((rows.reduce((sum, row) => sum + row.total, 0) / rows.length) * 100) / 100 : 0;
-
+  const report = await loadReportCard(studentId, query.termId, viewer.membership.schoolId, viewer.membership.role === "OWNER" ? undefined : viewer.membership.campusId ?? "__none__");
+  if (!report) notFound();
+  const attendance = report.attendance;
+  const rows = report.rows;
+  const average = Math.round(report.average * 100) / 100;
   return (
     <div>
       <div className="print:hidden"><AcademicsNav /></div>
@@ -73,11 +67,12 @@ export default async function StudentReportCardPage({
           <div><p className="text-xs font-black uppercase tracking-[0.14em] text-[#d71920]">{student.school.name}</p><h1 className="mt-1 text-2xl font-black">Student Report Card</h1><p className="text-sm text-[#68717d]">{student.campus.name} · {term.academicSession.name} · {term.name}</p></div>
           <ReportCardActions studentId={student.id} termId={query.termId} />
         </header>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><div><span className="text-xs font-bold uppercase text-[#777f8a]">Student</span><p className="font-black">{student.lastName}, {student.firstName}</p></div><div><span className="text-xs font-bold uppercase text-[#777f8a]">Admission no.</span><p className="font-black">{student.admissionNumber}</p></div><div><span className="text-xs font-bold uppercase text-[#777f8a]">Class</span><p className="font-black">{currentEnrollment ? `${currentEnrollment.classArm.classLevel.name} ${currentEnrollment.classArm.name}` : "—"}</p></div><div><span className="text-xs font-bold uppercase text-[#777f8a]">Average</span><p className="font-black">{average}%</p></div></div>
-        <div className="mt-6 table-wrap"><table className="data-table"><thead><tr><th>Subject</th><th>Total</th><th>Grade</th><th>Remark</th><th>Teacher comment</th></tr></thead><tbody>{rows.map((row) => <tr key={row.subject}><td className="font-bold">{row.subject}</td><td>{row.total}</td><td className="font-black">{row.grade?.label ?? "—"}</td><td>{row.grade?.remark ?? "—"}</td><td>{row.comment ?? "—"}</td></tr>)}</tbody></table></div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><div><span className="text-xs font-bold uppercase text-[#777f8a]">Student</span><p className="font-black">{student.lastName}, {student.firstName}</p></div><div><span className="text-xs font-bold uppercase text-[#777f8a]">Admission no.</span><p className="font-black">{student.admissionNumber}</p></div><div><span className="text-xs font-bold uppercase text-[#777f8a]">Class</span><p className="font-black">{report.className}</p></div><div><span className="text-xs font-bold uppercase text-[#777f8a]">Average</span><p className="font-black">{average}%</p></div></div>
+        <div className="mt-6 table-wrap"><table className="data-table"><thead><tr><th>Subject</th><th>CAT 1 /20</th><th>CAT 2 /20</th><th>Exam /60</th><th>Total</th><th>Grade</th><th>Class highest</th><th>Class lowest</th><th>Remark</th></tr></thead><tbody>{rows.map((row) => <tr key={row.subject}><td className="font-bold">{row.subject}</td><td>{row.cat1 ?? "—"}</td><td>{row.cat2 ?? "—"}</td><td>{row.exam ?? "—"}</td><td>{row.total}</td><td className="font-black">{row.grade || "—"}</td><td>{row.highest}</td><td>{row.lowest}</td><td>{row.remark || "—"}</td></tr>)}</tbody></table></div>
         <section className="mt-6 grid gap-4 sm:grid-cols-5">{[["Days", attendance.total], ["Present", attendance.present], ["Absent", attendance.absent], ["Late", attendance.late], ["Attendance", `${attendance.attendanceRate}%`]].map(([label, amount]) => <div className="rounded-xl bg-[#f6f7f8] p-4" key={label}><p className="text-xs font-bold uppercase text-[#767e89]">{label}</p><p className="mt-1 text-xl font-black">{amount}</p></div>)}</section>
         <section className="mt-7 border-t pt-5"><h2 className="font-black">Promotion and enrolment history</h2><div className="mt-3 flex flex-wrap gap-2">{student.enrollments.map((item) => <span className="pill" key={item.id}>{item.academicSession.name}: {item.classArm.classLevel.name} {item.classArm.name} · {item.status}</span>)}</div></section>
       </article>
+      {report && hasPermission(viewer.membership.role, "results.approve") && <ReportCardBuilder key={`${studentId}:${report.version}`} studentId={studentId} termId={query.termId} version={report.version} details={report.details} />}
     </div>
   );
 }
