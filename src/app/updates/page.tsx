@@ -6,11 +6,6 @@ export const dynamic = "force-dynamic";
 
 const importantNotices = [
   {
-    title: "First Continuous Assessment (CAT 1) — 12–16 October 2026",
-    body:
-      "The First Continuous Assessment (CAT 1) for Petra Academy Awka will take place from Monday, 12 October to Friday, 16 October 2026, for the first term of the 2026/2027 session. Learners are encouraged to revise their class notes and prepare for the assessments. Parents and guardians are kindly asked to support revision at home and ensure that learners attend school punctually throughout the assessment week.",
-  },
-  {
     title: "School Fees Reminder",
     body:
       "Parents and guardians are kindly reminded to settle any outstanding school fees and related payments promptly. For clarification on fees or payment arrangements, please contact the appropriate Awka or Nnewi campus administration.",
@@ -51,11 +46,11 @@ export default async function UpdatesPage() {
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="eyebrow">Important notices</p>
-              <h2 className="text-2xl font-black">CAT 1 and school fees</h2>
+              <h2 className="text-2xl font-black">School fees reminder</h2>
             </div>
-            <span className="pill">October 2026</span>
+            
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4">
             {importantNotices.map((notice) => (
               <article key={notice.title} className="rounded-2xl bg-[#fff7f7] p-5">
                 <h3 className="text-lg font-black text-[#b91118]">{notice.title}</h3>
