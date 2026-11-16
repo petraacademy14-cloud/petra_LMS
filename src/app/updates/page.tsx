@@ -1,56 +1,20 @@
-import Link from "next/link";
 import { subscribeNewsletter } from "@/app/actions/communications";
-import { db } from "@/lib/db";
 
-export const dynamic = "force-dynamic";
-
-export default async function UpdatesPage() {
-  // Public updates must remain readable even if the LMS database is unavailable.
-  let stories: Array<{ id: string; slug: string; kind: string; title: string; excerpt: string | null; campus: { name: string } | null }> = [];
-
-  try {
-    const school = await db.school.findUnique({ where: { slug: "petra-academy" } });
-    if (school) {
-      stories = await db.publication.findMany({
-        where: { schoolId: school.id, status: "PUBLISHED" },
-        include: { campus: true, category: true },
-        orderBy: { publishedAt: "desc" },
-        take: 30,
-      });
-    }
-  } catch (error) {
-    console.error("Public updates could not load database content:", error);
-  }
-
+export default function UpdatesPage() {
   return (
     <main>
       <section className="bg-[#fff0f1] px-4 py-14">
         <div className="mx-auto max-w-6xl">
           <p className="eyebrow">Petra Academy</p>
-          <h1 className="page-title max-w-3xl">News, events and achievements from Awka and Nnewi</h1>
-          <p className="page-subtitle">Published school updates and parent announcements in one low-data public page.</p>
+          <h1 className="page-title max-w-3xl">News and updates</h1>
+          <p className="page-subtitle">Stay connected with Petra Academy, Awka and Nnewi.</p>
         </div>
       </section>
-
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[1fr_20rem]">
         <section>
-          <h2 className="text-xl font-black">Latest stories</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            {stories.map((x) => (
-              <Link href={`/updates/${x.slug}`} key={x.id} className="card p-5 transition hover:-translate-y-0.5">
-                <div className="flex gap-2">
-                  <span className="pill">{x.kind}</span>
-                  {x.campus && <span className="pill">{x.campus.name}</span>}
-                </div>
-                <h3 className="mt-3 text-lg font-black">{x.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-[#68707d]">{x.excerpt}</p>
-                <p className="mt-4 text-sm font-black text-[#b91118]">Read update →</p>
-              </Link>
-            ))}
-            {!stories.length && <p className="empty-state card sm:col-span-2">Published stories will appear here.</p>}
-          </div>
+          <h2 className="text-xl font-black">Latest news</h2>
+          <p className="empty-state card mt-4">There are no news updates at this time. Please check back later.</p>
         </section>
-
         <aside>
           <section className="card p-5">
             <h2 className="font-black">School newsletter</h2>
