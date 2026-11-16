@@ -7,25 +7,16 @@ export const dynamic = "force-dynamic";
 export default async function UpdatesPage() {
   // Public updates must remain readable even if the LMS database is unavailable.
   let stories: Array<{ id: string; slug: string; kind: string; title: string; excerpt: string | null; campus: { name: string } | null }> = [];
-  let announcements: Array<{ id: string; title: string; body: string }> = [];
 
   try {
     const school = await db.school.findUnique({ where: { slug: "petra-academy" } });
     if (school) {
-      [stories, announcements] = await Promise.all([
-        db.publication.findMany({
-          where: { schoolId: school.id, status: "PUBLISHED" },
-          include: { campus: true, category: true },
-          orderBy: { publishedAt: "desc" },
-          take: 30,
-        }),
-        db.announcement.findMany({
-          where: { schoolId: school.id, status: "PUBLISHED", parentFacing: true },
-          include: { campus: true, classArm: { include: { classLevel: true } } },
-          orderBy: { publishedAt: "desc" },
-          take: 12,
-        }),
-      ]);
+      stories = await db.publication.findMany({
+        where: { schoolId: school.id, status: "PUBLISHED" },
+        include: { campus: true, category: true },
+        orderBy: { publishedAt: "desc" },
+        take: 30,
+      });
     }
   } catch (error) {
     console.error("Public updates could not load database content:", error);
@@ -62,18 +53,6 @@ export default async function UpdatesPage() {
 
         <aside>
           <section className="card p-5">
-            <h2 className="font-black">Parent announcements</h2>
-            <div className="mt-3 space-y-4">
-              {announcements.map((x) => (
-                <article key={x.id}>
-                  <p className="font-black">{x.title}</p>
-                  <p className="mt-1 text-sm leading-6 text-[#68707d]">{x.body}</p>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="card mt-4 p-5">
             <h2 className="font-black">School newsletter</h2>
             <p className="mt-1 text-sm text-[#68707d]">Join the subscriber list for future approved updates.</p>
             <form action={subscribeNewsletter} className="mt-3 grid gap-2">
