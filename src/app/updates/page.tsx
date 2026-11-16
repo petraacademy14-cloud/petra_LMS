@@ -4,14 +4,6 @@ import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-const importantNotices = [
-  {
-    title: "School Fees Reminder",
-    body:
-      "Parents and guardians are kindly reminded to settle any outstanding school fees and related payments promptly. For clarification on fees or payment arrangements, please contact the appropriate Awka or Nnewi campus administration.",
-  },
-] as const;
-
 export default async function UpdatesPage() {
   // Public updates must remain readable even if the LMS database is unavailable.
   let stories: Array<{ id: string; slug: string; kind: string; title: string; excerpt: string | null; campus: { name: string } | null }> = [];
@@ -49,25 +41,6 @@ export default async function UpdatesPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pt-8">
-        <div className="rounded-3xl border border-red-100 bg-white p-5 shadow-sm sm:p-7">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="eyebrow">Important notices</p>
-              <h2 className="text-2xl font-black">School fees reminder</h2>
-            </div>
-          </div>
-          <div className="grid gap-4">
-            {importantNotices.map((notice) => (
-              <article key={notice.title} className="rounded-2xl bg-[#fff7f7] p-5">
-                <h3 className="text-lg font-black text-[#b91118]">{notice.title}</h3>
-                <p className="mt-2 text-sm leading-7 text-[#5d6470]">{notice.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[1fr_20rem]">
         <section>
           <h2 className="text-xl font-black">Latest stories</h2>
@@ -91,12 +64,6 @@ export default async function UpdatesPage() {
           <section className="card p-5">
             <h2 className="font-black">Parent announcements</h2>
             <div className="mt-3 space-y-4">
-              {importantNotices.map((x) => (
-                <article key={x.title}>
-                  <p className="font-black">{x.title}</p>
-                  <p className="mt-1 text-sm leading-6 text-[#68707d]">{x.body}</p>
-                </article>
-              ))}
               {announcements.map((x) => (
                 <article key={x.id}>
                   <p className="font-black">{x.title}</p>
