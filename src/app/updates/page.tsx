@@ -13,9 +13,14 @@ const importantNotices = [
 ] as const;
 
 export default async function UpdatesPage() {
-  const school = await db.school.findUnique({ where: { slug: "petra-academy" } });
-  const [stories, announcements] = school
-    ? await Promise.all([
+  // Public updates must remain readable even if the LMS database is unavailable.
+  let stories: Array<{ id: string; slug: string; kind: string; title: string; excerpt: string | null; campus: { name: string } | null }> = [];
+  let announcements: Array<{ id: string; title: string; body: string }> = [];
+
+  try {
+    const school = await db.school.findUnique({ where: { slug: "petra-academy" } });
+    if (school) {
+      [stories, announcements] = await Promise.all([
         db.publication.findMany({
           where: { schoolId: school.id, status: "PUBLISHED" },
           include: { campus: true, category: true },
@@ -28,8 +33,11 @@ export default async function UpdatesPage() {
           orderBy: { publishedAt: "desc" },
           take: 12,
         }),
-      ])
-    : [[], []];
+      ]);
+    }
+  } catch (error) {
+    console.error("Public updates could not load database content:", error);
+  }
 
   return (
     <main>
@@ -48,7 +56,6 @@ export default async function UpdatesPage() {
               <p className="eyebrow">Important notices</p>
               <h2 className="text-2xl font-black">School fees reminder</h2>
             </div>
-            
           </div>
           <div className="grid gap-4">
             {importantNotices.map((notice) => (
