@@ -15,8 +15,19 @@ type BookVisitPageProps = {
 
 export default async function BookVisitPage({ searchParams }: BookVisitPageProps) {
   const { submitted } = await searchParams;
-  const school = await db.school.findUnique({ where: { slug: "petra-academy" }, select: { id: true } });
-  const campuses = school ? await db.campus.findMany({ where: { schoolId: school.id, isActive: true }, orderBy: { name: "asc" }, select: { id: true, name: true, city: true } }) : [];
+  let campuses: Array<{ id: string; name: string; city: string }> = [];
+  let bookingAvailable = true;
+  try {
+    const school = await db.school.findUnique({ where: { slug: "petra-academy" }, select: { id: true } });
+    if (!school) {
+      bookingAvailable = false;
+    } else {
+      campuses = await db.campus.findMany({ where: { schoolId: school.id, isActive: true }, orderBy: { name: "asc" }, select: { id: true, name: true, city: true } });
+    }
+  } catch (error) {
+    console.error("Book a visit could not load campus data:", error);
+    bookingAvailable = false;
+  }
 
   return (
     <>
@@ -46,7 +57,7 @@ export default async function BookVisitPage({ searchParams }: BookVisitPageProps
             <div><Clock size={21} /><span><strong>Plan for 30–45 minutes</strong><small>Allow time for your questions and next steps.</small></span></div>
           </aside>
 
-          <form action={createVisitBooking} className="marketing-form marketing-card">
+          <form action={createVisitBooking} className="marketing-form marketing-card">\n            {!bookingAvailable && <p role="alert" className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">Online visit requests are temporarily unavailable. Please call the school on <a className="font-bold underline" href="tel:+2348033130456">08033130456</a> to arrange your visit.</p>}\n            <fieldset disabled={!bookingAvailable}>
             <div className="form-heading"><h2>Visit request</h2><p>Fields marked * are required.</p></div>
             {submitted && <div className="success-banner"><CheckCircle2 size={20} />Your visit request has been received. The admissions team will contact you to confirm it.</div>}
             <div className="field-grid">
@@ -61,7 +72,7 @@ export default async function BookVisitPage({ searchParams }: BookVisitPageProps
               <label className="field-full"><span>Notes</span><textarea name="notes" rows={5} placeholder="Tell us anything that will help us prepare for your visit." /></label>
             </div>
             <button className="button button-lg" type="submit">Request visit</button>
-            <p className="form-note">Submitting this form creates a visit request. The appointment is confirmed only after the school contacts you.</p>
+            <p className="form-note">Submitting this form creates a visit request. The appointment is confirmed only after the school contacts you.</p>\n            </fieldset>
           </form>
         </div>
       </section>
