@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BookOpenCheck, CalendarDays, Layers3, Shapes } from "lucide-react";
+import { CurriculumPanel } from "@/components/curriculum-panel";
 import { AcademicSetupForms } from "@/components/foundation-forms";
 import { PageHeading } from "@/components/page-heading";
 import { requirePermission } from "@/lib/dal";
@@ -366,6 +367,8 @@ export default async function AcademicsPage() {
           <div className="empty-state">No subjects configured.</div>
         )}
       </section>
+
+      {hasPermission(viewer.membership.role, "academic.manage") && <CurriculumPanel />}
 
       <AcademicSetupForms
         campuses={campuses}
