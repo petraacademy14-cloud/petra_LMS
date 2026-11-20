@@ -1,6 +1,6 @@
 "use client";
 import { useActionState, useState } from "react";
-import { saveOffering, saveSelection } from "@/app/actions/curriculum";
+import { saveOffering, saveSelection, importCatalog, savePathway } from "@/app/actions/curriculum";
 import type { ActionState } from "@/app/actions/foundation";
 
 type Named={id:string;name:string};
@@ -18,6 +18,8 @@ export function CurriculumForms({campuses,terms,arms,subjects,offerings,enrollme
   const [subject,setSubject]=useState("");
   const [state,action,pending]=useActionState(saveOffering,initial);
   const [selectionState,selectionAction,selectionPending]=useActionState(saveSelection,initial);
+  const [importState,importAction,importPending]=useActionState(importCatalog,initial);
+  const [pathwayState,pathwayAction,pathwayPending]=useActionState(savePathway,initial);
   const scoped=(items:Scoped[])=>items.filter(i=>i.campusId===campus);
   const visible=offerings.filter(o=>o.campusId===campus&&o.classArmId===arm&&o.termId===term);
   const selected=enrollments.find(e=>e.id===student&&e.campusId===campus&&e.classArmId===arm);
@@ -29,6 +31,11 @@ export function CurriculumForms({campuses,terms,arms,subjects,offerings,enrollme
       <label>Class<select className={field} value={arm} onChange={e=>{setArm(e.target.value);setStudent("");}}><Options items={scoped(arms)}/></select></label>
       <label>Term<select className={field} value={term} onChange={e=>setTerm(e.target.value)}><Options items={scoped(terms)}/></select></label>
     </div>
+    {campus&&<form action={importAction} className="space-y-2 rounded-xl border p-3">
+      <input type="hidden" name="campusId" value={campus}/>
+      <p className="text-sm">Register the approved subject catalog for this campus. This does not assign subjects to classes or teachers.</p>
+      <button className="button" disabled={importPending} type="submit">{importPending?"Registering…":"Register Petra subject catalog"}</button><p role="status">{importState.message}</p>
+    </form>}
     {campus&&arm&&term&&<>
       <form action={action} className="grid gap-3 sm:grid-cols-2">
         <input type="hidden" name="campusId" value={campus}/><input type="hidden" name="classArmId" value={arm}/><input type="hidden" name="termId" value={term}/>
@@ -41,6 +48,11 @@ export function CurriculumForms({campuses,terms,arms,subjects,offerings,enrollme
         <button className="button" disabled={pending} type="submit">{pending?"Saving…":"Add class subject"}</button><p role="status">{state.message}</p>
       </form>
       <div className="space-y-2"><h3 className="font-bold">Configured subjects</h3>{visible.map(o=><p key={o.id} className="rounded-lg border p-2">{o.displayName} · {o.groupName??"Ungrouped"} · {o.pathway??"All pathways"} · {o.isRequired?"Compulsory":"Optional"}</p>)}{!visible.length&&<p>No subjects configured for this class and term.</p>}</div>
+      {selected&&<form action={pathwayAction} className="grid gap-3 sm:grid-cols-2">
+        <input type="hidden" name="campusId" value={campus}/><input type="hidden" name="enrollmentId" value={selected.id}/>
+        <label>Senior student pathway<select key={selected.id+selected.pathway} required className={field} name="pathway" defaultValue={selected.pathway??""}><option value="">Select…</option><option value="SCIENCE">Science</option><option value="ARTS">Arts</option><option value="COMMERCIAL">Commercial</option></select></label>
+        <button className="button" disabled={pathwayPending} type="submit">{pathwayPending?"Saving…":"Save senior pathway"}</button><p role="status">{pathwayState.message}</p>
+      </form>}
       <form action={selectionAction} className="grid gap-3 sm:grid-cols-2">
         <input type="hidden" name="campusId" value={campus}/>
         <label>Student<select required name="enrollmentId" className={field} value={student} onChange={e=>setStudent(e.target.value)}><Options items={enrollments.filter(e=>e.campusId===campus&&e.classArmId===arm)}/></select></label>
