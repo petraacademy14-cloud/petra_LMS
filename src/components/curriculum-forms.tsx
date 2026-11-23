@@ -1,16 +1,17 @@
 "use client";
 import { useActionState, useState } from "react";
-import { saveOffering, saveSelection, importCatalog, savePathway } from "@/app/actions/curriculum";
+import { saveOffering, saveSelection, importCatalog, savePathway, bulkConfigureSubjects } from "@/app/actions/curriculum";
 import type { ActionState } from "@/app/actions/foundation";
 
 type Named={id:string;name:string};
 type Scoped=Named & {campusId:string};
 type Offering={id:string;campusId:string;classArmId:string;termId:string;displayName:string;groupName:string|null;pathway:string|null;isRequired:boolean};
 type Enrollment=Scoped & {classArmId:string;pathway:string|null};
+type ClassOption=Scoped & {code:string};
 const initial:ActionState={status:"idle",message:""};
 const field="h-11 w-full rounded-xl border border-[#dfe2e6] bg-white px-3";
 function Options({items}:{items:Named[]}) {return <><option value="">Select…</option>{items.map(i=><option key={i.id} value={i.id}>{i.name}</option>)}</>;}
-export function CurriculumForms({campuses,terms,arms,subjects,offerings,enrollments}:{campuses:Named[];terms:Scoped[];arms:Scoped[];subjects:Scoped[];offerings:Offering[];enrollments:Enrollment[]}) {
+export function CurriculumForms({campuses,terms,arms,subjects,offerings,enrollments}:{campuses:Named[];terms:Scoped[];arms:ClassOption[];subjects:Scoped[];offerings:Offering[];enrollments:Enrollment[]}) {
   const [campus,setCampus]=useState("");
   const [arm,setArm]=useState("");
   const [term,setTerm]=useState("");
@@ -20,8 +21,11 @@ export function CurriculumForms({campuses,terms,arms,subjects,offerings,enrollme
   const [selectionState,selectionAction,selectionPending]=useActionState(saveSelection,initial);
   const [importState,importAction,importPending]=useActionState(importCatalog,initial);
   const [pathwayState,pathwayAction,pathwayPending]=useActionState(savePathway,initial);
+  const [bulkState,bulkAction,bulkPending]=useActionState(bulkConfigureSubjects,initial);
+  const [bulkSection,setBulkSection]=useState("");
   const scoped=(items:Scoped[])=>items.filter(i=>i.campusId===campus);
   const visible=offerings.filter(o=>o.campusId===campus&&o.classArmId===arm&&o.termId===term);
+  const activeArm=arms.find(a=>a.id===arm&&a.campusId===campus);
   const selected=enrollments.find(e=>e.id===student&&e.campusId===campus&&e.classArmId===arm);
   return <section className="card mt-5 space-y-4 p-5">
     <h2 className="text-lg font-black">Curriculum management</h2>
@@ -37,6 +41,23 @@ export function CurriculumForms({campuses,terms,arms,subjects,offerings,enrollme
       <button className="button" disabled={importPending} type="submit">{importPending?"Registering…":"Register Petra subject catalog"}</button><p role="status">{importState.message}</p>
     </form>}
     {campus&&arm&&term&&<>
+      <form action={bulkAction} className="space-y-3 rounded-xl border p-3">
+        <h3 className="font-black">Bulk class subjects</h3>
+        <p className="text-sm">Load the approved subject list into this class and term. Existing offerings remain unchanged; no students are enrolled automatically.</p>
+        <input type="hidden" name="campusId" value={campus}/><input type="hidden" name="classArmId" value={arm}/><input type="hidden" name="termId" value={term}/>
+        <label className="block">Section
+          <select required className={field} name="section" value={bulkSection} onChange={e=>setBulkSection(e.target.value)}>
+            <option value="">Select section…</option>
+            <option value="NURSERY">Nursery</option>
+            <option value="ELEMENTARY">Elementary</option>
+            <option value="JUNIOR">Junior Secondary</option>
+            <option value="SENIOR">Senior Secondary</option>
+          </select>
+        </label>
+        <p className="text-xs text-[#747c87]">Selected class code: {activeArm?.code ?? "Unknown"}. The server will reject a mismatched section.</p>
+        <button type="submit" className="button" disabled={bulkPending||!bulkSection}>{bulkPending?"Configuring…":"Add approved subjects to class"}</button>
+        <p role="status">{bulkState.message}</p>
+      </form>
       <form action={action} className="grid gap-3 sm:grid-cols-2">
         <input type="hidden" name="campusId" value={campus}/><input type="hidden" name="classArmId" value={arm}/><input type="hidden" name="termId" value={term}/>
         <label>Subject<select required className={field} name="subjectId" value={subject} onChange={e=>setSubject(e.target.value)}><Options items={scoped(subjects).filter(s=>!visible.some(o=>o.displayName===s.name))}/></select></label>

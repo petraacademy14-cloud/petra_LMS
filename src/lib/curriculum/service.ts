@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { createHash } from "node:crypto";
 import { catalogNames, subjectKey, isSeniorClassCode } from "./registration";
+import { curriculumSections, planSectionSubjects, sectionForClass } from "./bulk-plan";
 import { db } from "@/lib/db";
 import { requireCampusAccess, requirePermission } from "@/lib/dal";
 
@@ -104,4 +105,57 @@ export async function setStudentPathway(input:unknown){
     await tx.enrollment.update({where:{id:enrollment.id},data:{academicPathway:data.pathway}});
     await tx.auditLog.create({data:{schoolId,campusId:data.campusId,actorUserId:viewer.user.id,action:"curriculum.pathway.set",entityType:"Enrollment",entityId:enrollment.id,before:{pathway:enrollment.academicPathway},after:{pathway:data.pathway}}});
   },{isolationLevel:"Serializable"});
+}
+
+/**
+ * Bulk configure the approved subjects for a single class/term.
+ * Does not change existing offerings or enroll individual students.
+ * Requires campus catalog registration first; missing or ambiguous subjects
+ * cause a full rollback rather than a partial curriculum.
+ */
+export async function bulkConfigureClassSubjects(input: unknown) {
+  const data=z.object({
+    campusId:id,termId:id,classArmId:id,
+    section:z.enum(curriculumSections),
+  }).parse(input);
+  const viewer=await requirePermission("academic.manage");
+  await requireCampusAccess(data.campusId);
+  const schoolId=viewer.membership.schoolId;
+  const planned=planSectionSubjects(data.section);
+  return db.$transaction(async tx=>{
+    const [term,arm,links,existing]=await Promise.all([
+      tx.term.findFirst({where:{id:data.termId,campusId:data.campusId,isCurrent:true,academicSession:{schoolId,isCurrent:true}}}),
+      tx.classArm.findFirst({where:{id:data.classArmId,campusId:data.campusId,isActive:true,classLevel:{schoolId,isActive:true}},include:{classLevel:true}}),
+      tx.campusSubject.findMany({where:{campusId:data.campusId,isActive:true,subject:{schoolId,isActive:true}},include:{subject:true}}),
+      tx.curriculumOffering.findMany({where:{termId:data.termId,classArmId:data.classArmId},select:{subjectId:true}}),
+    ]);
+    if(!term||!arm||sectionForClass(arm.classLevel.code)!==data.section)throw new Error("INVALID_CLASS_SECTION");
+    const byKey=new Map<string,typeof links>();
+    for(const link of links) {
+      const key=subjectKey(link.subject.name);
+      byKey.set(key,[...(byKey.get(key)??[]),link]);
+    }
+    const resolved=planned.map(item=>{
+      const matches=byKey.get(subjectKey(item.name))??[];
+      if(matches.length!==1)throw new Error("MISSING_OR_AMBIGUOUS_CAMPUS_SUBJECT:"+item.name);
+      return {item,subjectId:matches[0].subjectId};
+    });
+    const ids=resolved.map(x=>x.subjectId);
+    if(new Set(ids).size!==ids.length)throw new Error("DUPLICATE_RESOLVED_SUBJECT");
+    const existingIds=new Set(existing.map(x=>x.subjectId));
+    const added=resolved.filter(x=>!existingIds.has(x.subjectId));
+    if(added.length){
+      await tx.curriculumOffering.createMany({data:added.map(({item,subjectId})=>({
+        campusId:data.campusId,termId:data.termId,classArmId:data.classArmId,subjectId,
+        displayName:item.name,groupName:item.groupName,sortOrder:item.sortOrder,
+        pathway:item.pathway,isRequired:false,
+      }))});
+      await tx.auditLog.create({data:{
+        schoolId,campusId:data.campusId,actorUserId:viewer.user.id,
+        action:"curriculum.class.bulk_configure",entityType:"ClassArm",entityId:data.classArmId,
+        after:{termId:data.termId,section:data.section,addedSubjectIds:added.map(x=>x.subjectId),existingCount:resolved.length-added.length},
+      }});
+    }
+    return {added:added.length,alreadyConfigured:resolved.length-added.length};
+  },{isolationLevel:"Serializable",timeout:60000});
 }

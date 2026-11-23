@@ -1,6 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { createCurriculumOffering, addStudentSubjectSelection, registerCampusCatalog, setStudentPathway } from "@/lib/curriculum/service";
+import { createCurriculumOffering, addStudentSubjectSelection, registerCampusCatalog, setStudentPathway, bulkConfigureClassSubjects } from "@/lib/curriculum/service";
 import type { ActionState } from "./foundation";
 
 export async function saveOffering(_state: ActionState, form: FormData): Promise<ActionState> {
@@ -37,4 +37,17 @@ export async function savePathway(_state:ActionState,form:FormData):Promise<Acti
     revalidatePath("/academics");
     return {status:"success",message:"Student pathway saved."};
   }catch{return {status:"error",message:"Could not save pathway. Check senior class eligibility and existing subject selections."};}
+}
+
+export async function bulkConfigureSubjects(_state:ActionState,form:FormData):Promise<ActionState>{
+  try {
+    const result=await bulkConfigureClassSubjects({
+      campusId:form.get("campusId"),termId:form.get("termId"),
+      classArmId:form.get("classArmId"),section:form.get("section"),
+    });
+    revalidatePath("/academics");
+    return {status:"success",message:`Added ${result.added} subjects; ${result.alreadyConfigured} already configured. Existing assignments were preserved.`};
+  } catch {
+    return {status:"error",message:"Bulk configuration was not saved. Verify class section, current term and register the full campus subject catalog first."};
+  }
 }
