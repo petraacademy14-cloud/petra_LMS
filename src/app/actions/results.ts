@@ -7,6 +7,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { canTransitionResult, PETRA_RESULT_COMPONENTS } from "@/lib/academics";
 import { requireCampusAccess, requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
+import { getResultRoster } from "@/lib/curriculum/result-roster";
 
 async function audit(
   tx: Prisma.TransactionClient,
@@ -202,7 +203,9 @@ export async function saveResultSheetScores(formData: FormData) {
   }
   await requireCampusAccess(sheet.campusId);
   if (sheet.status !== "DRAFT") throw new Error("INVALID:RESULT_SHEET_STATE");
-  const studentIds = sheet.classArm.enrollments.map((item) => item.studentId);
+  const roster = await getResultRoster(sheet, sheet.classArm.enrollments.map((item) => item.studentId));
+  const studentIds = roster.studentIds;
+  if (studentIds.length === 0) throw new Error("INVALID:EMPTY_SUBJECT_ROSTER");
 
   await db.$transaction(async (tx) => {
     for (const studentId of studentIds) {
@@ -273,11 +276,13 @@ export async function transitionResultSheet(formData: FormData) {
   }
   if (input.nextStatus === "SUBMITTED") {
     await requirePermission("results.manage");
-    const expected = sheet.classArm.enrollments.length * sheet.components.length;
+    const roster = await getResultRoster(sheet, sheet.classArm.enrollments.map((item) => item.studentId));
+    if (roster.studentIds.length === 0) throw new Error("INVALID:EMPTY_SUBJECT_ROSTER");
+    const expected = roster.studentIds.length * sheet.components.length;
     const recorded = await db.studentScore.count({
       where: {
         component: { sheetId: sheet.id },
-        studentId: { in: sheet.classArm.enrollments.map((item) => item.studentId) },
+        studentId: { in: roster.studentIds },
       },
     });
     if (recorded !== expected) throw new Error("INVALID:INCOMPLETE_RESULT_SHEET");

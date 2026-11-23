@@ -14,6 +14,7 @@ import {
 } from "@/lib/academics";
 import { requirePermission } from "@/lib/dal";
 import { db } from "@/lib/db";
+import { getResultRoster } from "@/lib/curriculum/result-roster";
 import { hasPermission } from "@/lib/permissions";
 
 export const metadata: Metadata = { title: "Result sheet" };
@@ -59,7 +60,9 @@ export default async function ResultSheetPage({
     },
   });
   if (!sheet) notFound();
-  const students = sheet.classArm.enrollments.map((item) => item.student);
+  const roster = await getResultRoster(sheet, sheet.classArm.enrollments.map((item) => item.studentId));
+  const rosterIds = new Set(roster.studentIds);
+  const students = sheet.classArm.enrollments.filter((item) => rosterIds.has(item.studentId)).map((item) => item.student);
   const scoreMap = new Map(sheet.components.flatMap((component) => component.scores.map((score) => [`${component.id}:${score.studentId}`, score] as const)));
   const entryMap = new Map(sheet.entries.map((entry) => [entry.studentId, entry]));
   const canManage = hasPermission(viewer.membership.role, "results.manage");
@@ -75,6 +78,9 @@ export default async function ResultSheetPage({
         title={`${sheet.classArm.classLevel.name} ${sheet.classArm.name}`}
       />
       <AcademicsNav />
+      {sheet.status === "DRAFT" && roster.mode === "selected" && students.length === 0 && (
+        <p className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm font-bold text-amber-900">No students are enrolled in this subject yet. Assign students through Academics before entering or submitting results.</p>
+      )}
       <section className="card mt-6 overflow-hidden">
         <form action={saveResultSheetScores}>
           <input name="sheetId" type="hidden" value={sheet.id} />
@@ -86,9 +92,9 @@ export default async function ResultSheetPage({
               const grade = total === null ? null : resolveGrade(total, sheet.gradingScheme.bands);
               return <tr key={student.id}><td><strong>{student.lastName}, {student.firstName}</strong><br /><span className="text-xs">{student.admissionNumber}</span></td>{scored.map(({ component, score }) => <td key={component.id}><input className="h-10 w-24 rounded-lg border px-2" defaultValue={score ? Number(score.score) : ""} disabled={!editable} max={Number(component.maxScore)} min="0" name={`score:${component.id}:${student.id}`} step="0.01" type="number" />{score?.corrections[0] && <p className="mt-1 text-[0.68rem] text-[#a25d00]">Corrected</p>}</td>)}<td className="font-black">{total ?? "—"}</td><td>{grade?.label ?? "—"}</td><td><textarea className="min-h-20 min-w-56 rounded-lg border p-2" defaultValue={entryMap.get(student.id)?.teacherComment ?? ""} disabled={!editable} maxLength={500} name={`comment:${student.id}`} /></td></tr>;
             })}</tbody></table></div>
-          {editable && <div className="border-t p-4"><button className="button" type="submit">Save scores</button></div>}
+          {editable && students.length > 0 && <div className="border-t p-4"><button className="button" type="submit">Save scores</button></div>}
         </form>
-        {sheet.status === "DRAFT" && canManage && <form action={transitionResultSheet} className="border-t p-4"><input name="sheetId" type="hidden" value={sheet.id} /><input name="nextStatus" type="hidden" value="SUBMITTED" /><button className="button" type="submit">Submit for approval</button></form>}
+        {sheet.status === "DRAFT" && canManage && students.length > 0 && <form action={transitionResultSheet} className="border-t p-4"><input name="sheetId" type="hidden" value={sheet.id} /><input name="nextStatus" type="hidden" value="SUBMITTED" /><button className="button" type="submit">Submit for approval</button></form>}
         {sheet.status === "SUBMITTED" && canApprove && <div className="flex gap-3 border-t p-4"><form action={transitionResultSheet}><input name="sheetId" type="hidden" value={sheet.id} /><input name="nextStatus" type="hidden" value="DRAFT" /><button className="button button-secondary" type="submit">Return to draft</button></form><form action={transitionResultSheet}><input name="sheetId" type="hidden" value={sheet.id} /><input name="nextStatus" type="hidden" value="APPROVED" /><button className="button" type="submit">Approve results</button></form></div>}
         {sheet.status === "APPROVED" && canPublish && <form action={transitionResultSheet} className="border-t p-4"><input name="sheetId" type="hidden" value={sheet.id} /><input name="nextStatus" type="hidden" value="PUBLISHED" /><button className="button" type="submit">Publish results</button></form>}
         {sheet.status === "PUBLISHED" && canPublish && <form action={transitionResultSheet} className="border-t p-4"><input name="sheetId" type="hidden" value={sheet.id} /><input name="nextStatus" type="hidden" value="LOCKED" /><button className="button" type="submit">Lock permanently</button></form>}

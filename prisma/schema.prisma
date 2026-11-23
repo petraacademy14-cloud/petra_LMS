@@ -327,6 +327,9 @@ model Campus {
   publications        Publication[]
   communicationMedia  CommunicationMedia[]
 
+  curriculumOfferings CurriculumOffering[]
+  subjectSelections StudentSubjectSelection[]
+
   @@unique([schoolId, code])
   @@unique([schoolId, name])
   @@index([schoolId, isActive])
@@ -397,6 +400,8 @@ model Term {
   attendanceRegisters AttendanceRegister[]
   resultSheets        ResultSheet[]
 
+  curriculumOfferings CurriculumOffering[]
+
   @@unique([academicSessionId, campusId, kind])
   @@index([campusId, isCurrent])
   @@map("terms")
@@ -440,6 +445,8 @@ model ClassArm {
   resultSheets        ResultSheet[]
   announcements       Announcement[]
 
+  curriculumOfferings CurriculumOffering[]
+
   @@unique([campusId, classLevelId, code])
   @@index([campusId, isActive])
   @@map("class_arms")
@@ -458,6 +465,8 @@ model Subject {
   campusSubjects      CampusSubject[]
   teachingAssignments TeachingAssignment[]
   resultSheets        ResultSheet[]
+
+  curriculumOfferings CurriculumOffering[]
 
   @@unique([schoolId, code])
   @@map("subjects")
@@ -579,6 +588,9 @@ model Enrollment {
   endsOn            DateTime?        @db.Date
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
+
+  academicPathway AcademicPathway?
+  subjectSelections StudentSubjectSelection[]
 
   @@unique([studentId, academicSessionId])
   @@index([campusId, classArmId, status])
@@ -1311,4 +1323,53 @@ model ErrorLog {
   @@index([schoolId, occurredAt(sort: Desc)])
   @@index([fingerprint])
   @@map("error_logs")
+}
+
+enum AcademicPathway {
+  SCIENCE
+  ARTS
+  COMMERCIAL
+}
+
+model CurriculumOffering {
+  id           String @id @default(cuid())
+  campusId     String
+  campus       Campus @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  termId       String
+  term         Term @relation(fields: [termId], references: [id], onDelete: Restrict)
+  classArmId   String
+  classArm     ClassArm @relation(fields: [classArmId], references: [id], onDelete: Restrict)
+  subjectId    String
+  subject      Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  displayName  String
+  groupName    String?
+  sortOrder    Int @default(0)
+  pathway      AcademicPathway?
+  isRequired   Boolean @default(false)
+  isActive     Boolean @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  selections StudentSubjectSelection[]
+
+  @@unique([termId, classArmId, subjectId])
+  @@index([campusId, termId, classArmId])
+  @@map("curriculum_offerings")
+}
+
+model StudentSubjectSelection {
+  id           String @id @default(cuid())
+  campusId     String
+  campus       Campus @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  enrollmentId String
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Restrict)
+  offeringId   String
+  offering     CurriculumOffering @relation(fields: [offeringId], references: [id], onDelete: Restrict)
+  isActive     Boolean @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([enrollmentId, offeringId])
+  @@index([campusId, offeringId, isActive])
+  @@map("student_subject_selections")
 }
