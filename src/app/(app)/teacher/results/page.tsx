@@ -13,6 +13,7 @@ import { createResultSheet } from "@/app/actions/results";
 import { PageHeading } from "@/components/page-heading";
 import { getViewer } from "@/lib/dal";
 import { db } from "@/lib/db";
+import { getResultRoster } from "@/lib/curriculum/result-roster";
 import {
   resultProgress,
   teacherStatusTone,
@@ -55,7 +56,7 @@ export default async function TeacherResultsPage() {
             classLevel: { select: { name: true } },
             enrollments: {
               where: { status: "CURRENT", student: { status: "ACTIVE" } },
-              select: { id: true },
+              select: { studentId: true },
             },
           },
         },
@@ -89,14 +90,14 @@ export default async function TeacherResultsPage() {
             classLevel: { select: { name: true } },
             enrollments: {
               where: { status: "CURRENT", student: { status: "ACTIVE" } },
-              select: { id: true },
+              select: { studentId: true },
             },
           },
         },
         subject: { select: { name: true, code: true } },
         components: {
           select: {
-            scores: { select: { id: true } },
+            scores: { select: { studentId: true } },
           },
         },
       },
@@ -129,6 +130,15 @@ export default async function TeacherResultsPage() {
     (assignment) => !sheetByAssignment.has(sheetKey(assignment)),
   );
 
+  const progressBySheet=new Map(await Promise.all(sheets.map(async sheet=>{
+    const roster=await getResultRoster({...sheet,schoolId:viewer.membership.schoolId},sheet.classArm.enrollments.map(e=>e.studentId));
+    const allowed=new Set(roster.studentIds);
+    const scoreCount=sheet.components.reduce((count,component)=>
+      count+component.scores.filter(score=>allowed.has(score.studentId)).length,0);
+    return [sheet.id,resultProgress({
+      componentCount:sheet.components.length,studentCount:roster.studentIds.length,scoreCount
+    })] as const;
+  })));
   const drafts = sheets.filter((sheet) => sheet.status === "DRAFT").length;
   const submitted = sheets.filter(
     (sheet) => sheet.status === "SUBMITTED",
@@ -265,16 +275,7 @@ export default async function TeacherResultsPage() {
         </div>
         <div className="grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-3">
           {sheets.map((sheet) => {
-            const studentCount = sheet.classArm.enrollments.length;
-            const scoreCount = sheet.components.reduce(
-              (total, component) => total + component.scores.length,
-              0,
-            );
-            const progress = resultProgress({
-              componentCount: sheet.components.length,
-              studentCount,
-              scoreCount,
-            });
+            const progress=progressBySheet.get(sheet.id)!;
             return (
               <article
                 className="rounded-xl border border-[#e5e7eb] p-4"
