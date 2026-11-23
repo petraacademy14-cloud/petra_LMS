@@ -56,7 +56,7 @@ export default async function StudentReportCardPage({
             <td className="border p-2">{r.group&&<span className="block text-[10px] text-[#666]">{r.group}</span>}<strong>{r.subject}</strong></td>
             {[r.cat1,r.cat2,r.exam,r.total].map((n,i)=><td className="border p-2 text-center" key={i}>{n??"—"}</td>)}
             <td className="border p-2 text-center">{r.grade}</td>
-            <td className="border p-2">{r.remark}</td>
+            <td className="border p-2 text-center">{r.classHighest??"—"}</td><td className="border p-2 text-center">{r.classLowest??"—"}</td><td className="border p-2">{r.remark}</td>
           </tr>)}</tbody>
         </table>
       </div>

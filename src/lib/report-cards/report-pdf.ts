@@ -40,7 +40,7 @@ export async function renderReportPdf(report:PublishedReport){
     if(!continued){text("CAT 1 + CAT 2 + EXAM = TOTAL (20 + 20 + 60 = 100)",35,637,8);}
     y=610;
     page.drawRectangle({x:35,y:y-7,width:525,height:23,color:RED});
-    const heads=[["Subject",40],["CAT1",256],["CAT2",301],["Exam",347],["Total",391],["Grade",438],["Remark",480]];
+    const heads=[["Subject",40],["CAT1",205],["CAT2",242],["Exam",281],["Total",320],["Grade",359],["High",393],["Low",436],["Remark",476]];
     heads.forEach(([t,x])=>page.drawText(String(t),{x:Number(x),y:y+1,size:8,font:bold,color:rgb(1,1,1)}));
     y-=18;
   };
@@ -57,13 +57,15 @@ export async function renderReportPdf(report:PublishedReport){
     }
     lastGroup=row.group;
     const num=(n:number|null)=>n===null?"-":String(n);
-    text(row.subject,40,y,8,false,206);
-    text(num(row.cat1),260,y,8);
-    text(num(row.cat2),306,y,8);
-    text(num(row.exam),351,y,8);
-    text(num(row.total),393,y,8,true);
-    text(row.grade,443,y,8,true);
-    text(row.remark,482,y,8,false,75);
+    text(row.subject,40,y,8,false,160);
+    text(num(row.cat1),208,y,8);
+    text(num(row.cat2),244,y,8);
+    text(num(row.exam),284,y,8);
+    text(num(row.total),323,y,8,true);
+    text(row.grade,359,y,8,true);
+    text(num(row.classHighest),396,y,8);
+    text(num(row.classLowest),439,y,8);
+    text(row.remark,476,y,8,false,79);
     line(y-6);y-=rowHeight;
   }
   if(y<225){header(true);}

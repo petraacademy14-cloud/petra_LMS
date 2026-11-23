@@ -8,6 +8,7 @@ export type ReportRow = {
   subject:string; group:string|null; sortOrder:number;
   cat1:number|null;cat2:number|null;exam:number|null;
   total:number|null;grade:string;remark:string;comment:string|null;
+  classHighest:number|null;classLowest:number|null;
 };
 export type PublishedReport = {
   studentId:string;schoolName:string;campusName:string;
@@ -53,6 +54,30 @@ export async function loadPublishedReport(input:{
     select:{subjectId:true,displayName:true,groupName:true,sortOrder:true}
   });
   const offeringMap=new Map(offerings.map(o=>[o.subjectId,o]));
+
+  // Compare only complete published scores from students enrolled in this class/session.
+  const cohort=await db.enrollment.findMany({where:{
+    campusId:term.campusId,academicSessionId:term.academicSessionId,classArmId:classArm.id
+  },select:{studentId:true}});
+  const comparisons=await db.resultSheet.findMany({where:{
+    id:{in:student.resultEntries.map(e=>e.sheetId)},schoolId:input.schoolId,campusId:term.campusId,
+    termId:term.id,classArmId:classArm.id,status:{in:["PUBLISHED","LOCKED"]}
+  },select:{id:true,components:{select:{
+    maxScore:true,weight:true,scores:{
+      where:{studentId:{in:cohort.map(e=>e.studentId)}},select:{studentId:true,score:true}
+    }
+  }}}});
+  const extremes=new Map<string,{highest:number;lowest:number}>();
+  for(const sheet of comparisons){
+    const marks=new Map<string,Array<{score:number;maxScore:number;weight:number}>>();
+    for(const component of sheet.components)for(const score of component.scores){
+      const values=marks.get(score.studentId)??[];
+      values.push({score:Number(score.score),maxScore:Number(component.maxScore),weight:Number(component.weight)});
+      marks.set(score.studentId,values);
+    }
+    const totals=[...marks.values()].filter(values=>values.length===sheet.components.length&&values.length>0).map(values=>totalWeightedScore(values));
+    if(totals.length)extremes.set(sheet.id,{highest:Math.max(...totals),lowest:Math.min(...totals)});
+  }
   const rows:ReportRow[]=student.resultEntries.map(entry=>{
     const sheet=entry.sheet;
     const configured=offeringMap.get(sheet.subjectId);
@@ -72,6 +97,8 @@ export async function loadPublishedReport(input:{
       cat1:byOrder(1),cat2:byOrder(2),exam:byOrder(3),
       total,grade:grade?.label??"—",remark:grade?.remark??"—",
       comment:entry.teacherComment,
+      classHighest:extremes.get(sheet.id)?.highest??null,
+      classLowest:extremes.get(sheet.id)?.lowest??null,
     };
   }).sort((a,b)=>a.sortOrder-b.sortOrder||a.subject.localeCompare(b.subject));
   const completed=rows.flatMap(row=>row.total===null?[]:[row.total]);
