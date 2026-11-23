@@ -71,10 +71,10 @@ export default async function StudentReportCardPage({
         <p><strong>Positive traits:</strong> ________________________</p>
         <p><strong>Negative traits:</strong> ________________________</p>
         <p><strong>Extra-curricular activities:</strong> ______________</p>
-        <p><strong>Teacher's comment:</strong> _____________________</p>
-        <p><strong>Teacher's signature:</strong> ____________________</p>
-        <p><strong>Principal's comment:</strong> ___________________</p>
-        <p><strong>Principal's signature:</strong> ____________________</p>
+        <p><strong>Teacher&apos;s comment:</strong> _____________________</p>
+        <p><strong>Teacher&apos;s signature:</strong> ____________________</p>
+        <p><strong>Principal&apos;s comment:</strong> ___________________</p>
+        <p><strong>Principal&apos;s signature:</strong> ____________________</p>
       </section>
       <p className="mt-6 text-xs text-[#69707a]">Only published or locked subject results are shown. Fields without approved data are left blank for completion.</p>
     </article>
