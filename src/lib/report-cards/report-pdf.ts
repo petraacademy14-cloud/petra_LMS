@@ -18,7 +18,7 @@ export async function renderReportPdf(report:PublishedReport){
   const bold=await pdf.embedFont(StandardFonts.HelveticaBold);
   let logo:Awaited<ReturnType<typeof pdf.embedJpg>>|null=null;
   try{const bytes=await readFile(path.join(process.cwd(),"public/petra-academy-logo.jpg"));logo=await pdf.embedJpg(bytes);}catch{/* Continue with text heading if logo is missing. */}
-  let page:PDFPage;
+  let page!:PDFPage;
   let y=0;
   const text=(value:string,x:number,y0:number,size=9,strong=false,max=480)=>{
     page.drawText(fit(value,strong?bold:normal,size,max),{x,y:y0,size,font:strong?bold:normal,color:DARK});
